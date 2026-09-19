@@ -288,6 +288,21 @@ final class SupabaseNoticeRepository
   }
 
   @override
+  Future<List<NoticeOfficialProfile>> fetchOfficialProfiles() async {
+    try {
+      final data = _map(_unwrap(await _client.rpc('superadmin_official_profiles_list_v1')));
+      return _list(data['items'])
+          .map(NoticeOfficialProfile.fromJson)
+          .whereType<NoticeOfficialProfile>()
+          .toList(growable: false);
+    } on PostgrestException catch (error) {
+      throw _error(error);
+    } on ClientException {
+      throw const NoticeUnavailableException();
+    }
+  }
+
+  @override
   Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) async {
     try {
       return _notice(
@@ -326,6 +341,7 @@ Map<String, Object?> _draftPayload(NoticeDraft draft) => {
   'button_label': draft.buttonLabel.trim(),
   'link_label': _nullable(draft.linkLabel),
   'cta_target': draft.ctaTarget.toJson(),
+  'official_profile_id': draft.officialProfileId,
   'recurrence': _recurrenceValue(draft.recurrence),
   'interval_days': draft.intervalDays,
   'weekly_days': draft.weeklyDays,
@@ -387,6 +403,7 @@ PlatformNotice _notice(Map<String, dynamic> value) {
     buttonLabel: _string(value['button_label'], fallback: 'Confirmar'),
     linkLabel: _nullable(value['link_label']),
     ctaTarget: NoticeCtaTarget.fromJson(value['cta_target']),
+    author: NoticeOfficialProfile.fromJson(value['author']),
     deliveredCount: _integer(value['delivered_count']),
     viewedCount: _integer(value['viewed_count']),
     acceptedCount: _integer(value['accepted_count']),

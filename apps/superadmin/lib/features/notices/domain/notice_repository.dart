@@ -70,6 +70,9 @@ abstract interface class NoticeCtaTargetOptionsReader {
     String? search,
     int pageSize = 30,
   });
+
+  /// Perfis oficiais ativos (spec 068) para "Publicar como".
+  Future<List<NoticeOfficialProfile>> fetchOfficialProfiles();
 }
 
 abstract interface class NoticeRepository {

@@ -40,6 +40,7 @@ final class NoticeFormPage extends StatefulWidget {
 
 final class _NoticeFormPageState extends State<NoticeFormPage> with SuperadminOwnedDialogs {
   late NoticeFormController _controller;
+  List<NoticeOfficialProfile> _officialProfiles = const [];
   bool _previewCheckboxChecked = false;
   NoticeTargetDevice _previewDevice = NoticeTargetDevice.web;
   int _commandGeneration = 0;
@@ -49,6 +50,18 @@ final class _NoticeFormPageState extends State<NoticeFormPage> with SuperadminOw
   void initState() {
     super.initState();
     _controller = _createController();
+    _loadOfficialProfiles();
+  }
+
+  Future<void> _loadOfficialProfiles() async {
+    final reader = widget.ctaTargetReader;
+    if (reader == null) return;
+    try {
+      final items = await reader.fetchOfficialProfiles();
+      if (mounted) setState(() => _officialProfiles = items);
+    } on Object {
+      // Sem catálogo o seletor só oferece "Plataforma"; nada a mostrar.
+    }
   }
 
   @override
@@ -269,6 +282,21 @@ final class _NoticeFormPageState extends State<NoticeFormPage> with SuperadminOw
           onChanged: _controller.setContentFormat,
         ),
       if (widget.ctaTargetReader case final reader?) ...[
+        if (_officialProfiles.isNotEmpty) ...[
+          const SizedBox(height: CoeloSpacing.space4),
+          CoeloAdminSingleSelectField<String>(
+            key: const Key('notice-official-profile'),
+            label: 'Publicar como',
+            value: _controller.officialProfile?.id ?? '',
+            options: ['', for (final profile in _officialProfiles) profile.id],
+            optionLabel: (id) => id.isEmpty
+                ? 'Plataforma Coelo (sem perfil)'
+                : _officialProfiles.firstWhere((profile) => profile.id == id).label,
+            onChanged: (id) => _controller.setOfficialProfile(
+              id.isEmpty ? null : _officialProfiles.firstWhere((profile) => profile.id == id),
+            ),
+          ),
+        ],
         const SizedBox(height: CoeloSpacing.space4),
         _formGrid([
           CoeloAdminSingleSelectField<NoticeCtaTargetKind>(

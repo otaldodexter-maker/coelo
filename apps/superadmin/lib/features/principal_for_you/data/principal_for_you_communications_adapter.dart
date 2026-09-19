@@ -103,6 +103,7 @@ final class PrincipalForYouCommunicationsAdapter {
             body: item.message,
             cta: item.linkLabel ?? item.buttonLabel,
             ctaTarget: item.ctaTarget,
+            authorLabel: item.author?.label,
           ),
         ),
   );

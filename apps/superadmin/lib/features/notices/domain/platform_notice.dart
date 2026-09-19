@@ -72,6 +72,43 @@ extension NoticeBehaviorLabel on NoticeBehavior {
 
 enum NoticeContentFormat { textBackground, image }
 
+/// Perfil oficial do Coelo que assina a comunicação (spec 068). Só o servidor
+/// atribui; o cliente exibe "por Coelo · @coelo".
+final class NoticeOfficialProfile {
+  const NoticeOfficialProfile({
+    required this.id,
+    required this.handle,
+    required this.displayName,
+    this.mandatory = false,
+  });
+
+  final String id;
+  final String handle;
+  final String displayName;
+  final bool mandatory;
+
+  String get label => '$displayName · @$handle';
+
+  static NoticeOfficialProfile? fromJson(Object? value) {
+    if (value is! Map) return null;
+    final id = value['id']?.toString();
+    if (id == null || id.isEmpty) return null;
+    return NoticeOfficialProfile(
+      id: id,
+      handle: value['handle']?.toString() ?? '',
+      displayName: value['display_name']?.toString() ?? 'Coelo',
+      mandatory: value['mandatory'] == true,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is NoticeOfficialProfile && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
+}
+
 /// Destino interno do CTA de uma comunicação (spec 069 H13). Nunca URL livre:
 /// o servidor valida que o alvo existe e pertence ao escopo da audiência.
 enum NoticeCtaTargetKind { none, circular, form, invite, notice }
@@ -305,6 +342,7 @@ final class PlatformNotice {
     this.buttonLabel = 'Confirmar',
     this.linkLabel,
     this.ctaTarget = NoticeCtaTarget.none,
+    this.author,
     this.deliveredCount = 0,
     this.viewedCount = 0,
     this.acceptedCount = 0,
@@ -349,6 +387,9 @@ final class PlatformNotice {
   final String buttonLabel;
   final String? linkLabel;
   final NoticeCtaTarget ctaTarget;
+
+  /// Perfil oficial que assina (spec 068); nulo em comunicação da plataforma.
+  final NoticeOfficialProfile? author;
   final int deliveredCount;
   final int viewedCount;
   final int acceptedCount;
@@ -417,6 +458,7 @@ final class PlatformNotice {
     String? buttonLabel,
     String? linkLabel,
     NoticeCtaTarget? ctaTarget,
+    NoticeOfficialProfile? author,
     int? deliveredCount,
     int? viewedCount,
     int? acceptedCount,
@@ -455,6 +497,7 @@ final class PlatformNotice {
     buttonLabel: buttonLabel ?? this.buttonLabel,
     linkLabel: linkLabel ?? this.linkLabel,
     ctaTarget: ctaTarget ?? this.ctaTarget,
+    author: author ?? this.author,
     deliveredCount: deliveredCount ?? this.deliveredCount,
     viewedCount: viewedCount ?? this.viewedCount,
     acceptedCount: acceptedCount ?? this.acceptedCount,
@@ -484,6 +527,7 @@ final class NoticeDraft {
     this.buttonLabel = 'Confirmar',
     this.linkLabel,
     this.ctaTarget = NoticeCtaTarget.none,
+    this.officialProfileId,
     this.recurrence = NoticeRecurrence.oneTime,
     this.intervalDays,
     this.weeklyDays = const [],
@@ -521,6 +565,9 @@ final class NoticeDraft {
   final String buttonLabel;
   final String? linkLabel;
   final NoticeCtaTarget ctaTarget;
+
+  /// Publicar como perfil oficial (spec 068); nulo = plataforma.
+  final String? officialProfileId;
   final NoticeRecurrence recurrence;
   final int? intervalDays;
   final List<int> weeklyDays;

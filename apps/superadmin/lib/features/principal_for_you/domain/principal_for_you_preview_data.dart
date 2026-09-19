@@ -25,6 +25,7 @@ final class PrincipalForYouHighlight {
     required this.body,
     required this.cta,
     this.ctaTarget = NoticeCtaTarget.none,
+    this.authorLabel,
     this.assetPath = '',
     this.assetIndex = 0,
   });
@@ -40,6 +41,9 @@ final class PrincipalForYouHighlight {
   /// Destino interno do CTA (spec 069 H13), resolvido pelo servidor; sem alvo
   /// o botão mantém a mensagem honesta de indisponibilidade.
   final NoticeCtaTarget ctaTarget;
+
+  /// "Coelo · @coelo" quando um perfil oficial assina (spec 068).
+  final String? authorLabel;
 
   /// Optional approved sprite for the preview fixtures.
   ///
@@ -58,6 +62,7 @@ final class PrincipalForYouHighlight {
     body: body,
     cta: cta,
     ctaTarget: ctaTarget,
+    authorLabel: authorLabel,
     assetPath: assetPath,
     assetIndex: assetIndex,
   );

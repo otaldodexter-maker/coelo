@@ -420,6 +420,18 @@ final class _HeroCard extends StatelessWidget {
                             ),
                           ),
                         ),
+                        if (item.authorLabel case final author?) ...[
+                          const SizedBox(height: CoeloSpacing.space2),
+                          Text(
+                            'por $author',
+                            key: const Key('principal-for-you-hero-author'),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(
+                              context,
+                            ).textTheme.labelMedium?.copyWith(color: scheme.onPrimary),
+                          ),
+                        ],
                         const SizedBox(height: CoeloSpacing.space3),
                         Text(
                           item.title,
