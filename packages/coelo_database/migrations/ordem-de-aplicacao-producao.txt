@@ -550,3 +550,6 @@
 # efetiva é de perfil e libera, reavalia os outros perfis com regra e devolve o primeiro bloqueio (reason/rule_id/popup dele); regra
 # própria segue acima de todos. pgTAP staff_access_profile_v1_test 45/45 (+ v1 68, legacy 13, assert 18); ledger 20260920041000 reparado.
 20260920041000_staff_access_most_restrictive_v1.sql
+# Lote 101 (Sessão CODE-REVIEW r4, 20/09/2026): opções de instituição do formulário de atividades (superadmin_activity_template_options,
+# superadmin_activity_filter_options_v2) trazem `handle` (= slug) para a prévia do @ bater com o lote 100. pgTAP activity_options_institution_handle_v1_test 3/3.
+20260920033000_activity_options_institution_handle_v1.sql
