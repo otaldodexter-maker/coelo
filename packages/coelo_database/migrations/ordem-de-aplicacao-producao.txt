@@ -478,13 +478,14 @@
 # pgTAP health_care_collections_v2_test 26/26 no espelho mirror-acesso; ledger 20260919233000 reparado.
 20260919233000_health_care_collections_v2.sql
 # Lote 89 (19/09 — Sessão ACESSO-PERFIL): varredura dos leitores legados de institution_memberships (item 4 do F7).
+# Lote 90 (19/09 — Sessão ACESSO-PERFIL): varredura dos leitores legados de institution_memberships (item 4 do F7).
 # 8 funções recriadas com o corpo vigente + "and not app_private.staff_access_blocked(<alias>.id)" (14 memberships):
 # child_care_notification_recipients_v1, medication_notification_recipients_v1/v2, child_safety_add_unit_review_recipients,
 # materialize_notice_publication_job, now_viewer_role_class, list_my_principal_for_you, redeem_now_media_read_ticket.
 # Contagens administrativas (Pessoas, Unidades, Perfis), audiência de formulários e chat não mudam (49 funções restantes anotadas em pendentes.md).
 # pgTAP staff_access_legacy_readers_v1_test 13/13 no espelho mirror-acesso; ledger 20260919230000 reparado e listado.
 20260919230000_staff_access_legacy_readers_v1.sql
-# Lote 90 (19/09 — Sessão ACESSO-PERFIL): erro com motivo (item 5 do F7). app_private.staff_access_assert(inst, unit, group, person)
+# Lote 91 (19/09 — Sessão ACESSO-PERFIL): erro com motivo (item 5 do F7). app_private.staff_access_assert(inst, unit, group, person)
 # levanta PT403 / STAFF_ACCESS_DENIED com detail JSON {code, membership_id, institution_id, reason, popup} quando todo vínculo de equipe
 # do ator na instituição está bloqueado agora; chamada no começo de happens_actor, now_actor, circular_actor, moments_actor_for_auth_user
 # e, em now_reader_actor, só depois que equipe e família falharam (família continua passando). assert_agenda/plan/people/support são do
