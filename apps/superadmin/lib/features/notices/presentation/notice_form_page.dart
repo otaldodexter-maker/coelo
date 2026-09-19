@@ -7,9 +7,11 @@ import '../../../app/widgets/superadmin_advanced_color_picker_dialog.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import '../../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 import '../domain/notice_repository.dart';
 import '../domain/platform_notice.dart';
 import 'notice_audience_selector.dart' as audience_picker;
+import 'notice_cta_target_picker.dart';
 import 'notice_form_controller.dart';
 import 'notice_popup_preview.dart';
 import 'notice_preview_dialog.dart';
@@ -18,12 +20,16 @@ final class NoticeFormPage extends StatefulWidget {
   const NoticeFormPage({
     required this.repository,
     this.noticeId,
+    this.ctaTargetReader,
     this.onSaved,
     this.onCancel,
     super.key,
   });
 
   final NoticeRepository repository;
+
+  /// Opções de destino do CTA (spec 069 H13). Sem leitor, o seletor não aparece.
+  final NoticeCtaTargetOptionsReader? ctaTargetReader;
   final String? noticeId;
   final ValueChanged<PlatformNotice>? onSaved;
   final VoidCallback? onCancel;
@@ -32,7 +38,7 @@ final class NoticeFormPage extends StatefulWidget {
   State<NoticeFormPage> createState() => _NoticeFormPageState();
 }
 
-final class _NoticeFormPageState extends State<NoticeFormPage> {
+final class _NoticeFormPageState extends State<NoticeFormPage> with SuperadminOwnedDialogs {
   late NoticeFormController _controller;
   bool _previewCheckboxChecked = false;
   NoticeTargetDevice _previewDevice = NoticeTargetDevice.web;
@@ -64,6 +70,7 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
 
   @override
   void dispose() {
+    dismissOwnedRoutes();
     _commandGeneration++;
     _dismissPreview();
     _controller.dispose();
@@ -261,6 +268,37 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
           optionLabel: _contentFormatLabel,
           onChanged: _controller.setContentFormat,
         ),
+      if (widget.ctaTargetReader case final reader?) ...[
+        const SizedBox(height: CoeloSpacing.space4),
+        _formGrid([
+          CoeloAdminSingleSelectField<NoticeCtaTargetKind>(
+            key: const Key('notice-cta-target-kind'),
+            label: 'Destino do botão',
+            value: _controller.ctaTarget.kind,
+            options: const [
+              NoticeCtaTargetKind.none,
+              NoticeCtaTargetKind.circular,
+              NoticeCtaTargetKind.form,
+              NoticeCtaTargetKind.notice,
+            ],
+            optionLabel: noticeCtaTargetKindLabel,
+            onChanged: _controller.setCtaTargetKind,
+          ),
+          if (_controller.ctaTarget.kind != NoticeCtaTargetKind.none)
+            OutlinedButton.icon(
+              key: const Key('notice-cta-target-pick'),
+              onPressed: () => _pickCtaTarget(reader),
+              icon: const Icon(Icons.link_rounded),
+              label: Text(
+                _controller.ctaTargetLabel ??
+                    (_controller.ctaTarget.hasTarget
+                        ? 'Destino selecionado'
+                        : 'Escolher ${noticeCtaTargetKindLabel(_controller.ctaTarget.kind).toLowerCase()}'),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+        ]),
+      ],
       if (_controller.type == CommunicationType.notice) ...[
         const SizedBox(height: CoeloSpacing.space4),
         _formGrid([
@@ -950,6 +988,16 @@ final class _NoticeFormPageState extends State<NoticeFormPage> {
       },
     );
     if (identical(_previewRoute, openedRoute)) _previewRoute = null;
+  }
+
+  Future<void> _pickCtaTarget(NoticeCtaTargetOptionsReader reader) async {
+    final controller = _controller;
+    final kind = controller.ctaTarget.kind;
+    final option = await showOwnedDialog<NoticeCtaTargetOption>(
+      builder: (_) => NoticeCtaTargetPickerDialog(reader: reader, kind: kind),
+    );
+    if (option == null || !mounted || !identical(controller, _controller)) return;
+    controller.setCtaTargetOption(option);
   }
 
   void _showFeedback(String message) {

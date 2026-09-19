@@ -95,6 +95,10 @@ GoRouter _router(WidgetTester tester, {NoticeRepository? repository}) {
 }
 
 final class _StubNoticeRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   var pageFetches = 0;
 
   @override

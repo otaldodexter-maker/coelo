@@ -127,6 +127,10 @@ typedef _StatusCall = ({
 });
 
 final class _RecordingNoticeRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   _RecordingNoticeRepository({this.status = NoticeStatus.draft});
 
   final NoticeStatus status;

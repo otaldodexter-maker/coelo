@@ -24,6 +24,7 @@ final class PrincipalForYouPreviewPage extends StatefulWidget {
     this.onOpenSearch,
     this.onOpenMessages,
     this.onAction,
+    this.onOpenHighlight,
     super.key,
   });
 
@@ -49,6 +50,10 @@ final class PrincipalForYouPreviewPage extends StatefulWidget {
   /// A production composition root supplies it so the hub navigates instead of
   /// answering with the preview message.
   final ValueChanged<String>? onAction;
+
+  /// Abre o destino real do destaque (spec 069 H13). Sem callback, o botão
+  /// cai em [onAction] com o rótulo.
+  final ValueChanged<PrincipalForYouHighlight>? onOpenHighlight;
 
   @override
   State<PrincipalForYouPreviewPage> createState() => _PrincipalForYouPreviewPageState();
@@ -170,6 +175,7 @@ final class _PrincipalForYouPreviewPageState extends State<PrincipalForYouPrevie
               navigationVisible: !widget.embedded,
               onContext: _showContextSelector,
               onAction: widget.onAction ?? _feedback,
+              onOpenHighlight: widget.onOpenHighlight,
             ),
             if (!widget.embedded)
               PrincipalGlobalNavigation(
@@ -197,6 +203,7 @@ final class _ForYouScroll extends StatelessWidget {
     required this.navigationVisible,
     required this.onContext,
     required this.onAction,
+    this.onOpenHighlight,
   });
 
   final PrincipalForYouPreviewData data;
@@ -205,6 +212,7 @@ final class _ForYouScroll extends StatelessWidget {
   final bool navigationVisible;
   final VoidCallback onContext;
   final ValueChanged<String> onAction;
+  final ValueChanged<PrincipalForYouHighlight>? onOpenHighlight;
 
   @override
   Widget build(BuildContext context) {
@@ -230,7 +238,11 @@ final class _ForYouScroll extends StatelessWidget {
                 canSwitchContext: data.contexts.length > 1,
               ),
               const SizedBox(height: CoeloSpacing.space4),
-              _HeroCard(highlight: data.primaryHighlight, onAction: onAction),
+              _HeroCard(
+                highlight: data.primaryHighlight,
+                onAction: onAction,
+                onOpenHighlight: onOpenHighlight,
+              ),
               const SizedBox(height: CoeloSpacing.space5),
               CoeloTourAnchor(
                 id: 'for-you.shortcuts',
@@ -320,7 +332,8 @@ final class _Greeting extends StatelessWidget {
 }
 
 final class _HeroCard extends StatelessWidget {
-  const _HeroCard({required this.highlight, required this.onAction});
+  const _HeroCard({required this.highlight, required this.onAction, this.onOpenHighlight});
+  final ValueChanged<PrincipalForYouHighlight>? onOpenHighlight;
   final PrincipalForYouHighlight? highlight;
   final ValueChanged<String> onAction;
 
@@ -422,7 +435,8 @@ final class _HeroCard extends StatelessWidget {
                         const Spacer(),
                         FilledButton.tonalIcon(
                           key: const Key('principal-for-you-hero-action'),
-                          onPressed: () => onAction(item.cta),
+                          onPressed: () =>
+                              onOpenHighlight != null ? onOpenHighlight!(item) : onAction(item.cta),
                           style: FilledButton.styleFrom(
                             backgroundColor: scheme.surface,
                             foregroundColor: scheme.onSurface,

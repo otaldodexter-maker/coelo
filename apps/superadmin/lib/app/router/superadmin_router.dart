@@ -175,7 +175,12 @@ import '../../features/invites/presentation/invite_detail_page.dart';
 import '../../features/invites/presentation/invite_directory_page.dart';
 import '../../features/invites/presentation/invite_form_page.dart';
 import '../../features/notices/domain/notice_repository.dart'
-    show NoticeRepository, PrincipalForYouReader, UnavailableNoticeRepository;
+    show
+        NoticeCtaTargetOptionsReader,
+        NoticeRepository,
+        PrincipalForYouReader,
+        UnavailableNoticeRepository;
+import '../../features/notices/domain/platform_notice.dart' show NoticeCtaTargetKind;
 import '../../features/notices/data/development_notice_repository.dart';
 import '../../features/notices/presentation/notice_directory_page.dart';
 import '../../features/notices/presentation/notice_form_page.dart';
@@ -1758,6 +1763,23 @@ GoRouter createSuperadminRouter({
                     SuperadminRoutes.principalConversationsName,
                     queryParameters: const {'from': 'for-you'},
                   ),
+                  // spec 069 H13: o CTA abre o destino real por tipo. Só a
+                  // circular tem rota no Principal hospedado hoje.
+                  onOpenCtaTarget: (target) {
+                    switch (target.kind) {
+                      case NoticeCtaTargetKind.circular:
+                        context.pushNamed(
+                          SuperadminRoutes.principalHappensCircularName,
+                          pathParameters: {'circularId': target.id!},
+                        );
+                        return true;
+                      case NoticeCtaTargetKind.none:
+                      case NoticeCtaTargetKind.form:
+                      case NoticeCtaTargetKind.invite:
+                      case NoticeCtaTargetKind.notice:
+                        return false;
+                    }
+                  },
                 );
               },
             ),
@@ -6396,6 +6418,9 @@ GoRouter createSuperadminRouter({
                     showChatLauncher: false,
                     child: NoticeFormPage(
                       repository: noticeRepository,
+                      ctaTargetReader: noticeRepository is NoticeCtaTargetOptionsReader
+                          ? noticeRepository as NoticeCtaTargetOptionsReader
+                          : null,
                       onSaved: (_) => context.goNamed(SuperadminRoutes.noticesName),
                       onCancel: () => context.goNamed(SuperadminRoutes.noticesName),
                     ),
@@ -6415,6 +6440,9 @@ GoRouter createSuperadminRouter({
                     showChatLauncher: false,
                     child: NoticeFormPage(
                       repository: noticeRepository,
+                      ctaTargetReader: noticeRepository is NoticeCtaTargetOptionsReader
+                          ? noticeRepository as NoticeCtaTargetOptionsReader
+                          : null,
                       noticeId: state.pathParameters['noticeId'],
                       onSaved: (_) => context.goNamed(SuperadminRoutes.noticesName),
                       onCancel: () => context.goNamed(SuperadminRoutes.noticesName),

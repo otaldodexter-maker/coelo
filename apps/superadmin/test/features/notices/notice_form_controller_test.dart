@@ -458,6 +458,10 @@ PlatformNotice _notice(String id, String title) => PlatformNotice(
 );
 
 final class _PendingSaveRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   final pending = <Completer<PlatformNotice>>[];
 
   @override
@@ -477,6 +481,10 @@ final class _PendingSaveRepository implements NoticeRepository {
 }
 
 final class _MismatchedLoadRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   @override
   Future<PlatformNotice> getById(String noticeId) async => _notice('notice-b', 'Outro aviso');
 
@@ -485,6 +493,10 @@ final class _MismatchedLoadRepository implements NoticeRepository {
 }
 
 final class _AmbiguousSaveRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   _AmbiguousSaveRepository({this.deferReplay = false});
 
   final bool deferReplay;
@@ -535,6 +547,10 @@ final class _AmbiguousSaveRepository implements NoticeRepository {
 }
 
 final class _WrongSaveReceiptRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   @override
   Future<PlatformNotice> saveDraft(
     NoticeDraft draft, {
@@ -548,6 +564,10 @@ final class _WrongSaveReceiptRepository implements NoticeRepository {
 }
 
 final class _PublishRetryRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   _PublishRetryRepository({this.ambiguousFirstPublish = false, this.conflictFirstPublish = false});
 
   final bool ambiguousFirstPublish;
@@ -603,6 +623,10 @@ final class _PublishRetryRepository implements NoticeRepository {
 }
 
 final class _StatefulPublicationRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   _StatefulPublicationRepository({
     NoticeStatus initialStatus = NoticeStatus.draft,
     this.publicationStatus = NoticeStatus.scheduled,
@@ -695,6 +719,10 @@ final class _PagedAudienceRepository extends _OrderedAudienceRepository {
 }
 
 class _OrderedAudienceRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   final first = Completer<NoticeAudienceOptionsPage>();
   final second = Completer<NoticeAudienceOptionsPage>();
   int calls = 0;

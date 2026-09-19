@@ -2,6 +2,8 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 
+import '../../notices/domain/platform_notice.dart' show NoticeCtaTarget;
+
 enum PrincipalForYouContentType { highlight, content, forYou }
 
 extension PrincipalForYouContentTypeLabel on PrincipalForYouContentType {
@@ -22,6 +24,7 @@ final class PrincipalForYouHighlight {
     required this.title,
     required this.body,
     required this.cta,
+    this.ctaTarget = NoticeCtaTarget.none,
     this.assetPath = '',
     this.assetIndex = 0,
   });
@@ -33,6 +36,10 @@ final class PrincipalForYouHighlight {
   final String title;
   final String body;
   final String cta;
+
+  /// Destino interno do CTA (spec 069 H13), resolvido pelo servidor; sem alvo
+  /// o botão mantém a mensagem honesta de indisponibilidade.
+  final NoticeCtaTarget ctaTarget;
 
   /// Optional approved sprite for the preview fixtures.
   ///
@@ -50,6 +57,7 @@ final class PrincipalForYouHighlight {
     title: title,
     body: body,
     cta: cta,
+    ctaTarget: ctaTarget,
     assetPath: assetPath,
     assetIndex: assetIndex,
   );

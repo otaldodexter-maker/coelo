@@ -107,6 +107,11 @@ final class NoticeFormController extends ChangeNotifier {
   late NoticeContentFormat contentFormat;
   late NoticeAudience audience;
   late NoticeTargetDevice targetDevice;
+
+  /// Destino interno do CTA (spec 069 H13). O rótulo é só para exibição: o
+  /// servidor valida o alvo pelo id.
+  NoticeCtaTarget ctaTarget = NoticeCtaTarget.none;
+  String? ctaTargetLabel;
   late NoticeBehavior behavior;
   late NoticeRecurrence recurrence;
   late NoticeImageOrientation imageOrientation;
@@ -397,6 +402,17 @@ final class NoticeFormController extends ChangeNotifier {
   void setBackgroundColor(Color value) => _set(() => backgroundColor = value);
   void setTextColor(Color value) => _set(() => textColor = value);
   void setButtonColor(Color value) => _set(() => buttonColor = value);
+  void setCtaTargetKind(NoticeCtaTargetKind kind) => _set(() {
+    if (kind == ctaTarget.kind) return;
+    ctaTarget = kind == NoticeCtaTargetKind.none
+        ? NoticeCtaTarget.none
+        : NoticeCtaTarget(kind: kind);
+    ctaTargetLabel = null;
+  });
+  void setCtaTargetOption(NoticeCtaTargetOption option) => _set(() {
+    ctaTarget = NoticeCtaTarget(kind: ctaTarget.kind, id: option.id);
+    ctaTargetLabel = option.label;
+  });
   void setPopupSize(NoticePopupSize value) => _set(() {
     popupSize = value;
     if (value == NoticePopupSize.fullscreen) hasOuterInset = false;
@@ -563,6 +579,7 @@ final class NoticeFormController extends ChangeNotifier {
       buttonLabel: buttonLabelController.text.trim().isEmpty
           ? 'Confirmar'
           : buttonLabelController.text.trim(),
+      ctaTarget: ctaTarget,
       recurrence: recurrence,
       intervalDays: recurrence == NoticeRecurrence.interval
           ? int.tryParse(intervalDaysController.text.trim())
@@ -616,6 +633,7 @@ final class NoticeFormController extends ChangeNotifier {
       recurrenceUntil: value.recurrenceUntil,
       imageOrientation: value.imageOrientation,
       buttonLabel: value.buttonLabel,
+      ctaTarget: value.ctaTarget,
     );
   }
 
@@ -735,6 +753,7 @@ final class NoticeFormController extends ChangeNotifier {
     'audienceSelection': value.audienceSelection.toJson(),
     'buttonLabel': value.buttonLabel,
     'linkLabel': value.linkLabel,
+    'ctaTarget': value.ctaTarget.toJson(),
     'recurrence': value.recurrence.name,
     'intervalDays': value.intervalDays,
     'weeklyDays': value.weeklyDays,

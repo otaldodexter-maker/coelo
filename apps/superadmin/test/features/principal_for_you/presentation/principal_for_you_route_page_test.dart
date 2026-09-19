@@ -502,6 +502,10 @@ final class _ActorReader implements PrincipalForYouReader {
 }
 
 final class _ControlledNoticeRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   final page = Completer<NoticePage>();
   var calls = 0;
 

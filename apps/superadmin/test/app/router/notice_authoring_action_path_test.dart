@@ -144,6 +144,10 @@ typedef _SaveCall = ({
 });
 
 final class _RecordingNoticeRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   _RecordingNoticeRepository({this.existente = false});
 
   final bool existente;

@@ -72,6 +72,41 @@ extension NoticeBehaviorLabel on NoticeBehavior {
 
 enum NoticeContentFormat { textBackground, image }
 
+/// Destino interno do CTA de uma comunicação (spec 069 H13). Nunca URL livre:
+/// o servidor valida que o alvo existe e pertence ao escopo da audiência.
+enum NoticeCtaTargetKind { none, circular, form, invite, notice }
+
+final class NoticeCtaTarget {
+  const NoticeCtaTarget({this.kind = NoticeCtaTargetKind.none, this.id});
+
+  static const none = NoticeCtaTarget();
+
+  final NoticeCtaTargetKind kind;
+  final String? id;
+
+  bool get hasTarget => kind != NoticeCtaTargetKind.none && id != null;
+
+  factory NoticeCtaTarget.fromJson(Object? value) {
+    if (value is! Map) return none;
+    final kind = NoticeCtaTargetKind.values.firstWhere(
+      (item) => item.name == value['kind']?.toString(),
+      orElse: () => NoticeCtaTargetKind.none,
+    );
+    final id = value['id']?.toString();
+    if (kind == NoticeCtaTargetKind.none || id == null || id.isEmpty) return none;
+    return NoticeCtaTarget(kind: kind, id: id);
+  }
+
+  Map<String, Object?> toJson() => {'kind': kind.name, 'id': hasTarget ? id : null};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is NoticeCtaTarget && other.kind == kind && other.id == id;
+
+  @override
+  int get hashCode => Object.hash(kind, id);
+}
+
 extension NoticeContentFormatLabel on NoticeContentFormat {
   String get label => switch (this) {
     NoticeContentFormat.textBackground => 'Texto sobre fundo',
@@ -269,6 +304,7 @@ final class PlatformNotice {
     this.textTone = NoticeVisualTone.light,
     this.buttonLabel = 'Confirmar',
     this.linkLabel,
+    this.ctaTarget = NoticeCtaTarget.none,
     this.deliveredCount = 0,
     this.viewedCount = 0,
     this.acceptedCount = 0,
@@ -312,6 +348,7 @@ final class PlatformNotice {
   final NoticeVisualTone textTone;
   final String buttonLabel;
   final String? linkLabel;
+  final NoticeCtaTarget ctaTarget;
   final int deliveredCount;
   final int viewedCount;
   final int acceptedCount;
@@ -324,6 +361,10 @@ final class PlatformNotice {
     popupSize: popupSize,
     hasOuterInset: hasOuterInset,
   );
+
+  /// Falso quando o servidor não tem `starts_at` (rascunho duplicado): o
+  /// cliente mapeia a ausência para a época zero.
+  bool get hasSchedule => startsAt.millisecondsSinceEpoch != 0;
 
   bool get canEdit =>
       status == NoticeStatus.draft ||
@@ -375,6 +416,7 @@ final class PlatformNotice {
     NoticeVisualTone? textTone,
     String? buttonLabel,
     String? linkLabel,
+    NoticeCtaTarget? ctaTarget,
     int? deliveredCount,
     int? viewedCount,
     int? acceptedCount,
@@ -412,6 +454,7 @@ final class PlatformNotice {
     textTone: textTone ?? this.textTone,
     buttonLabel: buttonLabel ?? this.buttonLabel,
     linkLabel: linkLabel ?? this.linkLabel,
+    ctaTarget: ctaTarget ?? this.ctaTarget,
     deliveredCount: deliveredCount ?? this.deliveredCount,
     viewedCount: viewedCount ?? this.viewedCount,
     acceptedCount: acceptedCount ?? this.acceptedCount,
@@ -440,6 +483,7 @@ final class NoticeDraft {
     this.audienceSelection = const NoticeAudienceSelection(),
     this.buttonLabel = 'Confirmar',
     this.linkLabel,
+    this.ctaTarget = NoticeCtaTarget.none,
     this.recurrence = NoticeRecurrence.oneTime,
     this.intervalDays,
     this.weeklyDays = const [],
@@ -476,6 +520,7 @@ final class NoticeDraft {
   final NoticeAudienceSelection audienceSelection;
   final String buttonLabel;
   final String? linkLabel;
+  final NoticeCtaTarget ctaTarget;
   final NoticeRecurrence recurrence;
   final int? intervalDays;
   final List<int> weeklyDays;

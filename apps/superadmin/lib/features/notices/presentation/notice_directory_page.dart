@@ -60,7 +60,7 @@ extension _NoticeStatusFilterLabel on _NoticeStatusFilter {
   };
 }
 
-enum _NoticeCardAction { preview, edit, publish, pause, resume, cancel }
+enum _NoticeCardAction { preview, edit, duplicate, publish, pause, resume, cancel }
 
 final class NoticeDirectoryPage extends StatefulWidget {
   const NoticeDirectoryPage({
@@ -107,6 +107,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage>
   bool _runningAction = false;
   NoticeDirectoryViewState _state = NoticeDirectoryViewState.loading;
   String? _errorMessage;
+  bool _refreshing = false;
   String? _selectedPreviewId;
 
   @override
@@ -182,6 +183,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage>
         color: Theme.of(context).colorScheme.surface,
         child: CoeloAdminDirectory<CoeloAdminDirectoryDisplay>(
           key: const Key('notice-directory-content-inset'),
+          refreshing: _refreshing,
           scrollKey: const Key('notice-directory-content-scroll'),
           gridKey: const Key('notice-card-grid'),
           status: switch (effectiveState) {
@@ -437,7 +439,10 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage>
         'validity',
         'Vigência',
         180,
-        (notice) => notice.endsAt == null
+        (notice) => !notice.hasSchedule
+            // Rascunho recém-duplicado (spec 069): sem datas até o operador definir.
+            ? 'Sem vigência'
+            : notice.endsAt == null
             ? 'Desde ${_formatDate(notice.startsAt)}'
             : '${_formatDate(notice.startsAt)} – ${_formatDate(notice.endsAt!)}',
       ),
@@ -532,7 +537,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage>
             const Divider(height: 1),
             const SizedBox(height: CoeloSpacing.space3),
             Text(
-              '${notice.targetDevice.label} \u00b7 ${_formatDate(notice.startsAt)}${notice.endsAt == null ? ' \u00b7 sem data limite' : ' \u00b7 at\u00e9 ${_formatDate(notice.endsAt!)}'}',
+              '${notice.targetDevice.label} · ${_validityLabel(notice)}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -568,6 +573,12 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage>
             value: _NoticeCardAction.edit,
             icon: Icons.edit_outlined,
             label: 'Editar',
+          ),
+        if (actions.contains(_NoticeCardAction.duplicate))
+          const CoeloAdminFlyoutItem(
+            value: _NoticeCardAction.duplicate,
+            icon: Icons.copy_all_outlined,
+            label: 'Duplicar',
           ),
         if (actions.contains(_NoticeCardAction.publish))
           const CoeloAdminFlyoutItem(
@@ -608,6 +619,8 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage>
   Set<_NoticeCardAction> _rowActions(PlatformNotice notice) {
     final actions = <_NoticeCardAction>{_NoticeCardAction.preview};
     if (widget.canManageLifecycle) {
+      // Duplicar vale em qualquer status, inclusive expirado/inativo (spec 069 H08).
+      actions.add(_NoticeCardAction.duplicate);
       if (notice.canEdit) {
         if (widget.onEdit != null) actions.add(_NoticeCardAction.edit);
         actions.add(_NoticeCardAction.publish);
@@ -651,6 +664,17 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage>
         case _NoticeCardAction.edit:
           _actionRequestIds.remove(requestKey);
           widget.onEdit?.call(notice.id);
+          return;
+        case _NoticeCardAction.duplicate:
+          final copy = await requestedRepository.duplicate(notice.id, requestId: requestId);
+          if (!_isCurrentCommand(generation, requestedRepository)) return;
+          _actionRequestIds.remove(requestKey);
+          if (widget.onEdit != null) {
+            // Abre o rascunho em edição; a lista é relida na volta.
+            widget.onEdit!(copy.id);
+          } else {
+            _refresh('Rascunho criado: ${copy.title}');
+          }
           return;
         case _NoticeCardAction.publish:
           final updated = await requestedRepository.publish(
@@ -852,9 +876,14 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage>
       _currentCursorOccurredAt = null;
       _currentCursorId = null;
     }
+    // H23 (spec 069): com itens já na tela a lista fica visível e só a barra
+    // fina de progresso aparece; o estado de carregamento cheio é só para a
+    // primeira leitura ou quando não há nada a preservar.
+    final keepsList = _items.isNotEmpty && _state == NoticeDirectoryViewState.content;
     if (mounted) {
       setState(() {
-        _state = NoticeDirectoryViewState.loading;
+        _refreshing = keepsList;
+        if (!keepsList) _state = NoticeDirectoryViewState.loading;
         _errorMessage = null;
       });
     }
@@ -862,6 +891,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage>
       final result = await requestedRepository.fetchPage(_query);
       if (!_isCurrentLoad(generation, requestedRepository)) return;
       setState(() {
+        _refreshing = false;
         _items = result.items;
         if (!_items.any((notice) => notice.id == _selectedPreviewId)) {
           _selectedPreviewId = _items.firstOrNull?.id;
@@ -881,6 +911,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage>
     } on NoticeUnauthorizedException catch (error) {
       if (!_isCurrentLoad(generation, requestedRepository)) return;
       setState(() {
+        _refreshing = false;
         _items = const [];
         _errorMessage = error.safeMessage;
         _state = NoticeDirectoryViewState.forbidden;
@@ -888,6 +919,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage>
     } on NoticeRepositoryException catch (error) {
       if (!_isCurrentLoad(generation, requestedRepository)) return;
       setState(() {
+        _refreshing = false;
         _items = const [];
         _errorMessage = error.safeMessage;
         _state = NoticeDirectoryViewState.error;
@@ -895,6 +927,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage>
     } on Object {
       if (!_isCurrentLoad(generation, requestedRepository)) return;
       setState(() {
+        _refreshing = false;
         _items = const [];
         _errorMessage = const NoticeUnexpectedException().safeMessage;
         _state = NoticeDirectoryViewState.error;
@@ -923,6 +956,10 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage>
     _page -= 1;
     _load(reset: false);
   }
+
+  String _validityLabel(PlatformNotice notice) => !notice.hasSchedule
+      ? 'sem vigência'
+      : '${_formatDate(notice.startsAt)}${notice.endsAt == null ? ' · sem data limite' : ' · até ${_formatDate(notice.endsAt!)}'}';
 
   String _formatDate(DateTime value) =>
       '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';

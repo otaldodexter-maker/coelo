@@ -152,6 +152,23 @@ final class DevelopmentNoticeRepository implements NoticeRepository {
     return updated;
   }
 
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) async {
+    final source = _find(noticeId);
+    final copy = source.copyWith(
+      id: 'notice-dev-${_nextId++}',
+      title: 'Cópia de ${source.title}',
+      status: NoticeStatus.draft,
+      managementVersion: 1,
+      reach: 0,
+      deliveredCount: 0,
+      viewedCount: 0,
+      acceptedCount: 0,
+    );
+    _items.add(copy);
+    return copy;
+  }
+
   PlatformNotice _fromDraft(
     NoticeDraft draft, {
     required String id,

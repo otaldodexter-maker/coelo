@@ -113,6 +113,10 @@ Future<void> _pump(WidgetTester tester, NoticeRepository repository) async {
 }
 
 final class _ConflictingNoticeRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   _ConflictingNoticeRepository({this.failure = const NoticeConflictException()});
 
   final NoticeRepositoryException failure;
@@ -188,6 +192,10 @@ final class _ConflictingNoticeRepository implements NoticeRepository {
 /// Duas paginas reais, para distinguir recarregar a pagina corrente de voltar
 /// ao inicio. O cursor decide qual pagina o repositorio devolve.
 final class _PagedNoticeRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   _PagedNoticeRepository({this.emptyAfterAction = false});
 
   final bool emptyAfterAction;

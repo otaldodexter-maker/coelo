@@ -620,6 +620,10 @@ NoticeDraft _draft(int index, {CommunicationType type = CommunicationType.notice
 );
 
 final class _DeferredNoticeRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   const _DeferredNoticeRepository(this._fetchPage, {this.publishHandler, this.changeStatusHandler});
 
   final Future<NoticePage> Function(NoticeDirectoryQuery query) _fetchPage;

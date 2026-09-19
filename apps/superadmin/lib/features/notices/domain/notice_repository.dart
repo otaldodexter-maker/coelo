@@ -52,6 +52,26 @@ abstract interface class PrincipalForYouReader {
   Future<List<PlatformNotice>> readForYou({String? membershipId});
 }
 
+/// Opção de destino do CTA (spec 069 H13): id + rótulo, resolvidos no
+/// servidor por tipo (circular, formulário, aviso).
+final class NoticeCtaTargetOption {
+  const NoticeCtaTargetOption({required this.id, required this.label});
+
+  final String id;
+  final String label;
+}
+
+/// Leitor das opções de destino do CTA. Separado do [NoticeRepository] para
+/// que o formulário funcione sem ele (o seletor some) e os fakes de teste não
+/// precisem implementá-lo.
+abstract interface class NoticeCtaTargetOptionsReader {
+  Future<List<NoticeCtaTargetOption>> fetchCtaTargetOptions({
+    required NoticeCtaTargetKind kind,
+    String? search,
+    int pageSize = 30,
+  });
+}
+
 abstract interface class NoticeRepository {
   Future<NoticePage> fetchPage(NoticeDirectoryQuery query);
 
@@ -86,6 +106,10 @@ abstract interface class NoticeRepository {
     required int expectedVersion,
     String? reason,
   });
+
+  /// Clona [noticeId] como rascunho "Cópia de …" (spec 069 H08), em qualquer
+  /// status; datas e recibos não são copiados.
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId});
 }
 
 sealed class NoticeRepositoryException implements Exception {
@@ -169,4 +193,7 @@ final class UnavailableNoticeRepository implements NoticeRepository {
     required int expectedVersion,
     String? reason,
   }) => _unavailable();
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) => _unavailable();
 }

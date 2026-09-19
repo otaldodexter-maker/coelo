@@ -341,6 +341,10 @@ PlatformNotice _notice(String id, String title) => PlatformNotice(
 );
 
 final class _OrderedNoticeRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   final requests = <String, Completer<PlatformNotice>>{};
 
   @override
@@ -362,6 +366,10 @@ final class _OrderedNoticeRepository implements NoticeRepository {
 }
 
 final class _PublicationResultRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   _PublicationResultRepository(this.resultStatus) {
     delegate.seed(_notice('notice-publish', 'Comunicação em fila'));
   }
@@ -406,6 +414,10 @@ final class _PublicationResultRepository implements NoticeRepository {
 }
 
 final class _SwapDuringSaveNoticeRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   final pendingSave = Completer<PlatformNotice>();
 
   @override
@@ -435,6 +447,10 @@ final class _SwapDuringSaveNoticeRepository implements NoticeRepository {
 }
 
 final class _RetryLoadNoticeRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   int loads = 0;
 
   @override
@@ -459,6 +475,10 @@ final class _RetryLoadNoticeRepository implements NoticeRepository {
 }
 
 final class _DeniedLoadNoticeRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   @override
   Future<PlatformNotice> getById(String noticeId) async =>
       throw const NoticeUnauthorizedException();

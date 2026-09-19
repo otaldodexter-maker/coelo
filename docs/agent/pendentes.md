@@ -7,7 +7,7 @@ Uma linha por item: tela · o que falta · quem pediu · data. Apague a linha qu
 - Segurança da criança · diretório contra a Table canônica (r12-10) · Owner · 18/09
 - Perfis de cuidado · spec 065 (wizard Alimentos × Restrições, reordenar, o que fazer) · Owner · 18/09
 - Instituições · spec 066 ciclo de vida + status; spec 067 Locais com mapa · Owner · 18/09
-- Avisos · spec 069 duplicar/CTA/atualização · Owner · 18/09
+- Avisos · spec 069: CTA por tipo tem rota real no Principal só para circular; formulário/convite/aviso ficam na mensagem honesta até existir rota no Principal hospedado (Etapa 4) · Sessão ETAPA-3 · 19/09
 - Principal · spec 068 perfis oficiais · Owner · 18/09
 - Acessos · acesso contextual: a regra seg–sex 08–18 da "QA R15 Educadora Turma" ficou em produção como dado QA (criada pela tela na prova de 19/09; remover pela tela quando não servir mais) · Sessão ACESSO-CONTEXTUAL · 19/09
 - Acessos · acesso contextual: prova da educadora na rota real exige conta de login para uma pessoa de equipe (Owner cria na Auth Admin; "QA R15 Educadora Turma" não tem login); popup/negação provados por pgTAP, widget test e com o espelho interno de qa-r06-principal · Sessão ACESSO-CONTEXTUAL · 19/09

@@ -152,6 +152,10 @@ FakeNoticeRepository _emptyRepository() {
 }
 
 final class _FailureNoticeRepository implements NoticeRepository {
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
+      throw UnimplementedError();
   const _FailureNoticeRepository(this.error);
 
   final NoticeRepositoryException error;

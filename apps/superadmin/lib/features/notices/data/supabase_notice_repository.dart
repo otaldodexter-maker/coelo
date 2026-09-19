@@ -5,7 +5,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../domain/notice_repository.dart';
 import '../domain/platform_notice.dart';
 
-final class SupabaseNoticeRepository implements NoticeRepository, PrincipalForYouReader {
+final class SupabaseNoticeRepository
+    implements NoticeRepository, PrincipalForYouReader, NoticeCtaTargetOptionsReader {
   SupabaseNoticeRepository(this._client, {String? targetDevice})
     : _targetDevice = targetDevice ?? (kIsWeb ? 'web' : 'mobile');
 
@@ -231,6 +232,80 @@ final class SupabaseNoticeRepository implements NoticeRepository, PrincipalForYo
       throw const NoticeUnavailableException();
     }
   }
+
+  @override
+  Future<List<NoticeCtaTargetOption>> fetchCtaTargetOptions({
+    required NoticeCtaTargetKind kind,
+    String? search,
+    int pageSize = 30,
+  }) async {
+    final limit = pageSize.clamp(1, 100);
+    try {
+      final data = switch (kind) {
+        NoticeCtaTargetKind.circular => _map(
+          _unwrap(
+            await _client.rpc(
+              'superadmin_circular_directory_v2',
+              params: {'p_search': _nullable(search), 'p_limit': limit},
+            ),
+          ),
+        ),
+        NoticeCtaTargetKind.form => _map(
+          _unwrap(
+            await _client.rpc(
+              'superadmin_forms_directory_v2',
+              params: {
+                'p_query': {'search': _nullable(search), 'limit': limit},
+              },
+            ),
+          ),
+        ),
+        NoticeCtaTargetKind.notice => _map(
+          _unwrap(
+            await _client.rpc(
+              'superadmin_notice_directory_v2',
+              params: {'p_search': _nullable(search), 'p_limit': limit},
+            ),
+          ),
+        ),
+        NoticeCtaTargetKind.none || NoticeCtaTargetKind.invite => const <String, dynamic>{},
+      };
+      return _list(data['items'])
+          .map(_map)
+          .map(
+            (item) => NoticeCtaTargetOption(
+              id: _string(item['id']),
+              label: _string(item['title'], fallback: 'Sem título'),
+            ),
+          )
+          .where((item) => item.id.isNotEmpty)
+          .toList(growable: false);
+    } on PostgrestException catch (error) {
+      throw _error(error);
+    } on ClientException {
+      throw const NoticeUnavailableException();
+    }
+  }
+
+  @override
+  Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) async {
+    try {
+      return _notice(
+        _map(
+          _unwrap(
+            await _client.rpc(
+              'superadmin_notice_duplicate_v2',
+              params: {'p_request_id': requestId, 'p_notice_id': noticeId},
+            ),
+          ),
+        ),
+      );
+    } on PostgrestException catch (error) {
+      throw _error(error);
+    } on ClientException {
+      throw const NoticeUnavailableException();
+    }
+  }
 }
 
 Map<String, Object?> _draftPayload(NoticeDraft draft) => {
@@ -250,6 +325,7 @@ Map<String, Object?> _draftPayload(NoticeDraft draft) => {
   'has_outer_inset': draft.hasOuterInset,
   'button_label': draft.buttonLabel.trim(),
   'link_label': _nullable(draft.linkLabel),
+  'cta_target': draft.ctaTarget.toJson(),
   'recurrence': _recurrenceValue(draft.recurrence),
   'interval_days': draft.intervalDays,
   'weekly_days': draft.weeklyDays,
@@ -310,6 +386,7 @@ PlatformNotice _notice(Map<String, dynamic> value) {
     ),
     buttonLabel: _string(value['button_label'], fallback: 'Confirmar'),
     linkLabel: _nullable(value['link_label']),
+    ctaTarget: NoticeCtaTarget.fromJson(value['cta_target']),
     deliveredCount: _integer(value['delivered_count']),
     viewedCount: _integer(value['viewed_count']),
     acceptedCount: _integer(value['accepted_count']),

@@ -25,6 +25,7 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
     this.onOpenProfile,
     this.onOpenMessages,
     this.onOpenActivities,
+    this.onOpenCtaTarget,
   });
 
   final NoticeRepository repository;
@@ -50,6 +51,10 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
   final VoidCallback? onOpenProfile;
   final VoidCallback? onOpenMessages;
   final VoidCallback? onOpenActivities;
+
+  /// Abre o destino real do CTA de um destaque (spec 069 H13). Devolve falso
+  /// quando o tipo ainda não tem rota no Principal.
+  final bool Function(NoticeCtaTarget target)? onOpenCtaTarget;
 
   @override
   State<PrincipalForYouRoutePage> createState() => _PrincipalForYouRoutePageState();
@@ -208,6 +213,14 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
   /// Routes a hub action to a real destination, or says plainly that the
   /// capability is not available yet. A production route never answers with the
   /// preview message.
+  void _openHighlight(PrincipalForYouHighlight highlight) {
+    if (highlight.ctaTarget.hasTarget &&
+        widget.onOpenCtaTarget?.call(highlight.ctaTarget) == true) {
+      return;
+    }
+    _handleAction(highlight.cta);
+  }
+
   void _handleAction(String label) {
     final destination = switch (label) {
       'Agenda' => widget.onOpenAgenda,
@@ -300,6 +313,7 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
         onOpenProfile: widget.onOpenProfile,
         onOpenMessages: widget.onOpenMessages,
         onAction: _handleAction,
+        onOpenHighlight: _openHighlight,
       ),
     ),
   };
