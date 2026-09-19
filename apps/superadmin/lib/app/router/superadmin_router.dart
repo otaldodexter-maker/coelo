@@ -7095,6 +7095,9 @@ bool _isProductionMutationLocation(String location) {
   // Access-profile RPCs revalidate actor, scope, MFA and version server-side.
   // The client route may render the request form without becoming an authorization boundary.
   if (location.startsWith('/profiles') || location.startsWith('/profile-models')) return false;
+  // Acesso contextual (ADR 0035): staff_access_rule_save_v1 / staff_leave_save_v1
+  // revalidam ator, staff_access.manage no escopo do vinculo e versao (PT409).
+  if (location.startsWith('/staff-access') || location.startsWith('/staff-leaves')) return false;
   if (location.endsWith('/new') ||
       location.contains('/new/') ||
       location.endsWith('/edit') ||
