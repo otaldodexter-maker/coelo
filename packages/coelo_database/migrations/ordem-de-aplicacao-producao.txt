@@ -491,3 +491,8 @@
 # e, em now_reader_actor, só depois que equipe e família falharam (família continua passando). assert_agenda/plan/people/support são do
 # realm interno (sem membership de instituição): fora. Nunca 40001. pgTAP staff_access_assert_v1_test 18/18 no espelho; ledger reparado.
 20260919233000_staff_access_assert_v1.sql
+# Fixture QA (19/09 — Sessão ACESSO-PERFIL, fora da numeração de lotes): app_private.seed_qa_e3_educadora_fixture_v1 (função privada,
+# executada como postgres): perfil "QA E3 Educador" em QA R04 Cuidado, pessoa "QA E3 Educadora Perfil" com login qa-e3-educadora@coelo.me
+# (conta criada pela Auth Admin API; credencial em Coelo-backups/qa-e3-educadora.env), vínculo teacher na Unidade QA R04 herdando o perfil,
+# vínculo teacher na Escola R04 Estrutura, responsável da QA R15 Crianca 1. Idempotente; ledger 20260919234500 reparado.
+20260919234500_qa_e3_educadora_fixture_v1.sql
