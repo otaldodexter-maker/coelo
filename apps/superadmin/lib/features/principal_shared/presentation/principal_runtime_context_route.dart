@@ -115,6 +115,8 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
 
   void _reload() => _load = widget.repository.listAvailableContexts();
 
+  bool _sheetOpen = false;
+
   void _retry() => setState(_reload);
 
   /// Sessão que já estava dentro quando o horário virou: o servidor negou com
@@ -122,6 +124,8 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
   /// listener — aqui só voltamos ao seletor com os contextos recarregados.
   void _onDenied(StaffAccessDenial denial) {
     if (!mounted) return;
+    // A folha "Ver como" aberta ainda lista os contextos antigos: fecha.
+    if (_sheetOpen) Navigator.of(context).pop();
     setState(() {
       _selectedMembershipId = null;
       _selectedMembershipIds = {};
@@ -255,6 +259,7 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
             onOpenProfile: () => widget.onOpenProfile?.call(context),
             onChooseContexts: () async {
               final restoreLauncher = SuperadminShell.suppressChatLauncher(context);
+              _sheetOpen = true;
               try {
                 if (widget.multipleBuilder != null) {
                   final chosen = await showModalBottomSheet<List<PrincipalRuntimeContext>>(
@@ -299,6 +304,7 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
                 );
                 if (chosen != null && context.mounted) await _choose(context, chosen);
               } finally {
+                _sheetOpen = false;
                 restoreLauncher?.call();
               }
             },

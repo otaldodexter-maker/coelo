@@ -1,8 +1,12 @@
 import 'package:coelo_superadmin/features/principal_shared/domain/principal_runtime_context.dart';
+import 'package:coelo_superadmin/features/staff_access/data/staff_access_denied_http_client.dart';
+import 'package:coelo_superadmin/features/staff_access/domain/staff_access_denied.dart';
 import 'package:coelo_superadmin/features/principal_shared/presentation/principal_runtime_context_route.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 
 /// ADR 0035: o vínculo bloqueado pelo servidor segue listado, sem dados; ao
 /// tentar entrar, popup (uma vez por sessão) ou mensagem genérica e volta ao
@@ -106,11 +110,48 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Selected: 1'), findsOneWidget);
   });
+
+  testWidgets('sessão aberta: PT403 do servidor vira popup do listener, fecha o "ver como" e recarrega', (
+    tester,
+  ) async {
+    resetPrincipalContextSelectionForTests();
+    staffAccessDenied.value = null;
+    final contexts = _Contexts();
+    // Mesma cadeia da produção: resposta 403/STAFF_ACCESS_DENIED de uma RPC do
+    // Principal passa pelo cliente HTTP e publica a negação.
+    const body =
+        '{"code":"PT403","message":"STAFF_ACCESS_DENIED","hint":null,'
+        '"details":"{\\"code\\":\\"STAFF_ACCESS_DENIED\\",\\"membership_id\\":\\"a\\",\\"reason\\":\\"schedule\\",'
+        '\\"popup\\":{\\"kind\\":\\"schedule\\",\\"windows\\":[{\\"weekday\\":1,\\"start\\":\\"08:00\\",\\"end\\":\\"18:00\\"}]}}"}';
+    final client = StaffAccessDeniedHttpClient(MockClient((_) async => http.Response(body, 403)));
+    await tester.pumpWidget(app(contexts));
+    await tester.pumpAndSettle();
+    expect(find.text('Ativo: QA a'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Abrir menu do perfil'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ver como'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('principal-context-a')), findsOneWidget);
+
+    // O horário vira com a sessão aberta: a próxima chamada ao servidor nega.
+    contexts.blockedFirst = true;
+    await client.post(Uri.parse('https://x/rest/v1/rpc/list_visible_happens_feed'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('staff-access-denied-dialog')), findsOneWidget);
+    expect(find.text('Horário permitido: Seg 08:00–18:00.'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('staff-access-denied-switch')));
+    await tester.pumpAndSettle();
+    // Folha antiga fechada, contextos recarregados: segue em "b".
+    expect(find.byKey(const ValueKey('principal-context-a')), findsNothing);
+    expect(find.text('Ativo: QA b'), findsOneWidget);
+  });
 }
 
 class _Contexts implements PrincipalRuntimeContextRepository {
   _Contexts({this.blockedFirst = false, this.blockedAll = false, this.popup = true});
-  final bool blockedFirst;
+  bool blockedFirst;
   final bool blockedAll;
   final bool popup;
 
