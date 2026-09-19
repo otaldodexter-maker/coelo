@@ -81,6 +81,36 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets('spec 069/068: hero shows the official author and a notice CTA opens the notice', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _ControlledNoticeRepository();
+    await pumpRoute(tester, repository);
+    final target = communication(
+      CommunicationType.forYou,
+    ).copyWith(id: 'target', title: 'Aviso apontado', message: 'Corpo do aviso apontado.');
+    final hero = communication(CommunicationType.highlight).copyWith(
+      id: 'hero',
+      title: 'Destaque oficial',
+      linkLabel: 'Ver aviso',
+      ctaTarget: const NoticeCtaTarget(kind: NoticeCtaTargetKind.notice, id: 'target'),
+      author: const NoticeOfficialProfile(id: 'op', handle: 'coelo', displayName: 'Coelo'),
+    );
+    repository.page.complete(NoticePage(items: [hero, target]));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-for-you-hero-author')), findsOneWidget);
+    expect(find.text('por Coelo · @coelo'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('principal-for-you-hero-action')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-for-you-notice-dialog')), findsOneWidget);
+    expect(find.text('Corpo do aviso apontado.'), findsOneWidget);
+    await tester.tap(find.text('Fechar'));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('an authorized active item observes its start boundary', (tester) async {
     var current = now;
     final repository = _ControlledNoticeRepository();
@@ -502,7 +532,6 @@ final class _ActorReader implements PrincipalForYouReader {
 }
 
 final class _ControlledNoticeRepository implements NoticeRepository {
-
   @override
   Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) =>
       throw UnimplementedError();

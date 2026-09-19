@@ -133,10 +133,8 @@ void main() {
     expect(exception, isNull, reason: 'the real For You composition reported: $exception');
   }
 
-  Finder shortcut(String label) => find.descendant(
-    of: find.byType(GridView),
-    matching: find.text(label),
-  );
+  Finder shortcut(String label) =>
+      find.descendant(of: find.byType(GridView), matching: find.text(label));
 
   void expectApprovedShortcuts() {
     for (final item in PrincipalForYouPreviewData.approvedShortcuts) {
@@ -207,21 +205,20 @@ void main() {
     // Column by 60 px at 375 px / 200% text, while 'Comunicado curto' fits.
     // The hero must size itself to its content instead of a magic height.
     // Unskip once the composition is fixed; the assertion below is the proof.
-    testWidgets(
-      'renders a long authorized title without overflow at 375 px and 200% text',
-      (tester) async {
-        await pumpRoute(
-          tester,
-          surface: const Size(375, 1100),
-          communications: [institutionCommunication()],
-          scope: PrincipalForYouAudienceScope.fromRuntimeContext(authorizedContext),
-          textScale: 2,
-        );
+    testWidgets('renders a long authorized title without overflow at 375 px and 200% text', (
+      tester,
+    ) async {
+      await pumpRoute(
+        tester,
+        surface: const Size(375, 1100),
+        communications: [institutionCommunication()],
+        scope: PrincipalForYouAudienceScope.fromRuntimeContext(authorizedContext),
+        textScale: 2,
+      );
 
-        expect(find.byKey(const Key('principal-for-you-hero')), findsOneWidget);
-        expectNoLayoutError(tester);
-      },
-    );
+      expect(find.byKey(const Key('principal-for-you-hero')), findsOneWidget);
+      expectNoLayoutError(tester);
+    });
 
     for (final width in [375.0, 1440.0]) {
       testWidgets('renders the empty hub without overflow at ${width.toInt()} px and 200% text', (
@@ -408,11 +405,7 @@ void main() {
     });
 
     testWidgets('a failure is not presented as an empty hub', (tester) async {
-      await pumpRoute(
-        tester,
-        surface: const Size(1440, 1400),
-        error: NoticeUnavailableException(),
-      );
+      await pumpRoute(tester, surface: const Size(1440, 1400), error: NoticeUnavailableException());
 
       expect(find.byKey(const Key('principal-for-you-error')), findsOneWidget);
       expect(find.byKey(const Key('principal-for-you-empty')), findsNothing);

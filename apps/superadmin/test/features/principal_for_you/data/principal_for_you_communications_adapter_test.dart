@@ -44,16 +44,22 @@ void main() {
   );
 
   bool eligibleFor(PlatformNotice item, {PrincipalForYouAudienceScope actor = scope}) =>
-      PrincipalForYouCommunicationsAdapter.highlights([
-        item,
-      ], now: now, scope: actor).single.eligible;
+      PrincipalForYouCommunicationsAdapter.highlights(
+        [item],
+        now: now,
+        scope: actor,
+      ).single.eligible;
 
   test('projects eligible communications and excludes popup notices', () {
-    final highlights = PrincipalForYouCommunicationsAdapter.highlights([
-      communication(type: CommunicationType.notice, priority: NoticePriority.urgent),
-      communication(type: CommunicationType.forYou, priority: NoticePriority.important),
-      communication(type: CommunicationType.highlight, priority: NoticePriority.urgent),
-    ], now: now, scope: scope);
+    final highlights = PrincipalForYouCommunicationsAdapter.highlights(
+      [
+        communication(type: CommunicationType.notice, priority: NoticePriority.urgent),
+        communication(type: CommunicationType.forYou, priority: NoticePriority.important),
+        communication(type: CommunicationType.highlight, priority: NoticePriority.urgent),
+      ],
+      now: now,
+      scope: scope,
+    );
 
     expect(highlights, hasLength(2));
     expect(highlights.first.type, PrincipalForYouContentType.highlight);
@@ -62,18 +68,24 @@ void main() {
   });
 
   test('never projects popup communications even with an actor scope', () {
-    final highlights = PrincipalForYouCommunicationsAdapter.highlights([
-      communication(type: CommunicationType.notice),
-    ], now: now, scope: scope);
+    final highlights = PrincipalForYouCommunicationsAdapter.highlights(
+      [communication(type: CommunicationType.notice)],
+      now: now,
+      scope: scope,
+    );
 
     expect(highlights, isEmpty);
   });
 
   test('keeps expired or inactive communications ineligible', () {
-    final highlights = PrincipalForYouCommunicationsAdapter.highlights([
-      communication(type: CommunicationType.content, endsAt: now),
-      communication(type: CommunicationType.forYou, status: NoticeStatus.paused),
-    ], now: now, scope: scope);
+    final highlights = PrincipalForYouCommunicationsAdapter.highlights(
+      [
+        communication(type: CommunicationType.content, endsAt: now),
+        communication(type: CommunicationType.forYou, status: NoticeStatus.paused),
+      ],
+      now: now,
+      scope: scope,
+    );
 
     expect(highlights.every((item) => !item.eligible), isTrue);
   });
@@ -97,9 +109,11 @@ void main() {
   });
 
   test('does not project popup-only behavior into the Principal model', () {
-    final item = PrincipalForYouCommunicationsAdapter.highlights([
-      communication(type: CommunicationType.forYou),
-    ], now: now, scope: scope).single;
+    final item = PrincipalForYouCommunicationsAdapter.highlights(
+      [communication(type: CommunicationType.forYou)],
+      now: now,
+      scope: scope,
+    ).single;
 
     expect(item.cta, 'Saiba mais');
     expect(item.type, PrincipalForYouContentType.forYou);
@@ -113,7 +127,9 @@ void main() {
           communication(
             type: CommunicationType.content,
             audienceSelection: const NoticeAudienceSelection(
-              rules: [NoticeAudienceRule(dimension: NoticeAudienceDimension.platform, selectAll: true)],
+              rules: [
+                NoticeAudienceRule(dimension: NoticeAudienceDimension.platform, selectAll: true),
+              ],
             ),
           ),
         ),
@@ -124,10 +140,7 @@ void main() {
     test('instituição correspondente e não correspondente', () {
       NoticeAudienceSelection institution(String id) => NoticeAudienceSelection(
         rules: [
-          NoticeAudienceRule(
-            dimension: NoticeAudienceDimension.institution,
-            targetIds: [id],
-          ),
+          NoticeAudienceRule(dimension: NoticeAudienceDimension.institution, targetIds: [id]),
         ],
       );
 
@@ -161,10 +174,7 @@ void main() {
             audience: NoticeAudience.unit,
             audienceSelection: const NoticeAudienceSelection(
               rules: [
-                NoticeAudienceRule(
-                  dimension: NoticeAudienceDimension.unit,
-                  targetIds: ['unit-1'],
-                ),
+                NoticeAudienceRule(dimension: NoticeAudienceDimension.unit, targetIds: ['unit-1']),
               ],
             ),
           ),
@@ -178,10 +188,7 @@ void main() {
             audience: NoticeAudience.unit,
             audienceSelection: const NoticeAudienceSelection(
               rules: [
-                NoticeAudienceRule(
-                  dimension: NoticeAudienceDimension.unit,
-                  targetIds: ['unit-9'],
-                ),
+                NoticeAudienceRule(dimension: NoticeAudienceDimension.unit, targetIds: ['unit-9']),
               ],
             ),
           ),
@@ -343,43 +350,51 @@ void main() {
         groupId: 'group-1',
       );
 
-      final highlights = PrincipalForYouCommunicationsAdapter.highlightsForContext([
-        communication(
-          type: CommunicationType.content,
-          audience: NoticeAudience.group,
-          audienceSelection: const NoticeAudienceSelection(
-            rules: [
-              NoticeAudienceRule(
-                dimension: NoticeAudienceDimension.group,
-                targetIds: ['group-1'],
-              ),
-            ],
+      final highlights = PrincipalForYouCommunicationsAdapter.highlightsForContext(
+        [
+          communication(
+            type: CommunicationType.content,
+            audience: NoticeAudience.group,
+            audienceSelection: const NoticeAudienceSelection(
+              rules: [
+                NoticeAudienceRule(
+                  dimension: NoticeAudienceDimension.group,
+                  targetIds: ['group-1'],
+                ),
+              ],
+            ),
           ),
-        ),
-      ], now: now, context: context);
+        ],
+        now: now,
+        context: context,
+      );
 
       expect(highlights.single.eligible, isTrue);
     });
   });
 
   test('ordena por prioridade urgente, importante e rotina', () {
-    final highlights = PrincipalForYouCommunicationsAdapter.highlights([
-      communication(
-        type: CommunicationType.content,
-        priority: NoticePriority.routine,
-        id: 'routine',
-      ),
-      communication(
-        type: CommunicationType.forYou,
-        priority: NoticePriority.urgent,
-        id: 'urgent',
-      ),
-      communication(
-        type: CommunicationType.highlight,
-        priority: NoticePriority.important,
-        id: 'important',
-      ),
-    ], now: now, scope: scope);
+    final highlights = PrincipalForYouCommunicationsAdapter.highlights(
+      [
+        communication(
+          type: CommunicationType.content,
+          priority: NoticePriority.routine,
+          id: 'routine',
+        ),
+        communication(
+          type: CommunicationType.forYou,
+          priority: NoticePriority.urgent,
+          id: 'urgent',
+        ),
+        communication(
+          type: CommunicationType.highlight,
+          priority: NoticePriority.important,
+          id: 'important',
+        ),
+      ],
+      now: now,
+      scope: scope,
+    );
 
     expect(highlights.map((item) => item.id).toList(), ['urgent', 'important', 'routine']);
   });
