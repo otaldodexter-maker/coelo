@@ -446,3 +446,9 @@
 # superadmin_entity_images_get_v1. Bytes passam pela Edge entity-media (o navegador nunca fala com o R2 — CORS do bucket fora da conta).
 # pgTAP entity_images_r2_v1_test 34/34 no espelho mirror-acesso (transação revertida); ledger 20260919200000 reparado e listado.
 20260919200000_entity_images_r2_v1.sql
+# Lote 91 (Sessão ETAPA-3, 19/09/2026): Avisos spec 069. platform_notices.cta_target_kind/cta_target_id (destino interno do
+# CTA: circular | form | invite | notice; validado contra o catálogo e a audiência por instituição); superadmin_notice_json expõe
+# cta_target (Superadmin e leitor do Principal); save_draft_v2 aceita cta_target; superadmin_notice_duplicate_v2 (notices.publish,
+# rascunho "Cópia de …" em qualquer status, sem datas/recibos, auditoria notice.duplicate com after_json.id = origem).
+# pgTAP notices_duplicate_cta_target_v1_test 34/34 no espelho mirror-acesso; ledger 20260919230000 reparado.
+20260919230000_notices_duplicate_cta_target_v1.sql
