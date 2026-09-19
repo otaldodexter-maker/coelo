@@ -1,4 +1,4 @@
--- Prova pgTAP da migration 20260920034000_media_feeds_guardian_reader_author_v1: leitor de família em
+-- Prova pgTAP da migration 20260920071000_media_feeds_guardian_reader_author_v1: leitor de família em
 -- Momentos/Acontece/Circulares (guardian_links + can_view, sem membership) e author_person_id nos feeds.
 -- Fixture sintética com rollback (prefixo f2): instituição A (unidade A1) e B.
 -- T: professora em A (moments/happens/circulars read+remove por override). G1: responsável com can_view em A.

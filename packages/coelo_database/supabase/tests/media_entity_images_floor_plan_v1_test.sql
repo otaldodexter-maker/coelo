@@ -1,4 +1,4 @@
--- Prova pgTAP da migration 20260920033000_media_entity_images_floor_plan_v1 (planta baixa, spec 067).
+-- Prova pgTAP da migration 20260920070000_media_entity_images_floor_plan_v1 (planta baixa, spec 067).
 -- Fixture sintética com rollback (prefixo f1): instituição A (unidade A1, turma A1) e B.
 -- P: owner de plataforma com escopo em A. Q: owner com escopo em B. G1: responsável com can_view em A.
 begin;
