@@ -59,8 +59,9 @@ final class SupabaseAccountSessionsRepository implements AccountSessionsReposito
     }
     if (raw is! Map) throw const AccountProfileRepositoryException('Resposta de sessões inválida.');
     final sessions = raw['sessions'];
-    if (sessions is! List)
+    if (sessions is! List) {
       throw const AccountProfileRepositoryException('Resposta de sessões inválida.');
+    }
     return [
       for (final item in sessions.whereType<Map<String, Object?>>())
         AccountSession(

@@ -55,7 +55,7 @@ void main() {
     expect(find.text('Alice Duarte'), findsWidgets);
     expect(find.text('Reação registrada no perfil de cuidado.'), findsNothing);
 
-    await tester.tap(find.text('Alergias e restrições').last);
+    await tester.tap(find.text('Restrições').last);
     await tester.pumpAndSettle();
     expect(find.text('Reação registrada no perfil de cuidado.'), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
