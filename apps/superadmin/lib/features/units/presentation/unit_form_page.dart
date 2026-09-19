@@ -195,6 +195,12 @@ final class _UnitFormPageState extends State<UnitFormPage> {
     if (widget.checkHandleAvailability != null) {
       _controllers['slug']!.addListener(_scheduleHandleCheck);
     }
+    // Na edicao o botao "Alterar @" acompanha o texto mesmo com o formulario ja sujo.
+    if (_original != null && widget.setHandle != null) {
+      _controllers['slug']!.addListener(() {
+        if (mounted) setState(() {});
+      });
+    }
     // A prévia do @ padrão segue o nome enquanto a unidade ainda não existe.
     if (_original == null) {
       _controllers['name']!.addListener(() {

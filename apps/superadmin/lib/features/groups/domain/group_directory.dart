@@ -307,11 +307,19 @@ final class GroupDirectoryPage {
 }
 
 final class GroupDirectoryFilterOption {
-  const GroupDirectoryFilterOption({required this.id, required this.label, this.institutionId});
+  const GroupDirectoryFilterOption({
+    required this.id,
+    required this.label,
+    this.institutionId,
+    this.handle,
+  });
 
   final String id;
   final String label;
   final String? institutionId;
+
+  /// @ da unidade (opção de unidade): sufixo do @ da turma na prévia.
+  final String? handle;
 }
 
 final class GroupDirectoryFilterOptions {

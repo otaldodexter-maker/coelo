@@ -1,4 +1,5 @@
 import '../../institutions/data/fake_institution_directory_repository.dart';
+import '../../units/domain/structure_handle_preview.dart';
 import '../domain/group_directory.dart';
 
 /// Deterministic repository restricted to tests, previews, and goldens.
@@ -188,6 +189,7 @@ final class FakeGroupDirectoryRepository implements GroupDirectoryRepository {
               id: unit.id,
               label: unit.name,
               institutionId: institution.id,
+              handle: previewUnitHandle(name: unit.name, institutionSlug: institution.slug),
             ),
     ]..sort((first, second) => first.label.compareTo(second.label));
     final types =

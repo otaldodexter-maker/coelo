@@ -28,6 +28,7 @@ final class StructureHandleChange {
     this.handle = '',
     this.managementVersion = 0,
     this.serverMessage,
+    this.nextAllowedAt,
   });
 
   final StructureHandleChangeOutcome outcome;
@@ -37,12 +38,19 @@ final class StructureHandleChange {
   /// Mensagem devolvida pelo servidor (ex.: data da proxima troca permitida).
   final String? serverMessage;
 
+  /// `next_allowed_at` do envelope SAI_HANDLE_COOLDOWN: quando a troca volta a valer.
+  final DateTime? nextAllowedAt;
+
   bool get changed => outcome == StructureHandleChangeOutcome.changed;
 
   String get message => switch (outcome) {
     StructureHandleChangeOutcome.changed => '@ alterado para @$handle.',
-    StructureHandleChangeOutcome.cooldown =>
-      serverMessage ?? 'O @ só pode ser alterado uma vez a cada 30 dias.',
+    StructureHandleChangeOutcome.cooldown => switch (nextAllowedAt) {
+      final next? =>
+        '${serverMessage ?? 'O @ só pode ser alterado uma vez a cada 30 dias.'} '
+            'Próxima troca a partir de ${_dayMonthYear(next.toLocal())}.',
+      null => serverMessage ?? 'O @ só pode ser alterado uma vez a cada 30 dias.',
+    },
     StructureHandleChangeOutcome.taken => 'Este @ já está em uso. Escolha outro.',
     StructureHandleChangeOutcome.invalid =>
       'Use letras minúsculas, números, ponto e sublinhado, começando e terminando com letra ou número.',
@@ -62,3 +70,8 @@ typedef StructureHandleSetter =
       int expectedVersion,
       String handle,
     );
+
+String _dayMonthYear(DateTime value) {
+  String two(int part) => part.toString().padLeft(2, '0');
+  return '${two(value.day)}/${two(value.month)}/${value.year}';
+}

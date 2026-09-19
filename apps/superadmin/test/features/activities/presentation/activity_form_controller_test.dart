@@ -118,26 +118,33 @@ void main() {
     },
   );
 
-  test('activity handle accepts only lowercase ASCII slugs', () async {
-    final options = await FakeActivityDirectoryRepository().fetchFormOptions(
-      institutionId: 'institution-1',
-    );
-    final controller = ActivityFormController.create(options);
-    addTearDown(controller.dispose);
-    controller.name.text = 'Robótica';
-    await controller.selectInstitution('institution-1');
-    controller.toggleUnit('institution-1-unit-1');
+  test(
+    'activity handle accepts only the server stem rule (no accents, spaces or hyphens)',
+    () async {
+      final options = await FakeActivityDirectoryRepository().fetchFormOptions(
+        institutionId: 'institution-1',
+      );
+      final controller = ActivityFormController.create(options);
+      addTearDown(controller.dispose);
+      controller.name.text = 'Robótica';
+      await controller.selectInstitution('institution-1');
+      controller.toggleUnit('institution-1-unit-1');
 
-    for (final invalid in ['Robotics', 'robótica', 'robotica nova', '@robotica', 'robótica-1']) {
-      controller.handleStem.text = invalid;
-      expect(controller.validateDraft(), isFalse, reason: invalid);
-      expect(controller.handleStemError, isNotNull, reason: invalid);
-    }
+      // Regra do stem (lote 100): [a-z0-9_], sem hífen; maiúsculas e o @ inicial
+      // o servidor normaliza, então não bloqueiam.
+      for (final invalid in ['robótica', 'robotica nova', 'robótica-1', 'robotica-1', 'r']) {
+        controller.handleStem.text = invalid;
+        expect(controller.validateDraft(), isFalse, reason: invalid);
+        expect(controller.handleStemError, isNotNull, reason: invalid);
+      }
 
-    controller.handleStem.text = 'robotica-1';
-    expect(controller.validateDraft(), isTrue);
-    expect(controller.handleStemError, isNull);
-  });
+      for (final valid in ['robotica_1', 'Robotics', '@robotica']) {
+        controller.handleStem.text = valid;
+        expect(controller.validateDraft(), isTrue, reason: valid);
+        expect(controller.handleStemError, isNull, reason: valid);
+      }
+    },
+  );
 
   test('taxonomy templates are chained and Other keeps a custom value', () async {
     final base = await FakeActivityDirectoryRepository().fetchFormOptions(

@@ -1189,7 +1189,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       };
     } else if (!_editing) {
       // O gatilho groups_assign_handle junta o segmento do nome ao @ da unidade.
-      final unit = _selectedUnit == null ? 'nomedaunidade' : '<@ da unidade>';
+      final unit = _selectedUnit?.handle ?? 'nomedaunidade';
       note =
           'Este é o @ público da turma, único no sistema. Vazio, nasce '
           '@${previewGroupHandle(name: _nameController.text, unitHandle: unit)} '
@@ -1217,7 +1217,8 @@ final class _GroupFormPageState extends State<GroupFormPage> {
             }
             return null;
           },
-          onChanged: (_) => _markDirty(),
+          // a previa e o botao "Alterar @" acompanham o texto mesmo com o formulario ja sujo
+          onChanged: (_) => setState(() => _dirty = true),
         ),
         const SizedBox(height: CoeloSpacing.space1),
         Text(

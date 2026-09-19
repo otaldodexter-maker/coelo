@@ -259,6 +259,7 @@ final class SupabaseActivityDirectoryRepository
               (row) => ActivityFormInstitutionOption(
                 id: row['id'] as String,
                 name: row['name'] as String,
+                handle: _nullableText(row['handle']),
               ),
             )
             .toList(growable: false),
@@ -583,6 +584,7 @@ List<ActivityFilterOption> _filterOptions(Object? value, {bool requireParent = f
             id: _requiredText(row['id']),
             label: _requiredText(row['label']),
             parentId: requireParent ? _requiredText(row['parent_id']) : null,
+            handle: _nullableText(row['handle']),
           ),
         )
         .toList(growable: false);

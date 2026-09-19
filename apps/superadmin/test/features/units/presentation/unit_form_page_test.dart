@@ -876,15 +876,14 @@ void main() {
     expect(find.text('Localização'), findsWidgets);
   });
 
-  testWidgets('identificador e o @ da unidade: recusa hifen e viaja como handle', (
-    tester,
-  ) async {
+  testWidgets('identificador e o @ da unidade: recusa hifen e viaja como handle', (tester) async {
     // Regra do @ (ADR 0034 Decisao 16): o campo Identificador e o @ publico,
     // sem hifens; na criacao ele vai no payload como `handle` (lote 211100).
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final institutions = FakeInstitutionDirectoryRepository();
     final repository = FakeUnitDirectoryRepository(institutions);
+    final checks = <String>[];
 
     await tester.pumpWidget(
       MaterialApp(
@@ -894,6 +893,15 @@ void main() {
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
           onSaved: (_) {},
+          checkHandleAvailability: (kind, handle, {excludeId}) async {
+            checks.add('$kind:$handle:$excludeId');
+            return UnitHandleAvailability(
+              normalized: handle,
+              reason: handle == 'ocupado.escola'
+                  ? UnitHandleAvailabilityReason.taken
+                  : UnitHandleAvailabilityReason.available,
+            );
+          },
         ),
       ),
     );
@@ -905,18 +913,29 @@ void main() {
     expect(note, findsOneWidget);
     expect(tester.widget<Text>(note).data, contains('@ público da unidade'));
 
+    // disponibilidade enquanto digita (superadmin_structure_handle_availability_v1)
+    await tester.enterText(find.byKey(const Key('unit-slug-field')), 'ocupado.escola');
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
+    expect(checks, ['unit:ocupado.escola:null']);
+    expect(find.text('@ocupado.escola já está em uso. Escolha outro.'), findsOneWidget);
+
     await tester.enterText(find.byKey(const Key('unit-name-field')), 'Unidade Centro R04');
     await tester.enterText(find.byKey(const Key('unit-slug-field')), 'unidade-centro-r04');
     await tester.tap(find.byKey(const Key('unit-form-continue')));
     await tester.pumpAndSettle();
-    expect(find.text('Use letras minúsculas, números, ponto e sublinhado (3 a 30 caracteres).'),
-        findsOneWidget);
+    expect(
+      find.text('Use letras minúsculas, números, ponto e sublinhado (3 a 30 caracteres).'),
+      findsOneWidget,
+    );
 
     await tester.enterText(find.byKey(const Key('unit-slug-field')), 'centro.escola');
     await tester.tap(find.byKey(const Key('unit-form-continue')));
     await tester.pumpAndSettle();
-    expect(find.text('Use letras minúsculas, números, ponto e sublinhado (3 a 30 caracteres).'),
-        findsNothing);
+    expect(
+      find.text('Use letras minúsculas, números, ponto e sublinhado (3 a 30 caracteres).'),
+      findsNothing,
+    );
   });
 
   testWidgets('edicao mostra o @ no identificador e troca por Alterar @', (tester) async {
@@ -942,13 +961,18 @@ void main() {
           onSaved: (_) {},
           setHandle: (kind, id, version, handle) async {
             calls.add((kind, id, version, handle));
-            return handle == 'ocupado'
-                ? const StructureHandleChange(outcome: StructureHandleChangeOutcome.taken)
-                : StructureHandleChange(
-                    outcome: StructureHandleChangeOutcome.changed,
-                    handle: handle,
-                    managementVersion: version + 1,
-                  );
+            return switch (handle) {
+              'ocupado' => const StructureHandleChange(outcome: StructureHandleChangeOutcome.taken),
+              'frio' => StructureHandleChange(
+                outcome: StructureHandleChangeOutcome.cooldown,
+                nextAllowedAt: DateTime(2026, 10, 20, 12),
+              ),
+              _ => StructureHandleChange(
+                outcome: StructureHandleChangeOutcome.changed,
+                handle: handle,
+                managementVersion: version + 1,
+              ),
+            };
           },
         ),
       ),
@@ -991,6 +1015,18 @@ void main() {
       contains('@centro.novo'),
     );
     expect(tester.widget<OutlinedButton>(button).onPressed, isNull);
+
+    // cooldown de 30 dias: a tela mostra a data da proxima troca (next_allowed_at)
+    await tester.enterText(find.byKey(const Key('unit-slug-field')), 'frio');
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(button);
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    expect(calls.last, ('unit', edited.id, 4, 'frio'));
+    expect(
+      tester.widget<Text>(find.byKey(const Key('unit-handle-change-message'))).data,
+      contains('Próxima troca a partir de 20/10/2026.'),
+    );
   });
 
   testWidgets('edit saves from the current step and remains on the form', (tester) async {

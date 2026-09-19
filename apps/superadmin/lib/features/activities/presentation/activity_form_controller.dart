@@ -8,6 +8,7 @@ import 'package:coelo_domain/locations.dart';
 import '../domain/activity_command.dart';
 
 import '../domain/activity_directory.dart';
+import '../../units/domain/structure_handle_preview.dart';
 import '../../units/domain/unit_handle_availability.dart';
 import 'activity_form_draft.dart';
 import 'activity_pedagogical_configuration_draft.dart';
@@ -143,6 +144,7 @@ final class ActivityFormController extends ChangeNotifier {
     }
     notifyListeners();
   }
+
   String _handleChecked = '';
   Timer? _handleCheckTimer;
   int _handleCheckSequence = 0;
@@ -155,12 +157,27 @@ final class ActivityFormController extends ChangeNotifier {
     return switch (result.reason) {
       UnitHandleAvailabilityReason.available => '@${result.normalized} está disponível.',
       UnitHandleAvailabilityReason.taken => '@${result.normalized} já está em uso. Escolha outro.',
-      UnitHandleAvailabilityReason.invalid => 'Use de 3 a 64 caracteres, letras, números e hífens.',
+      UnitHandleAvailabilityReason.invalid => activityHandleStemRule,
       UnitHandleAvailabilityReason.empty => null,
       UnitHandleAvailabilityReason.unavailable =>
         'Não foi possível verificar a disponibilidade agora; o servidor confere ao salvar.',
     };
   }
+
+  /// @ da instituição selecionada (sufixo do @ da atividade), ou vazio.
+  String get selectedInstitutionHandle =>
+      options.institutions
+          .where((item) => item.id == selectedInstitutionId)
+          .map((item) => item.handle ?? '')
+          .firstOrNull ??
+      '';
+
+  /// Prévia do @ completo que o servidor gera com o texto atual (lote 100).
+  String get handlePreview => previewActivityHandle(
+    name: name.text,
+    handleStem: handleStem.text,
+    institutionHandle: selectedInstitutionHandle,
+  );
 
   void _scheduleHandleCheck() {
     final checker = handleAvailabilityChecker;
@@ -175,14 +192,21 @@ final class ActivityFormController extends ChangeNotifier {
       return;
     }
     final sequence = ++_handleCheckSequence;
+    // O servidor só confere unicidade do @ completo (stem.@instituição); sem
+    // instituição escolhida ele valida só o formato do stem.
+    final institution = selectedInstitutionHandle;
+    final candidate = institution.isEmpty
+        ? value
+        : '${activityHandleStemNormalize(value)}.$institution';
     _handleCheckTimer = Timer(const Duration(milliseconds: 300), () async {
-      final result = await checker('activity', value, excludeId: detail?.item.id);
+      final result = await checker('activity', candidate, excludeId: detail?.item.id);
       if (sequence != _handleCheckSequence) return;
       handleAvailability = result;
       _handleChecked = value;
       notifyListeners();
     });
   }
+
   final ActivityDetail? detail;
   final bool isEditing;
   int expectedManagementVersion;
@@ -702,6 +726,8 @@ final class ActivityFormController extends ChangeNotifier {
     unitsError = null;
     groupsError = null;
     scopedOptionsError = null;
+    // o sufixo do @ mudou: a disponibilidade vale para o @ completo
+    _scheduleHandleCheck();
     notifyListeners();
     final loader = loadScopedOptions;
     if (loader == null || institutionId.isEmpty) return;
@@ -910,14 +936,15 @@ final class ActivityFormController extends ChangeNotifier {
   bool _identityValid({required bool setErrors}) {
     final validName = name.text.trim().isNotEmpty;
     final handle = handleStem.text.trim();
-    final validHandle = handle.isEmpty
-        ? name.text.trim().length >= 3
-        : RegExp(r'^[a-z0-9]+(?:-[a-z0-9]+)*$').hasMatch(handle) &&
-              handle.length >= 3 &&
-              handle.length <= 64;
+    // Mesma regra de segmento das unidades e turmas (lote 100): o servidor
+    // aceita maiúsculas e o @ inicial (normaliza), mas recusa acento, espaço e
+    // hífen, então o cliente avisa antes.
+    final validHandle =
+        handle.isEmpty ||
+        activityHandleStemPattern.hasMatch(handle.toLowerCase().replaceFirst(RegExp(r'^@'), ''));
     if (setErrors) {
       nameError = validName ? null : 'Informe o nome da atividade.';
-      handleStemError = validHandle ? null : 'Use de 3 a 64 caracteres, letras, números e hífens.';
+      handleStemError = validHandle ? null : activityHandleStemRule;
     }
     return validName && validHandle;
   }

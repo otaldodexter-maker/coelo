@@ -239,9 +239,9 @@ final class _IdentitySection extends StatelessWidget {
               CoeloFormTextField(
                 fieldKey: const Key('activity-form-handle'),
                 controller: controller.handleStem,
-                labelText: '@ da atividade',
+                labelText: controller.isEditing ? '@ da atividade' : '@ da atividade (opcional)',
                 hintText: switch (activityHandleStemFromName(controller.name.text)) {
-                  '' => 'nome-da-atividade',
+                  '' => 'nomedaatividade',
                   final stem => stem,
                 },
                 prefixIcon: Icons.alternate_email_rounded,
@@ -263,12 +263,11 @@ final class _IdentitySection extends StatelessWidget {
               else
                 Text(
                   controller.isEditing
-                      ? 'Use "Alterar @" para trocar (uma vez a cada 30 dias); o sufixo hierárquico é do servidor.'
-                      : 'Opcional. Vazio, o @ nasce do nome e o servidor junta a hierarquia: '
-                            '@${switch (activityHandleStemFromName(controller.name.text)) {
-                              '' => 'nome-da-atividade',
-                              final stem => stem,
-                            }}.nomedainstituicao (ou .nomedaunidade.nomedainstituicao quando a unidade cria).',
+                      ? 'Use "Alterar @" para trocar (uma vez a cada 30 dias); o sufixo é o @ da instituição.'
+                      : 'Este é o @ público da atividade, único no sistema. '
+                            '${controller.handleStem.text.trim().isEmpty ? 'Vazio, nasce' : 'Nasce'} '
+                            '@${controller.handlePreview} (o servidor confirma ao salvar).',
+                  key: const Key('activity-form-handle-note'),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               if (controller.isEditing && controller.handleSetter != null) ...[

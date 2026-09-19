@@ -157,6 +157,10 @@ class _ActivityReadDetailPageState extends State<ActivityReadDetailPage> {
                             'Identidade',
                             _fields(context, {
                               'Nome': detail.name,
+                              '@': switch (detail.canonicalHandle) {
+                                final handle? when handle.isNotEmpty => '@$handle',
+                                _ => 'Atribuído pelo servidor',
+                              },
                               'Categoria': detail.taxonomyName ?? 'Não informada',
                               'Status': _status(detail.status),
                               'Descrição': detail.description ?? 'Não informada',

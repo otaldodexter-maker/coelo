@@ -59,6 +59,26 @@ void main() {
     });
   }
 
+  test('set maps SAI_HANDLE_COOLDOWN with next_allowed_at into the message', () async {
+    final setter = checker((request) async {
+      expect(request.url.pathSegments.last, 'superadmin_structure_handle_set_v1');
+      return json(request, {
+        'ok': false,
+        'data': null,
+        'error': {
+          'code': 'SAI_HANDLE_COOLDOWN',
+          'message': 'O @ so pode ser alterado uma vez a cada 30 dias.',
+          'http_status': 409,
+          'next_allowed_at': '2026-10-20T12:00:00+00:00',
+        },
+      });
+    });
+    final result = await setter.set('activity', 'a-1', 3, 'novo');
+    expect(result.outcome, StructureHandleChangeOutcome.cooldown);
+    expect(result.nextAllowedAt, DateTime.utc(2026, 10, 20, 12));
+    expect(result.message, contains('Próxima troca a partir de 20/10/2026.'));
+  });
+
   test('denied envelope and transport failure become unavailable, never throw', () async {
     final denied = checker(
       (request) async => json(request, {

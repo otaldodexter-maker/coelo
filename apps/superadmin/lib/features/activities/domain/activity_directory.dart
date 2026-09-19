@@ -352,11 +352,14 @@ final class ActivityDirectoryResult {
 }
 
 final class ActivityFilterOption {
-  const ActivityFilterOption({required this.id, required this.label, this.parentId});
+  const ActivityFilterOption({required this.id, required this.label, this.parentId, this.handle});
 
   final String id;
   final String label;
   final String? parentId;
+
+  /// @ da instituição (slug) quando a opção é de instituição (lote 101).
+  final String? handle;
 }
 
 final class ActivityDirectoryUnitSummary {
@@ -398,10 +401,13 @@ final class ActivityFilterOptions {
 }
 
 final class ActivityFormInstitutionOption {
-  const ActivityFormInstitutionOption({required this.id, required this.name});
+  const ActivityFormInstitutionOption({required this.id, required this.name, this.handle});
 
   final String id;
   final String name;
+
+  /// @ da instituição (slug), sufixo do @ da atividade na prévia (lote 100).
+  final String? handle;
 }
 
 final class ActivityFormUnitOption {

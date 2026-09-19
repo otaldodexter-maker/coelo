@@ -61,7 +61,13 @@ final class DevelopmentActivityFixtureRepository implements ActivityDirectoryRep
     };
     final institutionOptions =
         institutions.entries
-            .map((entry) => ActivityFormInstitutionOption(id: entry.key, name: entry.value))
+            .map(
+              (entry) => ActivityFormInstitutionOption(
+                id: entry.key,
+                name: entry.value,
+                handle: entry.key,
+              ),
+            )
             .toList()
           ..sort((left, right) => left.name.compareTo(right.name));
     return ActivityFormOptions(

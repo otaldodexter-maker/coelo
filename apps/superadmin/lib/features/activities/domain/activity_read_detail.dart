@@ -40,6 +40,7 @@ class ActivityReadDetail {
       managementVersion = _integer(activity['management_version'], minimum: 1),
       iconKey = _nullableText(activity['icon_key']),
       initials = _nullableText(activity['initials']),
+      canonicalHandle = _nullableText(activity['canonical_handle']),
       createdAt = _timestamp(activity['created_at']),
       updatedAt = _timestamp(activity['updated_at']);
 
@@ -53,6 +54,10 @@ class ActivityReadDetail {
   final int managementVersion;
   final String? iconKey;
   final String? initials;
+
+  /// @ público da atividade (`stem.@daunidade` ou `stem.@dainstituicao`, lote 100);
+  /// opcional no payload para fixtures antigas.
+  final String? canonicalHandle;
   final DateTime createdAt;
   final DateTime updatedAt;
   final List<ActivityReadUnit> units;
@@ -75,6 +80,7 @@ class ActivityReadDetail {
       'created_at',
       'updated_at',
     });
+    activity['canonical_handle'] = (data['activity'] as Map)['canonical_handle'];
     final units = List<ActivityReadUnit>.unmodifiable(_rows(data['units']).map(ActivityReadUnit._));
     final groups = List<ActivityReadGroup>.unmodifiable(
       _rows(data['groups']).map(ActivityReadGroup._),

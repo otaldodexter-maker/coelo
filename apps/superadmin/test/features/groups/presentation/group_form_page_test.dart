@@ -11,6 +11,7 @@ import 'package:coelo_superadmin/features/institutions/data/fake_institution_dir
 import 'package:coelo_superadmin/features/locations/presentation/location_selection_field.dart';
 import 'package:coelo_superadmin/features/locations/domain/location_catalog_reader.dart';
 import '../../locations/location_read_fixtures.dart';
+import 'package:coelo_superadmin/features/units/domain/structure_handle_preview.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_handle_availability.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
@@ -505,11 +506,16 @@ void main() {
           },
           setHandle: (kind, id, version, handle) async {
             calls.add((kind, id, version, handle));
-            return StructureHandleChange(
-              outcome: StructureHandleChangeOutcome.changed,
-              handle: handle,
-              managementVersion: version + 1,
-            );
+            return handle == 'frio.centro'
+                ? StructureHandleChange(
+                    outcome: StructureHandleChangeOutcome.cooldown,
+                    nextAllowedAt: DateTime(2026, 10, 20, 12),
+                  )
+                : StructureHandleChange(
+                    outcome: StructureHandleChangeOutcome.changed,
+                    handle: handle,
+                    managementVersion: version + 1,
+                  );
           },
         ),
       ),
@@ -519,6 +525,8 @@ void main() {
     await tester.pumpAndSettle();
 
     final field = find.byKey(const Key('group-handle-field'));
+    expect(find.text('@ da turma'), findsOneWidget);
+    expect(find.text('@ da turma (opcional)'), findsNothing);
     expect(tester.widget<TextFormField>(field).controller!.text, 'azul.centro');
     expect(
       tester.widget<Text>(find.byKey(const Key('group-handle-note'))).data,
@@ -538,7 +546,98 @@ void main() {
     expect(calls.single, ('group', 'group-handle', 2, 'verde.centro'));
     expect(find.text('@ alterado para @verde.centro.'), findsOneWidget);
     expect(tester.widget<OutlinedButton>(button).onPressed, isNull);
+
+    // cooldown de 30 dias: a tela mostra a data da proxima troca (next_allowed_at)
+    await tester.enterText(field, 'frio.centro');
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
+    expect(tester.widget<OutlinedButton>(button).onPressed, isNotNull);
+    await tester.ensureVisible(button);
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    expect(calls.last.$4, 'frio.centro');
+    expect(
+      tester.widget<Text>(find.byKey(const Key('group-handle-change-message'))).data,
+      contains('Próxima troca a partir de 20/10/2026.'),
+    );
   });
+
+  testWidgets(
+    'criacao da turma: previa @nomedaturma.@daunidade, disponibilidade e handle no payload',
+    (tester) async {
+      // A previa usa o @ real da unidade (opcao de unidade traz `handle`); o @
+      // digitado e conferido enquanto digita e viaja como `handle` na criacao.
+      await tester.binding.setSurfaceSize(const Size(1024, 1100));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final institutions = FakeInstitutionDirectoryRepository();
+      final repository = _PendingGroupRepository(FakeGroupDirectoryRepository(institutions));
+      final checks = <String>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: GroupFormPage(
+            repository: repository,
+            logout: () async => const LogoutResult.success(),
+            onCancel: () {},
+            onSaved: (_) {},
+            checkHandleAvailability: (kind, handle, {excludeId}) async {
+              checks.add('$kind:$handle:$excludeId');
+              return UnitHandleAvailability(
+                normalized: handle,
+                reason: UnitHandleAvailabilityReason.available,
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final unitField = tester.widget<CoeloAdminSingleSelectField<GroupDirectoryFilterOption?>>(
+        find.byKey(const Key('group-unit-field')),
+      );
+      final unit = unitField.value!;
+      final institution = institutions.records.firstWhere(
+        (record) => record.id == unit.institutionId,
+      );
+      final unitRecord = institution.units.firstWhere((item) => item.id == unit.id);
+      final unitHandle = previewUnitHandle(
+        name: unitRecord.name,
+        institutionSlug: institution.slug,
+      );
+      expect(unit.handle, unitHandle);
+
+      await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
+      await tester.tap(find.byKey(const Key('group-form-continue')));
+      await tester.pumpAndSettle();
+      expect(find.text('@ da turma (opcional)'), findsOneWidget);
+      await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma Azul');
+      await tester.pump();
+      final note = tester.widget<Text>(find.byKey(const Key('group-handle-note'))).data!;
+      expect(note, contains('@turmaazul.$unitHandle'));
+      expect(note, contains('o servidor confirma ao salvar'));
+
+      await tester.enterText(find.byKey(const Key('group-handle-field')), 'azul2.$unitHandle');
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pumpAndSettle();
+      expect(checks, ['group:azul2.$unitHandle:null']);
+      expect(find.text('@azul2.$unitHandle está disponível.'), findsOneWidget);
+
+      await tester.ensureVisible(find.byKey(const Key('step-convites')));
+      await tester.tap(find.byKey(const Key('step-convites')));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byKey(const Key('group-form-save')));
+      await tester.tap(find.byKey(const Key('group-form-save')));
+      await tester.pump();
+      expect(repository.requests.single.record.handle, 'azul2.$unitHandle');
+      repository.pending.complete(
+        GroupDirectorySaveResult(
+          requestId: repository.requests.single.requestId,
+          steps: [GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.group)],
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('uses six external-free steps and the canonical continuation footer', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));

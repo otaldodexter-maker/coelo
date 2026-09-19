@@ -88,6 +88,9 @@ final class SupabaseStructureHandleAvailability {
           _ => StructureHandleChangeOutcome.unavailable,
         },
         serverMessage: code == 'SAI_HANDLE_COOLDOWN' ? message : null,
+        nextAllowedAt: error is Map && error['next_allowed_at'] is String
+            ? DateTime.tryParse(error['next_allowed_at'] as String)
+            : null,
       );
     } on PostgrestException {
       return const StructureHandleChange(outcome: StructureHandleChangeOutcome.unavailable);

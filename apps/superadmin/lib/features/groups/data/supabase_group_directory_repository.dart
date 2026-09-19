@@ -249,6 +249,10 @@ final class SupabaseGroupDirectoryRepository
               id: _string(row, 'id'),
               label: _string(row, 'name'),
               institutionId: row['institution_id'] as String?,
+              handle: switch (row['public_profile']) {
+                final Map<Object?, Object?> profile => profile['handle'] as String?,
+                _ => null,
+              },
             ),
           )
           .toList(growable: false);

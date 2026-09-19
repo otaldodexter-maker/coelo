@@ -46,7 +46,9 @@ class FakeActivityDirectoryRepository implements ActivityDirectoryRepository {
     };
     final options =
         institutions.entries
-            .map((entry) => ActivityFilterOption(id: entry.key, label: entry.value))
+            .map(
+              (entry) => ActivityFilterOption(id: entry.key, label: entry.value, handle: entry.key),
+            )
             .toList()
           ..sort((left, right) => left.label.compareTo(right.label));
     return ActivityFilterOptions(institutions: options);
@@ -59,7 +61,13 @@ class FakeActivityDirectoryRepository implements ActivityDirectoryRepository {
     };
     final institutionOptions =
         institutions.entries
-            .map((entry) => ActivityFormInstitutionOption(id: entry.key, name: entry.value))
+            .map(
+              (entry) => ActivityFormInstitutionOption(
+                id: entry.key,
+                name: entry.value,
+                handle: entry.key,
+              ),
+            )
             .toList()
           ..sort((left, right) => left.name.compareTo(right.name));
     return ActivityFormOptions(

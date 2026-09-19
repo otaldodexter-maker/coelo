@@ -10,6 +10,7 @@ import 'package:coelo_superadmin/features/activities/presentation/activity_form_
 import 'package:coelo_superadmin/features/activities/presentation/activity_form_page.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_form_draft.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
+import 'package:coelo_superadmin/features/units/domain/unit_handle_availability.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
@@ -247,6 +248,131 @@ void main() {
     expect(saved?.requestId, matches(RegExp(r'^[0-9a-f-]{36}$')));
   });
 
+  testWidgets(
+    '@ da atividade: previa stem.@instituicao, disponibilidade do @ completo e handle no rascunho',
+    (tester) async {
+      // Lote 100: o @ da atividade e `stem.@dainstituicao`; a previa acompanha o
+      // nome e a instituicao, a disponibilidade confere o @ completo e o stem
+      // digitado viaja no rascunho (payload `handle` na criacao).
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final checks = <String>[];
+      ActivityFormDraft? saved;
+      await tester.pumpWidget(
+        _app(
+          checkHandleAvailability: (kind, handle, {excludeId}) async {
+            checks.add('$kind:$handle:$excludeId');
+            return UnitHandleAvailability(
+              normalized: handle,
+              reason: handle.startsWith('ocupado')
+                  ? UnitHandleAvailabilityReason.taken
+                  : UnitHandleAvailabilityReason.available,
+            );
+          },
+          onSaveDraft: (draft) async {
+            saved = draft;
+            return null;
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('@ da atividade (opcional)'), findsOneWidget);
+      await tester.enterText(find.byKey(const Key('activity-form-name')), 'Educação Física');
+      await tester.pump();
+      final note = find.byKey(const Key('activity-form-handle-note'));
+      expect(tester.widget<Text>(note).data, contains('@educacaofisica.nomedainstituicao'));
+
+      await tester.tap(find.byKey(const Key('step-estrutura-e-locais')));
+      await tester.pumpAndSettle();
+      tester
+          .widget<CoeloAdminSingleSelectField<String>>(
+            find.byKey(const Key('activity-form-institution')),
+          )
+          .onChanged('institution-1');
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byKey(const Key('activity-unit-institution-1-unit-1')));
+      await tester.tap(find.byKey(const Key('activity-unit-institution-1-unit-1')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('step-identidade')));
+      await tester.pumpAndSettle();
+      expect(tester.widget<Text>(note).data, contains('nasce @educacaofisica.institution-1'));
+
+      await tester.enterText(find.byKey(const Key('activity-form-handle')), 'Xadrez');
+      await tester.pump();
+      expect(tester.widget<Text>(note).data, contains('Nasce @xadrez.institution-1'));
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pumpAndSettle();
+      expect(checks, ['activity:xadrez.institution-1:null']);
+      expect(find.text('@xadrez.institution-1 está disponível.'), findsOneWidget);
+
+      await tester.enterText(find.byKey(const Key('activity-form-handle')), 'ocupado');
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pumpAndSettle();
+      expect(find.text('@ocupado.institution-1 já está em uso. Escolha outro.'), findsOneWidget);
+
+      await tester.enterText(find.byKey(const Key('activity-form-handle')), 'xadrez');
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('activity-form-save-draft')));
+      await tester.pumpAndSettle();
+      expect(saved?.handleStem, 'xadrez');
+      expect(saved?.institutionId, 'institution-1');
+    },
+  );
+
+  testWidgets(
+    '@ da atividade na edicao: so por Alterar @, com a data da proxima troca no cooldown',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final calls = <(String, String, int, String)>[];
+      await tester.pumpWidget(
+        _app(
+          activityId: 'activity-1',
+          setHandle: (kind, id, version, handle) async {
+            calls.add((kind, id, version, handle));
+            return handle == 'frio'
+                ? StructureHandleChange(
+                    outcome: StructureHandleChangeOutcome.cooldown,
+                    nextAllowedAt: DateTime(2026, 10, 20, 12),
+                  )
+                : StructureHandleChange(
+                    outcome: StructureHandleChangeOutcome.changed,
+                    handle: handle,
+                    managementVersion: version + 1,
+                  );
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('@ da atividade'), findsOneWidget);
+      expect(find.text('@ da atividade (opcional)'), findsNothing);
+      final button = find.byKey(const Key('activity-form-handle-change-button'));
+      expect(tester.widget<OutlinedButton>(button).onPressed, isNull);
+
+      await tester.enterText(find.byKey(const Key('activity-form-handle')), 'frio');
+      await tester.pumpAndSettle();
+      await tester.tap(button);
+      await tester.pumpAndSettle();
+      expect(calls.single.$1, 'activity');
+      expect(calls.single.$2, 'activity-1');
+      expect(calls.single.$4, 'frio');
+      expect(
+        tester.widget<Text>(find.byKey(const Key('activity-form-handle-change-message'))).data,
+        contains('Próxima troca a partir de 20/10/2026.'),
+      );
+
+      await tester.enterText(find.byKey(const Key('activity-form-handle')), 'novo');
+      await tester.pumpAndSettle();
+      await tester.tap(button);
+      await tester.pumpAndSettle();
+      expect(find.text('@ alterado para @novo.'), findsOneWidget);
+      expect(tester.widget<OutlinedButton>(button).onPressed, isNull);
+    },
+  );
+
   test('command signature keeps pipe-delimited free-text drafts distinct', () {
     final first = ActivityFormController.create(const ActivityFormOptions());
     final second = ActivityFormController.create(const ActivityFormOptions());
@@ -456,10 +582,7 @@ void main() {
     // do proprio frame; nao acompanha mais o fim do conteudo rolavel.
     expect(
       tester.getBottomLeft(footer).dy,
-      closeTo(
-        tester.getBottomLeft(find.byType(SuperadminFormFrame)).dy - CoeloSpacing.space4,
-        0.5,
-      ),
+      closeTo(tester.getBottomLeft(find.byType(SuperadminFormFrame)).dy - CoeloSpacing.space4, 0.5),
     );
   });
 
@@ -628,9 +751,7 @@ void main() {
     expect(find.text('Robótica'), findsWidgets);
   });
 
-  testWidgets('edit route keeps the form usable when the template catalog fails', (
-    tester,
-  ) async {
+  testWidgets('edit route keeps the form usable when the template catalog fails', (tester) async {
     final repository = _ProductionShapedRepository(failCatalog: true);
     await tester.pumpWidget(_app(activityId: 'activity-1', repository: repository));
     await tester.pumpAndSettle();
@@ -716,7 +837,11 @@ void main() {
     final saveA = Completer<void>();
 
     await tester.pumpWidget(
-      _app(activityId: 'activity-1', repository: repository, onSaveDraft: (_) => saveA.future.then((_) => null)),
+      _app(
+        activityId: 'activity-1',
+        repository: repository,
+        onSaveDraft: (_) => saveA.future.then((_) => null),
+      ),
     );
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('activity-form-save-draft')));
@@ -1079,6 +1204,8 @@ Widget _app({
   ActivityFormSubmit? onSaveDraft,
   ActivityFormSubmit? onSubmit,
   ValueChanged<String>? onDestinationSelected,
+  StructureHandleAvailabilityChecker? checkHandleAvailability,
+  StructureHandleSetter? setHandle,
   TextScaler textScaler = TextScaler.noScaling,
 }) => MaterialApp(
   theme: CoeloTheme.light,
@@ -1107,6 +1234,8 @@ Widget _app({
         ),
     ],
     onDestinationSelected: onDestinationSelected,
+    checkHandleAvailability: checkHandleAvailability,
+    setHandle: setHandle,
     imagePicker: () async => null,
     aboutRepository: aboutRepository ?? DevelopmentActivityProfileAboutRepository(),
   ),

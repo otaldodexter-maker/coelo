@@ -215,7 +215,13 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
           }
           options = ActivityFormOptions(
             institutions: filters.institutions
-                .map((item) => ActivityFormInstitutionOption(id: item.id, name: item.label))
+                .map(
+                  (item) => ActivityFormInstitutionOption(
+                    id: item.id,
+                    name: item.label,
+                    handle: item.handle,
+                  ),
+                )
                 .toList(growable: false),
           );
           initialCatalogError = 'Não foi possível carregar categorias e modelos.';

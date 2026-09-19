@@ -221,6 +221,10 @@ final class _ActivityDetailContent extends StatelessWidget {
         child: _ResponsiveFields(
           fields: [
             _Field('Nome', detail.item.name),
+            _Field('@', switch (detail.item.canonicalHandle) {
+              final handle? when handle.isNotEmpty => '@$handle',
+              _ => 'Atribuído pelo servidor',
+            }),
             _Field('Instituição', detail.item.institutionName),
             _Field('Status', detail.item.status.label),
             _Field('Descrição', detail.item.description ?? 'Não informada'),

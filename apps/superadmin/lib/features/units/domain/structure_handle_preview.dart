@@ -1,5 +1,6 @@
 /// Prévia do @ que o servidor gera quando o formulário não informa um
-/// (`create_unit_for_superadmin`, lote 211400; gatilho `groups_assign_handle`).
+/// (`create_unit_for_superadmin`, lote 211400; gatilho `groups_assign_handle`;
+/// `superadmin_activity_create_v2`, lote 100).
 /// O servidor é a fonte da verdade: a prévia só aproxima o segmento e o corte,
 /// e a tela diz que ele confirma ao salvar.
 library;
@@ -64,12 +65,47 @@ String previewGroupHandle({required String name, required String unitHandle}) {
   return '$group.$unit';
 }
 
-/// Stem do @ da atividade como `app_private.activity_slugify`: minúsculas sem
-/// acento, blocos de [a-z0-9] separados por hífen.
+/// Stem do @ da atividade como o servidor gera quando o campo fica vazio
+/// (`structure_handle_segment` do nome, lote 100): mesmo segmento das
+/// unidades e turmas, até 20 caracteres, sem hífen.
 String activityHandleStemFromName(String value) {
-  var text = value.toLowerCase();
+  final segment = structureHandleSegment(value);
+  return segment.length > 20 ? segment.substring(0, 20) : segment;
+}
+
+/// Regra do stem no servidor (`set_activity_canonical_handle`, lote 100).
+final RegExp activityHandleStemPattern = RegExp(r'^[a-z0-9][a-z0-9_]{0,62}[a-z0-9]$');
+const String activityHandleStemRule =
+    'Use de 2 a 64 caracteres: letras minúsculas, números e sublinhado.';
+
+/// Stem digitado como `app_private.activity_handle_stem_normalize`: sem o @,
+/// minúsculas, só o primeiro segmento, sem acento, só `[a-z0-9_]`.
+String activityHandleStemNormalize(String value) {
+  var text = value.trim().toLowerCase();
+  if (text.startsWith('@')) text = text.substring(1);
+  text = text.split('.').first;
   for (final entry in _accents.entries) {
     text = text.replaceAll(entry.key, entry.value);
   }
-  return text.replaceAll(RegExp(r'[^a-z0-9]+'), '-').replaceAll(RegExp(r'^-+|-+$'), '');
+  return text.replaceAll(RegExp(r'[^a-z0-9_]'), '');
+}
+
+/// `@stem.@dainstituicao` (lote 100; a atividade criada pelo Superadmin nasce
+/// no escopo da instituição). Com `handleStem` vazio o stem sai do nome.
+String previewActivityHandle({
+  required String name,
+  required String handleStem,
+  required String institutionHandle,
+}) {
+  final stem = switch (activityHandleStemNormalize(handleStem)) {
+    '' => switch (activityHandleStemFromName(name)) {
+      '' => 'atividade',
+      final segment => segment,
+    },
+    final typed => typed,
+  };
+  final institution = institutionHandle.trim().isEmpty
+      ? 'nomedainstituicao'
+      : institutionHandle.trim();
+  return '$stem.$institution';
 }
