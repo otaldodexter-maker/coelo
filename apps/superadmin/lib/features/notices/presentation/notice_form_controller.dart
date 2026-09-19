@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math' as math;
+import 'package:coelo_tokens/coelo_tokens.dart';
 
 import 'package:flutter/material.dart';
 
@@ -156,11 +157,7 @@ final class NoticeFormController extends ChangeNotifier {
 
   bool get isEditing => _noticeId != null;
   bool get isReviewStep => currentStep == NoticeFormStep.review;
-  double get contrastRatio {
-    final high = math.max(backgroundColor.computeLuminance(), textColor.computeLuminance());
-    final low = math.min(backgroundColor.computeLuminance(), textColor.computeLuminance());
-    return (high + 0.05) / (low + 0.05);
-  }
+  double get contrastRatio => coeloContrastRatio(backgroundColor, textColor);
 
   bool get hasAccessibleContrast => contrastRatio >= 4.5;
 

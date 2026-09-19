@@ -2080,8 +2080,7 @@ Color _activityIdentityColor(String value) {
   return Color(0xFF000000 | (parsed ?? 0xD63C00));
 }
 
-Color _activityIdentityForeground(Color color) =>
-    ThemeData.estimateBrightnessForColor(color) == Brightness.dark ? Colors.white : Colors.black;
+Color _activityIdentityForeground(Color color) => coeloOnColor(color);
 
 String _activityIdentityIconLabel(ActivityIdentityIcon icon) => switch (icon) {
   ActivityIdentityIcon.activity => 'Atividade',

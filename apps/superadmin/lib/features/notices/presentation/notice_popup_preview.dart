@@ -259,17 +259,7 @@ double _previewWidth(NoticePopupSize size, NoticeTargetDevice device, double ava
   return presetWidth.clamp(0, deviceWidth.clamp(0, availableWidth));
 }
 
-Color _bestForeground(Color background) {
-  final blackContrast = _contrastRatio(background, Colors.black);
-  final whiteContrast = _contrastRatio(background, Colors.white);
-  return blackContrast >= whiteContrast ? Colors.black : Colors.white;
-}
-
-double _contrastRatio(Color first, Color second) {
-  final high = first.computeLuminance() > second.computeLuminance() ? first : second;
-  final low = identical(high, first) ? second : first;
-  return (high.computeLuminance() + 0.05) / (low.computeLuminance() + 0.05);
-}
+Color _bestForeground(Color background) => coeloOnColor(background);
 
 Color _backgroundFallback(
   ColorScheme colors,
