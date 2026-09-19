@@ -423,6 +423,7 @@ final class RoutineDirectoryItem {
 
   /// Rotina aplicada de origem de um lançamento (spec 054 §3).
   final String? applicationId;
+
   /// `management_version` do registro (expected_version de Arquivar/Restaurar,
   /// spec 054). `version` continua sendo a versão da definição publicada.
   final int managementVersion;

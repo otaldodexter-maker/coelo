@@ -187,104 +187,111 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                         child: Center(
                           child: ConstrainedBox(
                             constraints: const BoxConstraints(maxWidth: 880),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Text(
-                                  'Contexto da chamada',
-                                  style: Theme.of(context).textTheme.headlineSmall,
-                                ),
-                                const SizedBox(height: CoeloSpacing.space2),
-                                Text(
-                                  'Escolha a data, a turma e, quando necessário, a atividade. A rotina diária vinculada será resolvida pelo contexto autorizado.',
-                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            child: CoeloTourAnchor(
+                              id: 'attendance-create.context',
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Text(
+                                    'Contexto da chamada',
+                                    style: Theme.of(context).textTheme.headlineSmall,
                                   ),
-                                ),
-                                const SizedBox(height: CoeloSpacing.space5),
-                                OutlinedButton.icon(
-                                  key: const Key('attendance-date-picker'),
-                                  focusNode: _dateFocusNode,
-                                  onPressed:
-                                      widget.permissions.canCreate(
-                                            backendCanManage: _options!.canManage,
-                                          ) &&
-                                          !_submitting
-                                      ? _pickDate
-                                      : null,
-                                  icon: const Icon(Icons.calendar_today_outlined),
-                                  label: Text('Data da chamada · ${_attendanceDate(_date)}'),
-                                ),
-                                const SizedBox(height: CoeloSpacing.space5),
-                                CoeloAdminSingleSelectField<String>(
-                                  label: 'Instituição',
-                                  value: _institution!,
-                                  options: _institutions
-                                      .map((item) => item.id)
-                                      .toList(growable: false),
-                                  optionLabel: (id) => _labelFor(_institutions, id),
-                                  enabled: !_submitting,
-                                  onChanged: _selectInstitution,
-                                  prefixIcon: Icons.account_balance_outlined,
-                                ),
-                                const SizedBox(height: CoeloSpacing.space4),
-                                CoeloAdminSingleSelectField<String>(
-                                  label: 'Unidade',
-                                  value: _unit!,
-                                  options: _units.map((item) => item.id).toList(growable: false),
-                                  optionLabel: (id) => _labelFor(_units, id),
-                                  enabled: !_submitting,
-                                  onChanged: _selectUnit,
-                                  prefixIcon: Icons.apartment_outlined,
-                                ),
-                                const SizedBox(height: CoeloSpacing.space4),
-                                CoeloAdminSingleSelectField<String>(
-                                  label: 'Turma',
-                                  value: _group!,
-                                  options: _groups.map((item) => item.id).toList(growable: false),
-                                  optionLabel: (id) => _labelFor(_groups, id),
-                                  enabled: !_submitting,
-                                  onChanged: _selectGroup,
-                                  prefixIcon: Icons.groups_outlined,
-                                ),
-                                const SizedBox(height: CoeloSpacing.space4),
-                                CoeloAdminSingleSelectField<String>(
-                                  label: 'Contexto',
-                                  value: _context,
-                                  options: _activities.isEmpty
-                                      ? const ['group']
-                                      : const ['group', 'activity'],
-                                  optionLabel: (value) => value == 'group' ? 'Turma' : 'Atividade',
-                                  enabled: !_submitting,
-                                  onChanged: (value) => setState(() {
-                                    _context = value;
-                                    if (value == 'activity') {
-                                      _activity = _validId(_activity, _activities);
-                                    }
-                                  }),
-                                  prefixIcon: Icons.account_tree_outlined,
-                                ),
-                                if (_context == 'activity' && _activities.isNotEmpty) ...[
-                                  const SizedBox(height: CoeloSpacing.space4),
+                                  const SizedBox(height: CoeloSpacing.space2),
+                                  Text(
+                                    'Escolha a data, a turma e, quando necessário, a atividade. A rotina diária vinculada será resolvida pelo contexto autorizado.',
+                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                  const SizedBox(height: CoeloSpacing.space5),
+                                  OutlinedButton.icon(
+                                    key: const Key('attendance-date-picker'),
+                                    focusNode: _dateFocusNode,
+                                    onPressed:
+                                        widget.permissions.canCreate(
+                                              backendCanManage: _options!.canManage,
+                                            ) &&
+                                            !_submitting
+                                        ? _pickDate
+                                        : null,
+                                    icon: const Icon(Icons.calendar_today_outlined),
+                                    label: Text('Data da chamada · ${_attendanceDate(_date)}'),
+                                  ),
+                                  const SizedBox(height: CoeloSpacing.space5),
                                   CoeloAdminSingleSelectField<String>(
-                                    label: 'Atividade na turma',
-                                    value: _activity!,
-                                    options: _activities
+                                    label: 'Instituição',
+                                    value: _institution!,
+                                    options: _institutions
                                         .map((item) => item.id)
                                         .toList(growable: false),
-                                    optionLabel: (id) => _labelFor(_activities, id),
+                                    optionLabel: (id) => _labelFor(_institutions, id),
                                     enabled: !_submitting,
-                                    onChanged: (value) => setState(() => _activity = value),
-                                    prefixIcon: Icons.local_activity_outlined,
+                                    onChanged: _selectInstitution,
+                                    prefixIcon: Icons.account_balance_outlined,
                                   ),
-                                ],
-                                const SizedBox(height: CoeloSpacing.space5),
-                                _AttendanceContextFacts(date: _date, today: _today),
-                                if (_notRequired) ...[
                                   const SizedBox(height: CoeloSpacing.space4),
-                                  const _AttendanceRequirementNotice(),
+                                  CoeloAdminSingleSelectField<String>(
+                                    label: 'Unidade',
+                                    value: _unit!,
+                                    options: _units.map((item) => item.id).toList(growable: false),
+                                    optionLabel: (id) => _labelFor(_units, id),
+                                    enabled: !_submitting,
+                                    onChanged: _selectUnit,
+                                    prefixIcon: Icons.apartment_outlined,
+                                  ),
+                                  const SizedBox(height: CoeloSpacing.space4),
+                                  CoeloAdminSingleSelectField<String>(
+                                    label: 'Turma',
+                                    value: _group!,
+                                    options: _groups.map((item) => item.id).toList(growable: false),
+                                    optionLabel: (id) => _labelFor(_groups, id),
+                                    enabled: !_submitting,
+                                    onChanged: _selectGroup,
+                                    prefixIcon: Icons.groups_outlined,
+                                  ),
+                                  const SizedBox(height: CoeloSpacing.space4),
+                                  CoeloAdminSingleSelectField<String>(
+                                    label: 'Contexto',
+                                    value: _context,
+                                    options: _activities.isEmpty
+                                        ? const ['group']
+                                        : const ['group', 'activity'],
+                                    optionLabel: (value) =>
+                                        value == 'group' ? 'Turma' : 'Atividade',
+                                    enabled: !_submitting,
+                                    onChanged: (value) => setState(() {
+                                      _context = value;
+                                      if (value == 'activity') {
+                                        _activity = _validId(_activity, _activities);
+                                      }
+                                    }),
+                                    prefixIcon: Icons.account_tree_outlined,
+                                  ),
+                                  if (_context == 'activity' && _activities.isNotEmpty) ...[
+                                    const SizedBox(height: CoeloSpacing.space4),
+                                    CoeloAdminSingleSelectField<String>(
+                                      label: 'Atividade na turma',
+                                      value: _activity!,
+                                      options: _activities
+                                          .map((item) => item.id)
+                                          .toList(growable: false),
+                                      optionLabel: (id) => _labelFor(_activities, id),
+                                      enabled: !_submitting,
+                                      onChanged: (value) => setState(() => _activity = value),
+                                      prefixIcon: Icons.local_activity_outlined,
+                                    ),
+                                  ],
+                                  const SizedBox(height: CoeloSpacing.space5),
+                                  CoeloTourAnchor(
+                                    id: 'attendance-create.participants',
+                                    child: _AttendanceContextFacts(date: _date, today: _today),
+                                  ),
+                                  if (_notRequired) ...[
+                                    const SizedBox(height: CoeloSpacing.space4),
+                                    const _AttendanceRequirementNotice(),
+                                  ],
                                 ],
-                              ],
+                              ),
                             ),
                           ),
                         ),
@@ -296,20 +303,23 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                         message: 'Não foi possível criar a chamada.',
                       ),
                     ],
-                    SuperadminFormActionFooter(
-                      surfaceKey: const Key('attendance-context-footer'),
-                      tertiaryAction: TextButton(
-                        key: const Key('attendance-context-cancel'),
-                        onPressed: _submitting ? null : widget.onCancel,
-                        child: const Text('Cancelar'),
-                      ),
-                      continuationActions: [
-                        FilledButton(
-                          key: const Key('attendance-context-continue'),
-                          onPressed: !_canCreate || _submitting ? null : _create,
-                          child: const Text('Lançar chamada'),
+                    CoeloTourAnchor(
+                      id: 'form.footer',
+                      child: SuperadminFormActionFooter(
+                        surfaceKey: const Key('attendance-context-footer'),
+                        tertiaryAction: TextButton(
+                          key: const Key('attendance-context-cancel'),
+                          onPressed: _submitting ? null : widget.onCancel,
+                          child: const Text('Cancelar'),
                         ),
-                      ],
+                        continuationActions: [
+                          FilledButton(
+                            key: const Key('attendance-context-continue'),
+                            onPressed: !_canCreate || _submitting ? null : _create,
+                            child: const Text('Lançar chamada'),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -606,9 +616,7 @@ class _AttendanceRoutineFact extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final qualifier = routine.sourceLabel(
-      concluded: AttendanceRoutineRef.statusConcluded(status),
-    );
+    final qualifier = routine.sourceLabel(concluded: AttendanceRoutineRef.statusConcluded(status));
     return Padding(
       padding: const EdgeInsets.only(top: CoeloSpacing.space3),
       child: Semantics(
@@ -617,7 +625,11 @@ class _AttendanceRoutineFact extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.view_agenda_outlined, size: CoeloSize.iconSm, color: theme.colorScheme.onSurfaceVariant),
+            Icon(
+              Icons.view_agenda_outlined,
+              size: CoeloSize.iconSm,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
             const SizedBox(width: CoeloSpacing.space2),
             Expanded(
               child: Column(
@@ -1013,7 +1025,10 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
                                         color: colors.onSurfaceVariant,
                                       ),
                                     ),
-                                    _AttendanceRoutineFact(routine: call.routine, status: call.status),
+                                    _AttendanceRoutineFact(
+                                      routine: call.routine,
+                                      status: call.status,
+                                    ),
                                   ],
                                 ),
                               ),

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 /// Rodapé fixo de paginação aprovado em Instituições (compacto abaixo de 600 px).
@@ -33,62 +34,69 @@ final class CoeloAdminPaginationFooter extends StatelessWidget {
   final int? compactTotalPages;
   final VoidCallback? compactOnPrevious;
   final VoidCallback? compactOnNext;
+
+  /// Âncora do tour por tela: o rodapé de paginação de qualquer diretório.
+  static const tourAnchorId = 'directory.pagination';
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return ClipRect(
-      key: semanticKey,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: CoeloSpacing.space3, sigmaY: CoeloSpacing.space3),
-        child: Container(
-          padding: EdgeInsets.fromLTRB(
-            horizontalPadding,
-            CoeloSpacing.space3,
-            horizontalPadding,
-            CoeloSpacing.space3,
-          ),
-          decoration: BoxDecoration(
-            color: colors.surface.withValues(
-              alpha: Theme.brightnessOf(context) == Brightness.light ? 0.84 : 0.88,
+    return CoeloTourAnchor(
+      id: tourAnchorId,
+      child: ClipRect(
+        key: semanticKey,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: CoeloSpacing.space3, sigmaY: CoeloSpacing.space3),
+          child: Container(
+            padding: EdgeInsets.fromLTRB(
+              horizontalPadding,
+              CoeloSpacing.space3,
+              horizontalPadding,
+              CoeloSpacing.space3,
             ),
-          ),
-          child: SafeArea(
-            top: false,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final compact =
-                    constraints.maxWidth + horizontalPadding * 2 <
-                        CoeloBreakpoints.medium.minWidth &&
-                    compactCurrentPage != null &&
-                    compactTotalPages != null;
-                if (!compact) return child;
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _CompactPageAction(
-                      label: 'P\u00e1gina anterior',
-                      icon: Icons.chevron_left_rounded,
-                      onPressed: compactOnPrevious,
-                    ),
-                    const SizedBox(width: CoeloSpacing.space1),
-                    Flexible(
-                      child: Text(
-                        'P\u00e1gina $compactCurrentPage de $compactTotalPages',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.labelLarge,
+            decoration: BoxDecoration(
+              color: colors.surface.withValues(
+                alpha: Theme.brightnessOf(context) == Brightness.light ? 0.84 : 0.88,
+              ),
+            ),
+            child: SafeArea(
+              top: false,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final compact =
+                      constraints.maxWidth + horizontalPadding * 2 <
+                          CoeloBreakpoints.medium.minWidth &&
+                      compactCurrentPage != null &&
+                      compactTotalPages != null;
+                  if (!compact) return child;
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _CompactPageAction(
+                        label: 'P\u00e1gina anterior',
+                        icon: Icons.chevron_left_rounded,
+                        onPressed: compactOnPrevious,
                       ),
-                    ),
-                    const SizedBox(width: CoeloSpacing.space1),
-                    _CompactPageAction(
-                      label: 'Pr\u00f3xima p\u00e1gina',
-                      icon: Icons.chevron_right_rounded,
-                      onPressed: compactOnNext,
-                    ),
-                  ],
-                );
-              },
+                      const SizedBox(width: CoeloSpacing.space1),
+                      Flexible(
+                        child: Text(
+                          'P\u00e1gina $compactCurrentPage de $compactTotalPages',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                      ),
+                      const SizedBox(width: CoeloSpacing.space1),
+                      _CompactPageAction(
+                        label: 'Pr\u00f3xima p\u00e1gina',
+                        icon: Icons.chevron_right_rounded,
+                        onPressed: compactOnNext,
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ),

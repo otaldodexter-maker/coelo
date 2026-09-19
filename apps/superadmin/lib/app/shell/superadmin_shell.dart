@@ -17,6 +17,7 @@ import '../../features/chat/presentation/widgets/superadmin_chat_launcher.dart';
 import '../../features/support/domain/support_ticket.dart';
 import '../theme/superadmin_theme_mode_scope.dart';
 import '../tour/superadmin_menu_tour_steps.dart';
+import '../tour/superadmin_screen_tours.dart';
 import '../tour/superadmin_tour_store.dart';
 import 'superadmin_activity_center.dart';
 import 'superadmin_bug_report_dialog.dart';
@@ -106,6 +107,7 @@ class SuperadminShell extends StatefulWidget {
     this.headerProfile,
     this.tourStore,
     this.menuTourSteps = superadminMenuTourSteps,
+    this.screenTours = superadminScreenTourList,
     super.key,
   }) : assert(chatLauncherBottomInset >= 0);
 
@@ -122,6 +124,7 @@ class SuperadminShell extends StatefulWidget {
     this.headerProfile,
     this.tourStore,
     this.menuTourSteps = superadminMenuTourSteps,
+    this.screenTours = superadminScreenTourList,
     this.frameHostedContent = false,
     this.chatLauncherBottomInset = 0,
     super.key,
@@ -199,6 +202,10 @@ class SuperadminShell extends StatefulWidget {
   /// Passos do tour do menu (texto em `superadmin_menu_tour_steps.dart`).
   final List<CoeloTourStep> menuTourSteps;
 
+  /// Tours por tela, na ordem do menu (texto em `tour/screens/`). O tour
+  /// desta tela usa o do [currentDestination]; o completo percorre todos.
+  final List<SuperadminScreenTour> screenTours;
+
   @override
   State<SuperadminShell> createState() => _SuperadminShellState();
 }
@@ -224,6 +231,10 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   // o login), cada build do shell tenta de novo.
   bool _autoTourResolved = false;
   bool _autoTourChecking = false;
+  // Tour completo: retoma após reload a partir da tela gravada no store.
+  bool _completeResumeResolved = false;
+  bool _completeResumeChecking = false;
+  final _pageBodyKey = GlobalKey();
 
   @override
   void initState() {
@@ -431,26 +442,40 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     );
   }
 
+  /// Fecha o que o tour abriu (drawer, menu da conta).
+  void _closeTourSurfaces() {
+    final scaffold = _scaffoldKey.currentState;
+    if (scaffold != null && scaffold.isDrawerOpen) scaffold.closeDrawer();
+    if (_tourMenus.account?.isOpen ?? false) _tourMenus.account!.close();
+  }
+
+  /// Abre o tour do menu (sidebar expandida antes) e devolve o resultado.
+  Future<CoeloTourOutcome> _runMenuTour({
+    CoeloTourSegment segment = CoeloTourSegment.single,
+  }) async {
+    if (!_isNarrow && _sidebarCollapsed) {
+      _toggleSidebar();
+      await _waitMotion(_sidebarMotionDuration);
+      if (!mounted) return CoeloTourOutcome.unavailable;
+    }
+    final outcome = await showCoeloTour(
+      context,
+      steps: widget.menuTourSteps,
+      registry: _tourRegistry,
+      isStepAvailable: _isTourStepAvailable,
+      onPrepareStep: _prepareTourStep,
+      segment: segment,
+    );
+    if (mounted) _closeTourSurfaces();
+    return outcome;
+  }
+
   Future<void> _startMenuTour() async {
     if (_tourRunning || !mounted) return;
     _tourRunning = true;
     try {
-      if (!_isNarrow && _sidebarCollapsed) {
-        _toggleSidebar();
-        await _waitMotion(_sidebarMotionDuration);
-        if (!mounted) return;
-      }
-      final outcome = await showCoeloTour(
-        context,
-        steps: widget.menuTourSteps,
-        registry: _tourRegistry,
-        isStepAvailable: _isTourStepAvailable,
-        onPrepareStep: _prepareTourStep,
-      );
+      final outcome = await _runMenuTour();
       if (!mounted) return;
-      final scaffold = _scaffoldKey.currentState;
-      if (scaffold != null && scaffold.isDrawerOpen) scaffold.closeDrawer();
-      if (_tourMenus.account?.isOpen ?? false) _tourMenus.account!.close();
       if (outcome != CoeloTourOutcome.unavailable) {
         await widget.tourStore?.markMenuTour(
           outcome == CoeloTourOutcome.completed ? 'done' : 'skipped',
@@ -459,6 +484,249 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     } finally {
       _tourRunning = false;
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Tour desta tela e tour completo
+
+  SuperadminScreenTour? get _currentScreenTour {
+    for (final tour in widget.screenTours) {
+      if (tour.destinationId == widget.currentDestination) return tour;
+    }
+    return null;
+  }
+
+  /// Telas do tour completo: as que têm tour e cujo destino está visível no
+  /// menu deste ambiente e capacidade.
+  List<SuperadminScreenTour> get _completeTourScreens => [
+    for (final tour in widget.screenTours)
+      if (coeloNavigationNodeVisible(
+        tour.destinationId,
+        environment: _navigationEnvironment,
+        canAccess: _menuCapabilityCheck,
+      ))
+        tour,
+  ];
+
+  /// Antes de cada passo de tela: fecha drawer e menu da conta (ficam acima
+  /// do overlay), rola a página até a âncora aparecer (listas preguiçosas só
+  /// montam o que está visível) e centraliza a âncora.
+  Future<void> _prepareScreenStep(CoeloTourStep step) async {
+    final id = step.anchorId;
+    final accountMenu = _tourMenus.account;
+    if (accountMenu != null && accountMenu.isOpen) {
+      accountMenu.close();
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+    }
+    final scaffold = _scaffoldKey.currentState;
+    if (_isNarrow && scaffold != null && scaffold.isDrawerOpen) {
+      scaffold.closeDrawer();
+      await _waitMotion(const Duration(milliseconds: 300));
+      if (!mounted) return;
+    }
+    if (_tourRegistry.contextOf(id) == null) {
+      await _scrollPageUntilAnchor(id);
+      if (!mounted) return;
+    }
+    final anchorContext = _tourRegistry.contextOf(id);
+    if (anchorContext == null || !anchorContext.mounted) return;
+    await Scrollable.ensureVisible(
+      anchorContext,
+      alignment: 0.5,
+      duration: _reduceMotion ? Duration.zero : CoeloMotion.short,
+    );
+  }
+
+  /// Rola as listas verticais da página, uma tela por vez, até a âncora
+  /// montar. Sem sucesso, devolve cada lista à posição inicial.
+  Future<void> _scrollPageUntilAnchor(String id) async {
+    final root = _pageBodyKey.currentContext;
+    if (root == null) return;
+    final scrollables = <ScrollableState>[];
+    void visit(Element element) {
+      if (element is StatefulElement && element.state is ScrollableState) {
+        final state = element.state as ScrollableState;
+        if (state.widget.axis == Axis.vertical) scrollables.add(state);
+      }
+      element.visitChildElements(visit);
+    }
+
+    (root as Element).visitChildElements(visit);
+    for (final scrollable in scrollables) {
+      final position = scrollable.position;
+      if (!position.hasContentDimensions || !position.hasViewportDimension) continue;
+      final initial = position.pixels;
+      var found = false;
+      var offset = initial;
+      while (offset < position.maxScrollExtent) {
+        offset = (offset + position.viewportDimension * 0.8).clamp(0.0, position.maxScrollExtent);
+        position.jumpTo(offset);
+        await WidgetsBinding.instance.endOfFrame;
+        if (!mounted) return;
+        if (_tourRegistry.contextOf(id) != null) {
+          found = true;
+          break;
+        }
+      }
+      if (found) return;
+      position.jumpTo(initial);
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+    }
+  }
+
+  Future<CoeloTourOutcome> _runScreenTour(
+    SuperadminScreenTour tour, {
+    CoeloTourSegment segment = CoeloTourSegment.single,
+  }) async {
+    final outcome = await showCoeloTour(
+      context,
+      steps: tour.steps,
+      registry: _tourRegistry,
+      // Passo sem elemento na tela (estado vazio, sem permissão, largura
+      // estreita) é pulado sem aviso pelo mecanismo depois da preparação.
+      isStepAvailable: (_) => true,
+      onPrepareStep: _prepareScreenStep,
+      segment: segment,
+    );
+    if (mounted) _closeTourSurfaces();
+    return outcome;
+  }
+
+  /// "Tour desta tela": o tour do destino atual. Devolve false quando a tela
+  /// não tem tour (o botão avisa).
+  Future<bool> _startScreenTour() async {
+    final tour = _currentScreenTour;
+    if (tour == null) return false;
+    if (_tourRunning || !mounted) return true;
+    _tourRunning = true;
+    try {
+      await _runScreenTour(tour);
+    } finally {
+      _tourRunning = false;
+    }
+    return true;
+  }
+
+  /// Espera a página do destino montar (âncora do primeiro passo ou qualquer
+  /// âncora do tour), até [frames] frames.
+  Future<void> _waitForScreen(SuperadminScreenTour tour, {int frames = 120}) async {
+    for (var frame = 0; frame < frames; frame++) {
+      if (widget.currentDestination == tour.destinationId &&
+          tour.steps.any((step) => _tourRegistry.contextOf(step.anchorId) != null)) {
+        return;
+      }
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+    }
+  }
+
+  /// "Tour completo": o tour do menu e, em seguida, cada tela com tour na
+  /// ordem do menu, navegando de tela em tela. Contador global; "Pular tour"
+  /// encerra tudo; "Voltar" no primeiro passo de uma tela volta ao último da
+  /// anterior; ao fim volta à tela de origem. [resumeAt] retoma numa tela
+  /// (índice gravado no store antes do reload).
+  Future<void> _startCompleteTour({int? resumeAt}) async {
+    if (_tourRunning || !mounted) return;
+    _tourRunning = true;
+    final store = widget.tourStore;
+    try {
+      final origin = widget.currentDestination;
+      final screens = _completeTourScreens;
+      final menuCount = widget.menuTourSteps.where(_isTourStepAvailable).length;
+      final offsets = <int>[];
+      var total = menuCount;
+      for (final tour in screens) {
+        offsets.add(total);
+        total += tour.steps.length;
+      }
+      // -1 é o tour do menu.
+      var index = resumeAt == null ? -1 : resumeAt.clamp(0, screens.length);
+      var startAtLast = false;
+      while (mounted) {
+        if (index < 0) {
+          final outcome = await _runMenuTour(
+            segment: CoeloTourSegment(
+              counterTotal: total,
+              continuesAfter: screens.isNotEmpty,
+              startAtLast: startAtLast,
+            ),
+          );
+          if (!mounted) return;
+          if (outcome == CoeloTourOutcome.skipped) {
+            await store?.markCompleteTour('skipped');
+            break;
+          }
+          await store?.markMenuTour(outcome == CoeloTourOutcome.completed ? 'done' : 'skipped');
+          index = 0;
+          startAtLast = false;
+          continue;
+        }
+        if (index >= screens.length) {
+          await store?.markCompleteTour('done');
+          break;
+        }
+        final tour = screens[index];
+        await store?.saveCompleteTourProgress(index);
+        if (!mounted) return;
+        if (widget.currentDestination != tour.destinationId) {
+          widget.onDestinationSelected?.call(tour.destinationId);
+          await WidgetsBinding.instance.endOfFrame;
+          if (!mounted) return;
+        }
+        await _waitForScreen(tour);
+        if (!mounted) return;
+        final outcome = await _runScreenTour(
+          tour,
+          segment: CoeloTourSegment(
+            counterOffset: offsets[index],
+            counterTotal: total,
+            continuesAfter: index < screens.length - 1,
+            allowBackFromFirst: true,
+            startAtLast: startAtLast,
+          ),
+        );
+        if (!mounted) return;
+        switch (outcome) {
+          case CoeloTourOutcome.skipped:
+            await store?.markCompleteTour('skipped');
+            index = screens.length + 1;
+          case CoeloTourOutcome.back:
+            index -= 1;
+            startAtLast = true;
+          case CoeloTourOutcome.completed:
+          case CoeloTourOutcome.unavailable:
+            index += 1;
+            startAtLast = false;
+        }
+        if (index > screens.length) break;
+      }
+      if (mounted && widget.currentDestination != origin) {
+        widget.onDestinationSelected?.call(origin);
+      }
+    } finally {
+      _tourRunning = false;
+    }
+  }
+
+  /// Após reload no meio do tour completo: com índice gravado no store, retoma
+  /// naquela tela assim que o shell assentar.
+  void _scheduleCompleteTourResume() {
+    final store = widget.tourStore;
+    if (store == null || _completeResumeResolved || _completeResumeChecking) return;
+    _completeResumeChecking = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Sem usuário identificado (logo após o login) o store devolve null e
+      // o shell repergunta no próximo build.
+      final seen = await store.hasSeenMenuTour();
+      _completeResumeChecking = false;
+      if (!mounted || seen == null) return;
+      _completeResumeResolved = true;
+      final progress = await store.completeTourProgress();
+      if (!mounted || progress == null) return;
+      await _startCompleteTour(resumeAt: progress);
+    });
   }
 
   /// Primeiro acesso: com store e sem registro de "visto", abre o tour do
@@ -488,15 +756,24 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
 
   Widget _withTourScope(Widget child) {
     _scheduleFirstAccessTour();
+    _scheduleCompleteTourResume();
     return CoeloTourScope(
       registry: _tourRegistry,
-      child: _SuperadminTourScope(startMenuTour: _startMenuTour, menus: _tourMenus, child: child),
+      child: _SuperadminTourScope(
+        startMenuTour: _startMenuTour,
+        startScreenTour: _startScreenTour,
+        startCompleteTour: _startCompleteTour,
+        menus: _tourMenus,
+        child: child,
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final pageBody = widget.child ?? const SizedBox.expand();
+    final pageBody = widget.isHost
+        ? KeyedSubtree(key: _pageBodyKey, child: widget.child ?? const SizedBox.expand())
+        : widget.child ?? const SizedBox.expand();
     final hostScope = _SuperadminShellHostScope.maybeOf(context);
     final headerProfile = widget.headerProfile ?? SuperadminHeaderProfileScope.maybeOf(context);
     if (!widget.isHost && hostScope != null) {
@@ -1143,11 +1420,17 @@ const _accountDestinations = <_NavigationDestinationData>[
 class _SuperadminTourScope extends InheritedWidget {
   const _SuperadminTourScope({
     required this.startMenuTour,
+    required this.startScreenTour,
+    required this.startCompleteTour,
     required this.menus,
     required super.child,
   });
 
   final Future<void> Function() startMenuTour;
+
+  /// Devolve false quando a tela atual não tem tour.
+  final Future<bool> Function() startScreenTour;
+  final Future<void> Function() startCompleteTour;
   final _SuperadminTourMenuHandles menus;
 
   static _SuperadminTourScope? maybeOf(BuildContext context) =>
@@ -1155,7 +1438,10 @@ class _SuperadminTourScope extends InheritedWidget {
 
   @override
   bool updateShouldNotify(_SuperadminTourScope oldWidget) =>
-      startMenuTour != oldWidget.startMenuTour || menus != oldWidget.menus;
+      startMenuTour != oldWidget.startMenuTour ||
+      startScreenTour != oldWidget.startScreenTour ||
+      startCompleteTour != oldWidget.startCompleteTour ||
+      menus != oldWidget.menus;
 }
 
 /// Controladores de menus que o tour precisa abrir (menu da conta). Quem
@@ -1267,26 +1553,25 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
     return CoeloAdminFlyout<String>(
       items: _tourFlyoutItems,
       onSelected: (selection) {
-        // `complete` abre, nesta versão, o mesmo tour do menu: o tour
-        // completo por tela vem depois (ADR 0035, F8).
         final tour = _SuperadminTourScope.maybeOf(context);
-        final message = switch (selection) {
-          'screen' => 'O tour desta tela chega em breve.',
-          'menu' || 'complete' when tour != null => null,
-          'menu' || 'complete' => 'O tour do menu n\u00e3o est\u00e1 dispon\u00edvel nesta tela.',
-          _ => null,
-        };
-        if (message != null) {
-          _showMessage(context, message);
+        if (tour == null) {
+          _showMessage(context, 'O tour n\u00e3o est\u00e1 dispon\u00edvel nesta tela.');
           return;
         }
-        if (selection == 'complete') {
-          _showMessage(
-            context,
-            'O tour completo (menu e todas as telas) chega em breve. Abrindo o tour do menu.',
-          );
+        switch (selection) {
+          case 'screen':
+            unawaited(
+              tour.startScreenTour().then((started) {
+                if (!started && context.mounted) {
+                  _showMessage(context, 'Esta tela ainda n\u00e3o tem tour.');
+                }
+              }),
+            );
+          case 'complete':
+            unawaited(tour.startCompleteTour());
+          default:
+            unawaited(tour.startMenuTour());
         }
-        unawaited(tour!.startMenuTour());
       },
       alignmentOffset: Offset(
         widget.collapsed ? CoeloSize.touchMin + CoeloSpacing.space4 + CoeloSpacing.space1 : 252,
@@ -1884,6 +2169,13 @@ class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
+/// Âncoras do tour por tela no cabeçalho de qualquer página embutida:
+/// `page.header` (título e subtítulo) e `page.actions` (botões da página).
+abstract final class SuperadminPageTourAnchors {
+  static const header = 'page.header';
+  static const actions = 'page.actions';
+}
+
 class _PageHeader extends StatelessWidget {
   const _PageHeader({
     required this.title,
@@ -1925,27 +2217,33 @@ class _PageHeader extends StatelessWidget {
               child: Row(
                 children: [
                   Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(title, style: theme.textTheme.headlineSmall),
-                        const SizedBox(height: CoeloSpacing.space1),
-                        Text(
-                          subtitle,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.onSurfaceVariant,
+                    child: CoeloTourAnchor(
+                      id: SuperadminPageTourAnchors.header,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(title, style: theme.textTheme.headlineSmall),
+                          const SizedBox(height: CoeloSpacing.space1),
+                          Text(
+                            subtitle,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colors.onSurfaceVariant,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(width: CoeloSpacing.space1),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: visibleActions
-                        .expand((action) => [action, const SizedBox(width: CoeloSpacing.space1)])
-                        .toList(growable: false),
+                  CoeloTourAnchor(
+                    id: SuperadminPageTourAnchors.actions,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: visibleActions
+                          .expand((action) => [action, const SizedBox(width: CoeloSpacing.space1)])
+                          .toList(growable: false),
+                    ),
                   ),
                 ],
               ),
@@ -1959,30 +2257,41 @@ class _PageHeader extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        maxLines: compact ? null : 1,
-                        overflow: compact ? null : TextOverflow.ellipsis,
-                        style: theme.textTheme.headlineSmall,
-                      ),
-                      const SizedBox(height: CoeloSpacing.space1),
-                      Text(
-                        subtitle,
-                        maxLines: compact ? null : 1,
-                        overflow: compact ? null : TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
-                      ),
-                    ],
+                  child: CoeloTourAnchor(
+                    id: SuperadminPageTourAnchors.header,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          maxLines: compact ? null : 1,
+                          overflow: compact ? null : TextOverflow.ellipsis,
+                          style: theme.textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: CoeloSpacing.space1),
+                        Text(
+                          subtitle,
+                          maxLines: compact ? null : 1,
+                          overflow: compact ? null : TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 if (visibleActions.isNotEmpty) ...[
                   const SizedBox(width: CoeloSpacing.space4),
-                  ...visibleActions.expand(
-                    (action) => [action, const SizedBox(width: CoeloSpacing.space2)],
+                  CoeloTourAnchor(
+                    id: SuperadminPageTourAnchors.actions,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: visibleActions
+                          .expand((action) => [action, const SizedBox(width: CoeloSpacing.space2)])
+                          .toList(growable: false),
+                    ),
                   ),
                 ],
                 if (!compact) ...[

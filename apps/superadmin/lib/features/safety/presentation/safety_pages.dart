@@ -134,78 +134,90 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
                   padding: EdgeInsets.fromLTRB(inset, inset, inset, inset + footerInset),
                   children: [
                     CoeloAdminListingToolbar(
-                      search: SizedBox(
-                        width: constraints.maxWidth < 768 ? constraints.maxWidth : 320,
-                        height: CoeloSize.touchMin,
-                        child: CoeloSearchField(
-                          controller: search,
-                          hintText: 'Nome ou identificação interna',
-                          semanticLabel: 'Buscar criança no escopo autorizado',
-                          onChanged: widget.controller.setSearch,
+                      search: CoeloTourAnchor(
+                        id: CoeloAdminDirectoryTourAnchors.search,
+                        child: SizedBox(
+                          width: constraints.maxWidth < 768 ? constraints.maxWidth : 320,
+                          height: CoeloSize.touchMin,
+                          child: CoeloSearchField(
+                            controller: search,
+                            hintText: 'Nome ou identificação interna',
+                            semanticLabel: 'Buscar criança no escopo autorizado',
+                            onChanged: widget.controller.setSearch,
+                          ),
                         ),
                       ),
                       filters: const [],
                       actions: [
-                        CoeloAdminDirectoryViewToggle<_TableView>(
-                          cardsSelected:
-                              widget.controller.query.view == ChildSafetyDirectoryView.cards,
-                          groupedView: _TableView.grouped,
-                          selectedTableView: _TableView.grouped,
-                          tableViews: const [
-                            CoeloAdminDirectoryTableViewOption(
-                              value: _TableView.grouped,
-                              label: 'Agrupado',
-                            ),
-                          ],
-                          cardsKey: const Key('safety-view-cards'),
-                          tableKey: const Key('safety-view-table'),
-                          onCardsSelected: () =>
-                              widget.controller.setView(ChildSafetyDirectoryView.cards),
-                          onTableViewSelected: (_) =>
-                              widget.controller.setView(ChildSafetyDirectoryView.table),
-                        ),
-                        CoeloAdminFileActions(
-                          actions: [
-                            CoeloAdminFileAction(
-                              key: const Key('safety-import-file'),
-                              label: 'Importar',
-                              icon: Icons.upload_file_outlined,
-                              onPressed: () => showSuperadminNotice(
-                                context,
-                                'Indisponível nesta etapa',
-                                icon: Icons.info_outline_rounded,
+                        CoeloTourAnchor(
+                          id: CoeloAdminDirectoryTourAnchors.view,
+                          child: CoeloAdminDirectoryViewToggle<_TableView>(
+                            cardsSelected:
+                                widget.controller.query.view == ChildSafetyDirectoryView.cards,
+                            groupedView: _TableView.grouped,
+                            selectedTableView: _TableView.grouped,
+                            tableViews: const [
+                              CoeloAdminDirectoryTableViewOption(
+                                value: _TableView.grouped,
+                                label: 'Agrupado',
                               ),
-                            ),
-                            CoeloAdminFileAction(
-                              key: const Key('safety-export-csv'),
-                              label: 'Exportar CSV',
-                              icon: Icons.download_outlined,
-                              onPressed:
-                                  widget.onExport ??
-                                  () => showSuperadminNotice(
-                                    context,
-                                    'Indisponível nesta etapa',
-                                    icon: Icons.info_outline_rounded,
-                                  ),
-                            ),
-                          ],
+                            ],
+                            cardsKey: const Key('safety-view-cards'),
+                            tableKey: const Key('safety-view-table'),
+                            onCardsSelected: () =>
+                                widget.controller.setView(ChildSafetyDirectoryView.cards),
+                            onTableViewSelected: (_) =>
+                                widget.controller.setView(ChildSafetyDirectoryView.table),
+                          ),
+                        ),
+                        CoeloTourAnchor(
+                          id: CoeloAdminDirectoryTourAnchors.files,
+                          child: CoeloAdminFileActions(
+                            actions: [
+                              CoeloAdminFileAction(
+                                key: const Key('safety-import-file'),
+                                label: 'Importar',
+                                icon: Icons.upload_file_outlined,
+                                onPressed: () => showSuperadminNotice(
+                                  context,
+                                  'Indisponível nesta etapa',
+                                  icon: Icons.info_outline_rounded,
+                                ),
+                              ),
+                              CoeloAdminFileAction(
+                                key: const Key('safety-export-csv'),
+                                label: 'Exportar CSV',
+                                icon: Icons.download_outlined,
+                                onPressed:
+                                    widget.onExport ??
+                                    () => showSuperadminNotice(
+                                      context,
+                                      'Indisponível nesta etapa',
+                                      icon: Icons.info_outline_rounded,
+                                    ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: CoeloSpacing.space4),
-                    CoeloAdminUnderlineTabs<ChildSafetyDirectorySegment>(
-                      tabs: [
-                        for (final value in ChildSafetyDirectorySegment.values)
-                          CoeloAdminUnderlineTab(
-                            value: value,
-                            label: '${value.label} (${widget.controller.segmentCounts[value]})',
-                          ),
-                      ],
-                      selected: widget.controller.query.segment,
-                      onSelected: widget.controller.setStatusSegment,
+                    CoeloTourAnchor(
+                      id: CoeloAdminDirectoryTourAnchors.tabs,
+                      child: CoeloAdminUnderlineTabs<ChildSafetyDirectorySegment>(
+                        tabs: [
+                          for (final value in ChildSafetyDirectorySegment.values)
+                            CoeloAdminUnderlineTab(
+                              value: value,
+                              label: '${value.label} (${widget.controller.segmentCounts[value]})',
+                            ),
+                        ],
+                        selected: widget.controller.query.segment,
+                        onSelected: widget.controller.setStatusSegment,
+                      ),
                     ),
                     const SizedBox(height: CoeloSpacing.space4),
-                    _body(),
+                    CoeloTourAnchor(id: CoeloAdminDirectoryTourAnchors.body, child: _body()),
                   ],
                 ),
                 if (showPagination)

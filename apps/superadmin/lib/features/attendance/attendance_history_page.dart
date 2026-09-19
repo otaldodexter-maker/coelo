@@ -156,11 +156,15 @@ class _CallsSection extends StatelessWidget {
     final query = state.query;
     final options = state.options;
     final today = controller.today;
-    final units = options?.units
-            .where((unit) => query.institutionId == null || unit.institutionId == query.institutionId)
+    final units =
+        options?.units
+            .where(
+              (unit) => query.institutionId == null || unit.institutionId == query.institutionId,
+            )
             .toList(growable: false) ??
         const <AttendanceContextOption>[];
-    final groups = options?.groups
+    final groups =
+        options?.groups
             .where(
               (group) =>
                   (query.institutionId == null || group.institutionId == query.institutionId) &&
@@ -168,7 +172,8 @@ class _CallsSection extends StatelessWidget {
             )
             .toList(growable: false) ??
         const <AttendanceContextOption>[];
-    final activities = options?.activities
+    final activities =
+        options?.activities
             .where((activity) => query.groupId != null && activity.groupId == query.groupId)
             .toList(growable: false) ??
         const <AttendanceContextOption>[];
@@ -196,7 +201,8 @@ class _CallsSection extends StatelessWidget {
         unauthorizedIcon: Icons.lock_outline_rounded,
       ),
       errorMessage: switch (state.status) {
-        AttendanceHistoryStatus.empty => 'As chamadas lançadas aparecem aqui após o primeiro registro.',
+        AttendanceHistoryStatus.empty =>
+          'As chamadas lançadas aparecem aqui após o primeiro registro.',
         AttendanceHistoryStatus.noResults => 'Ajuste os filtros ou o período.',
         AttendanceHistoryStatus.unavailable =>
           'Este host ainda não possui uma fonte produtiva autorizada.',
@@ -215,9 +221,8 @@ class _CallsSection extends StatelessWidget {
           label: 'Instituição',
           value: query.institutionId,
           options: <String?>[null, ...?options?.institutions.map((item) => item.id)],
-          optionLabel: (value) => value == null
-              ? 'Todas as instituições'
-              : _optionName(options?.institutions, value),
+          optionLabel: (value) =>
+              value == null ? 'Todas as instituições' : _optionName(options?.institutions, value),
           onChanged: controller.changeInstitution,
           prefixIcon: Icons.account_balance_outlined,
           isFilter: true,
@@ -389,9 +394,7 @@ class _RoutineCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final qualifier = routine.sourceLabel(
-      concluded: AttendanceRoutineRef.statusConcluded(status),
-    );
+    final qualifier = routine.sourceLabel(concluded: AttendanceRoutineRef.statusConcluded(status));
     return Align(
       alignment: AlignmentDirectional.centerStart,
       child: Tooltip(
@@ -406,7 +409,9 @@ class _RoutineCell extends StatelessWidget {
                 qualifier,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
           ],
         ),
@@ -541,7 +546,8 @@ class _RoutineLaunchesSegmentState extends State<_RoutineLaunchesSegment> {
         unauthorized: 'Acesso não autorizado',
         unauthorizedIcon: Icons.lock_outline_rounded,
       ),
-      errorMessage: _error ??
+      errorMessage:
+          _error ??
           (page != null && page.items.isEmpty
               ? 'Use "Lançar hoje" em Rotina diária › Rotinas para criar o lançamento do dia.'
               : null),
@@ -585,7 +591,9 @@ class _RoutineLaunchesSegmentState extends State<_RoutineLaunchesSegment> {
               cellBuilder: (context, item) => item.status == 'draft'
                   ? IconButton(
                       key: Key('daily-routine-publish-${item.id}-row'),
-                      tooltip: _publishing.contains(item.id) ? 'Publicando…' : 'Publicar lançamento',
+                      tooltip: _publishing.contains(item.id)
+                          ? 'Publicando…'
+                          : 'Publicar lançamento',
                       onPressed: _publishing.contains(item.id) ? null : () => _publish(item),
                       icon: const Icon(Icons.publish_rounded),
                     )

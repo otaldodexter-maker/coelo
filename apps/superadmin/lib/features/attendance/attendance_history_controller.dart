@@ -35,8 +35,7 @@ class AttendanceHistoryState {
   /// Páginas conhecidas + uma quando o servidor sinaliza que há mais.
   int get totalPages => pages.isEmpty ? 1 : pages.length + (pages.last.hasMore ? 1 : 0);
 
-  bool get hasFilters =>
-      query.hasContextFilter || query.status != null;
+  bool get hasFilters => query.hasContextFilter || query.status != null;
 
   AttendanceHistoryState copyWith({
     AttendanceHistoryStatus? status,

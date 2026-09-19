@@ -121,21 +121,22 @@ Home vai no primeiro lote.
 | # | Âncora | Título | Texto |
 |---|---|---|---|
 | 1 | `page.header` | Lançar avaliações | Registre resultados e acompanhe as pendências da turma. |
-| 2 | `assessment.context` | Contexto do lançamento | Escolha instituição, unidade, turma e Atividade. O diário só abre com o contexto completo. |
-| 3 | `assessment.period` | Período avaliativo | O período vigente da configuração da Atividade. Período fechado não aceita lançamento. |
-| 4 | `assessment.toolbar` | Aluno, situação e modo | Busque um aluno, filtre por situação e escolha o modo de lançamento (tabela ou aluno a aluno). |
-| 5 | `assessment.gradebook` | O diário | Uma linha por aluno, uma coluna por instrumento com seu peso. A média sugerida é calculada na hora. |
-| 6 | `assessment.footer` | Salvar e enviar | "Salvar rascunho" guarda sem publicar; "Revisão e envio" confere pendências e envia para fechamento. |
+| 2 | `form.navigation` | Etapas do lançamento | Contexto, Notas e competências, Comentários e Revisão e envio. Cada etapa libera a seguinte. |
+| 3 | `assessment.context` | Contexto do lançamento | Escolha instituição, unidade, turma e Atividade. O diário só abre com o contexto completo. |
+| 4 | `assessment.period` | Período avaliativo | O período vigente da configuração da Atividade. Período fechado não aceita lançamento. |
+| 5 | `assessment.toolbar` | Aluno, situação e modo | Busque um aluno, filtre por situação e escolha o modo de lançamento (tabela ou aluno a aluno). |
+| 6 | `assessment.gradebook` | O diário | Uma linha por aluno, uma coluna por instrumento com seu peso. A média sugerida é calculada na hora. |
+| 7 | `form.footer` | Salvar e avançar | "Salvar rascunho" guarda sem publicar; o botão de avançar leva à próxima etapa até a revisão e o envio. |
 
 ### Fechamento de avaliações (`assessment-closing`)
 
 | # | Âncora | Título | Texto |
 |---|---|---|---|
 | 1 | `page.header` | Fechamento de avaliações | Revise pendências e publique resultados autorizados. |
-| 2 | `directory.search` | Buscar turma ou Atividade | Encontre o envio pelo nome da turma ou da Atividade. |
-| 3 | `directory.files` | Importar e exportar | Exporte os fechamentos em CSV ou XLSX. |
-| 4 | `directory.body` | Envios pendentes | Cada linha é um envio: turma, período e quantas pendências restam. Clique para abrir. |
-| 5 | `assessment-closing.detail` | Completar pendências | No detalhe você completa o que falta com justificativa, publica e vê o histórico de eventos. |
+| 2 | `page.actions` | Importar e exportar | Exporte os fechamentos em CSV ou XLSX. |
+| 3 | `directory.search` | Buscar turma ou Atividade | Encontre o envio pelo nome da turma ou da Atividade. |
+| 4 | `directory.body` | Envios pendentes | Cada linha é um envio: turma, período e quantas pendências restam. Clique para abrir e completar o que falta. |
+| 5 | `directory.pagination` | Paginação | Avance de página e escolha quantos itens ver por vez. |
 
 ## Lote Acompanhamento
 
@@ -144,7 +145,7 @@ Home vai no primeiro lote.
 | # | Âncora | Título | Texto |
 |---|---|---|---|
 | 1 | `page.header` | Assiduidade | Visão consolidada de presença e chamadas no seu escopo. |
-| 2 | `page.actions` | Nova chamada e exportar | "Nova chamada" abre o lançamento de hoje; Exportar gera CSV ou XLSX do que está na tela. |
+| 2 | `attendance.actions` | Nova chamada e exportar | "Nova chamada" abre o lançamento de hoje; Exportar gera CSV ou XLSX do que está na tela. |
 | 3 | `attendance.filters` | Granularidade e período | Escolha o contexto (instituição, unidade, turma), o período e a granularidade dos indicadores. |
 | 4 | `attendance.kpis` | Indicadores | Presença geral, chamadas pendentes, faltas no período e itens em revisão. |
 | 5 | `attendance.attention` | Atenção necessária | Pendências que precisam de ação: chamadas atrasadas e correções aguardando. |
@@ -159,7 +160,7 @@ Home vai no primeiro lote.
 | 1 | `page.header` | Lançar chamada | Selecione o contexto antes de registrar a presença. |
 | 2 | `attendance-create.context` | Contexto da chamada | Instituição, unidade, turma e atividade na turma. A data padrão é hoje. |
 | 3 | `attendance-create.participants` | Participantes esperados | Quem deve estar presente segundo os vínculos ativos. Atividades sem chamada obrigatória avisam aqui. |
-| 4 | `form.footer` | Continuar | "Salvar e continuar depois" guarda o rascunho; "Concluir chamada" registra oficialmente. Cancelar não salva. |
+| 4 | `form.footer` | Lançar chamada | "Lançar chamada" cria a chamada e abre a lista de participantes para marcar presença. Cancelar volta sem criar. |
 
 ### Histórico (`attendance-history`)
 
@@ -176,12 +177,13 @@ Home vai no primeiro lote.
 | # | Âncora | Título | Texto |
 |---|---|---|---|
 | 1 | `page.header` | Rotina diária | Modelos, versões e alcances do registro cotidiano (sono, alimentação, higiene). |
-| 2 | `daily-routine.tabs` | Modelos ou rotinas | "Modelos" são a base; "Rotinas" são as versões aplicadas a cada unidade ou turma. |
+| 2 | `directory.tabs` | Modelos ou rotinas | "Modelos" são a base; "Rotinas" são as versões aplicadas a cada unidade ou turma. |
 | 3 | `directory.search` | Buscar | Encontre um modelo ou rotina pelo nome. |
 | 4 | `directory.filters` | Status e tabela | Filtre por status e alterne para a tabela com nome, origem, versão e ações. |
 | 5 | `directory.files` | Configuração | Importe ou exporte a configuração completa da rotina. |
 | 6 | `directory.create` | Criar | Abre o editor de um novo modelo ou rotina. |
 | 7 | `directory.body` | A lista | Cada item mostra versão, origem e vigência. Nas ações: editar, arquivar, restaurar ou publicar. |
+| 8 | `directory.pagination` | Paginação | Avance de página e escolha quantos itens ver por vez. |
 
 ### Acompanhamento de alunos (`students`)
 
@@ -189,7 +191,7 @@ Home vai no primeiro lote.
 |---|---|---|---|
 | 1 | `page.header` | Acompanhamento | A visão da família por aluno, contexto e período, como o responsável vê. |
 | 2 | `students.selectors` | Aluno, contexto e período | Escolha o aluno, o vínculo escolar e o período que quer ver. |
-| 3 | `students.tabs` | Abas | Visão geral, Assiduidade, Avaliações, Competências, Boletins, Agenda, Participação e Comportamento. |
+| 3 | `students.tabs` | Abas | Visão geral, Assiduidade, Avaliações, Competências e Boletins. |
 | 4 | `students.body` | O conteúdo | Só o que já foi publicado aparece aqui. Presenças, faltas, notas e recomendações da professora. |
 
 ## Lote Acessos
@@ -214,11 +216,12 @@ Home vai no primeiro lote.
 |---|---|---|---|
 | 1 | `page.header` | Segurança da criança | Quem está autorizado a buscar cada criança, com revisão auditada pela unidade. |
 | 2 | `directory.search` | Buscar | Nome ou identificação interna da criança. |
-| 3 | `directory.files` | Importar e exportar | Importe autorizações ou exporte em CSV. |
-| 4 | `directory.tabs` | Segmentos | Cada aba mostra a contagem: com autorização, em análise, sem autorização. |
-| 5 | `directory.create` | Criar segurança | Abre o assistente de nova autorização: criança, pessoa autorizada, relação, capacidades e validade. |
-| 6 | `directory.body` | A lista | Cada card mostra autorizações ativas e solicitações em análise. Clique para gerenciar. |
-| 7 | `directory.pagination` | Paginação | Avance de página e escolha quantos itens ver por vez. |
+| 3 | `directory.view` | Cards ou tabela | Escolha ver cards por criança ou a tabela agrupada. |
+| 4 | `directory.files` | Importar e exportar | Importe autorizações ou exporte em CSV. |
+| 5 | `directory.tabs` | Segmentos | Cada aba mostra a contagem: com autorização, em análise, sem autorização. |
+| 6 | `directory.create` | Criar segurança | Abre o assistente de nova autorização: criança, pessoa autorizada, relação, capacidades e validade. |
+| 7 | `directory.body` | A lista | Cada card mostra autorizações ativas e solicitações em análise. Clique para gerenciar. |
+| 8 | `directory.pagination` | Paginação | Avance de página e escolha quantos itens ver por vez. |
 
 ### Usuários internos (`internal-users`)
 

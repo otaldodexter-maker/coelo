@@ -370,8 +370,7 @@ final class UnavailableAttendanceRepository
   Future<T> _unavailable<T>() => Future<T>.error(const AttendanceUnavailableException());
 
   @override
-  Future<AttendanceHistoryPageResult> fetchHistory(AttendanceHistoryQuery query) =>
-      _unavailable();
+  Future<AttendanceHistoryPageResult> fetchHistory(AttendanceHistoryQuery query) => _unavailable();
 
   @override
   Future<AttendanceDashboardAccess> fetchAccess() => _unavailable();
@@ -779,4 +778,3 @@ String _dashboardStatusName(AttendanceDashboardCallStatus value) => switch (valu
   AttendanceDashboardCallStatus.completed => 'completed',
   AttendanceDashboardCallStatus.inReview => 'inReview',
 };
-

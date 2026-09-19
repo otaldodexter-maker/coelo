@@ -14,25 +14,56 @@ final class CoeloTourStep {
 }
 
 /// Como o tour terminou. `unavailable` significa que nenhum passo tinha
-/// âncora visível (o balão nunca abriu).
-enum CoeloTourOutcome { completed, skipped, unavailable }
+/// âncora visível (o balão nunca abriu); `back` significa que o usuário
+/// pediu "Voltar" no primeiro passo (só com [CoeloTourSegment.allowBackFromFirst]).
+enum CoeloTourOutcome { completed, skipped, unavailable, back }
+
+/// Como este tour se encaixa numa sequência maior (tour completo): o contador
+/// mostra `counterOffset + n de counterTotal`; com [continuesAfter] o último
+/// passo diz "Próximo" em vez de "Concluir"; com [allowBackFromFirst] o
+/// primeiro passo aceita "Voltar" (resolve `back`); com [startAtLast] o tour
+/// abre no último passo disponível.
+final class CoeloTourSegment {
+  const CoeloTourSegment({
+    this.counterOffset = 0,
+    this.counterTotal,
+    this.continuesAfter = false,
+    this.allowBackFromFirst = false,
+    this.startAtLast = false,
+  });
+
+  static const single = CoeloTourSegment();
+
+  final int counterOffset;
+  final int? counterTotal;
+  final bool continuesAfter;
+  final bool allowBackFromFirst;
+  final bool startAtLast;
+}
 
 /// Registro das âncoras montadas na tela. Uma mesma âncora pode estar
 /// registrada mais de uma vez (menu lateral e drawer, por exemplo); vale a
 /// primeira que estiver montada e com tamanho.
 final class CoeloTourAnchorRegistry {
   final _keys = <String, List<GlobalKey>>{};
+  final _union = <String>{};
 
-  void register(String id, GlobalKey key) {
+  /// [union]: todas as âncoras montadas com esta id formam um único
+  /// retângulo (filtros lado a lado, por exemplo).
+  void register(String id, GlobalKey key, {bool union = false}) {
     final keys = _keys.putIfAbsent(id, () => <GlobalKey>[]);
     if (!keys.contains(key)) keys.add(key);
+    if (union) _union.add(id);
   }
 
   void unregister(String id, GlobalKey key) {
     final keys = _keys[id];
     if (keys == null) return;
     keys.remove(key);
-    if (keys.isEmpty) _keys.remove(id);
+    if (keys.isEmpty) {
+      _keys.remove(id);
+      _union.remove(id);
+    }
   }
 
   bool get isEmpty => _keys.isEmpty;
@@ -50,8 +81,24 @@ final class CoeloTourAnchorRegistry {
 
   /// Retângulo global da âncora, ou null se ela não está na tela.
   Rect? rectOf(String id) {
-    final context = contextOf(id);
-    if (context == null) return null;
+    if (!_union.contains(id)) {
+      final context = contextOf(id);
+      if (context == null) return null;
+      return _rectOfContext(context);
+    }
+    Rect? union;
+    for (final key in _keys[id] ?? const <GlobalKey>[]) {
+      final context = key.currentContext;
+      if (context == null || !context.mounted) continue;
+      final box = context.findRenderObject();
+      if (box is! RenderBox || !box.attached || !box.hasSize) continue;
+      final rect = _rectOfContext(context);
+      union = union == null ? rect : union.expandToInclude(rect);
+    }
+    return union;
+  }
+
+  static Rect _rectOfContext(BuildContext context) {
     final box = context.findRenderObject()! as RenderBox;
     return box.localToGlobal(Offset.zero) & box.size;
   }
@@ -73,10 +120,13 @@ final class CoeloTourScope extends InheritedWidget {
 /// Marca [child] como a âncora [id]. Sem [CoeloTourScope] acima, não faz
 /// nada além de renderizar o filho.
 final class CoeloTourAnchor extends StatefulWidget {
-  const CoeloTourAnchor({required this.id, required this.child, super.key});
+  const CoeloTourAnchor({required this.id, required this.child, this.union = false, super.key});
 
   final String id;
   final Widget child;
+
+  /// Junta esta âncora às outras de mesma id num único retângulo.
+  final bool union;
 
   @override
   State<CoeloTourAnchor> createState() => _CoeloTourAnchorState();
@@ -103,7 +153,7 @@ final class _CoeloTourAnchorState extends State<CoeloTourAnchor> {
     if (_registry != null && _registeredId != null) _registry!.unregister(_registeredId!, _key);
     _registry = registry;
     _registeredId = registry == null ? null : widget.id;
-    registry?.register(widget.id, _key);
+    registry?.register(widget.id, _key, union: widget.union);
   }
 
   @override
@@ -132,6 +182,7 @@ Future<CoeloTourOutcome> showCoeloTour(
   required CoeloTourAnchorRegistry registry,
   CoeloTourPrepareStep? onPrepareStep,
   CoeloTourStepAvailability? isStepAvailable,
+  CoeloTourSegment segment = CoeloTourSegment.single,
 }) {
   final available = steps
       .where(isStepAvailable ?? (step) => registry.contextOf(step.anchorId) != null)
@@ -145,6 +196,7 @@ Future<CoeloTourOutcome> showCoeloTour(
       steps: available,
       registry: registry,
       onPrepareStep: onPrepareStep,
+      segment: segment,
       onFinished: (outcome) {
         entry.remove();
         entry.dispose();
@@ -165,6 +217,7 @@ final class CoeloTourOverlay extends StatefulWidget {
     required this.registry,
     required this.onFinished,
     this.onPrepareStep,
+    this.segment = CoeloTourSegment.single,
     super.key,
   });
 
@@ -172,6 +225,7 @@ final class CoeloTourOverlay extends StatefulWidget {
   final CoeloTourAnchorRegistry registry;
   final ValueChanged<CoeloTourOutcome> onFinished;
   final CoeloTourPrepareStep? onPrepareStep;
+  final CoeloTourSegment segment;
 
   @override
   State<CoeloTourOverlay> createState() => _CoeloTourOverlayState();
@@ -188,7 +242,7 @@ final class _CoeloTourOverlayState extends State<CoeloTourOverlay> {
   @override
   void initState() {
     super.initState();
-    unawaited(_go(0, 1));
+    unawaited(widget.segment.startAtLast ? _go(widget.steps.length - 1, -1) : _go(0, 1));
   }
 
   @override
@@ -235,6 +289,12 @@ final class _CoeloTourOverlayState extends State<CoeloTourOverlay> {
       }
       if (direction > 0) {
         _finish(_shownAny ? CoeloTourOutcome.completed : CoeloTourOutcome.unavailable);
+      } else if (!_shownAny) {
+        // Abriu no último passo (`startAtLast`) e nenhum tinha âncora.
+        _finish(CoeloTourOutcome.unavailable);
+      } else if (widget.segment.allowBackFromFirst) {
+        // "Voltar" no primeiro passo disponível: devolve à sequência.
+        _finish(CoeloTourOutcome.back);
       }
     } finally {
       _busy = false;
@@ -259,7 +319,11 @@ final class _CoeloTourOverlayState extends State<CoeloTourOverlay> {
 
   void _back() {
     final index = _index;
-    if (index == null || index == 0) return;
+    if (index == null) return;
+    if (index == 0) {
+      if (widget.segment.allowBackFromFirst) _finish(CoeloTourOutcome.back);
+      return;
+    }
     unawaited(_go(index - 1, -1));
   }
 
@@ -304,14 +368,14 @@ final class _CoeloTourOverlayState extends State<CoeloTourOverlay> {
               child: _CoeloTourBalloon(
                 focusNode: _focusNode,
                 step: step,
-                position: index + 1,
-                total: widget.steps.length,
+                position: widget.segment.counterOffset + index + 1,
+                total: widget.segment.counterTotal ?? widget.steps.length,
                 narrow: narrow,
                 sheetAtTop: sheetAtTop,
-                onBack: index == 0 ? null : _back,
+                onBack: index == 0 && !widget.segment.allowBackFromFirst ? null : _back,
                 onNext: _next,
                 onSkip: _skip,
-                isLast: index == widget.steps.length - 1,
+                isLast: index == widget.steps.length - 1 && !widget.segment.continuesAfter,
               ),
             ),
           ],

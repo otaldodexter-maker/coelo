@@ -446,11 +446,7 @@ class AttendanceHistoryItem {
 
 @immutable
 class AttendanceHistoryPageResult {
-  const AttendanceHistoryPageResult({
-    required this.items,
-    required this.hasMore,
-    this.nextCursor,
-  });
+  const AttendanceHistoryPageResult({required this.items, required this.hasMore, this.nextCursor});
 
   final List<AttendanceHistoryItem> items;
   final bool hasMore;

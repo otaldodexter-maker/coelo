@@ -284,31 +284,43 @@ class _DashboardContent extends StatelessWidget {
           onCreate: onCreate,
         ),
         const SizedBox(height: CoeloSpacing.space6),
-        _Filters(query: snapshot.query, controller: controller, today: today),
+        CoeloTourAnchor(
+          id: 'attendance.filters',
+          child: _Filters(query: snapshot.query, controller: controller, today: today),
+        ),
         const SizedBox(height: CoeloSpacing.space4),
         _TopBand(snapshot: snapshot, wide: _wide, controller: controller, today: today),
         const SizedBox(height: CoeloSpacing.space4),
-        _SectionSurface(
-          title: 'Desempenho por contexto',
-          subtitle: snapshot.contextLabel,
-          child: _RankingGrid(
-            rankings: snapshot.rankings,
-            twoColumns: _twoColumns,
-            controller: controller,
+        CoeloTourAnchor(
+          id: 'attendance.ranking',
+          child: _SectionSurface(
+            title: 'Desempenho por contexto',
+            subtitle: snapshot.contextLabel,
+            child: _RankingGrid(
+              rankings: snapshot.rankings,
+              twoColumns: _twoColumns,
+              controller: controller,
+            ),
           ),
         ),
         const SizedBox(height: CoeloSpacing.space4),
-        _SectionSurface(
-          title: 'Presença no período',
-          subtitle: snapshot.contextLabel,
-          child: _AttendanceChart(points: snapshot.series),
+        CoeloTourAnchor(
+          id: 'attendance.chart',
+          child: _SectionSurface(
+            title: 'Presença no período',
+            subtitle: snapshot.contextLabel,
+            child: _AttendanceChart(points: snapshot.series),
+          ),
         ),
         const SizedBox(height: CoeloSpacing.space4),
-        _CallsSection(
-          snapshot: snapshot,
-          controller: controller,
-          searchController: searchController,
-          onOpenCall: onOpenCall,
+        CoeloTourAnchor(
+          id: 'attendance.recent',
+          child: _CallsSection(
+            snapshot: snapshot,
+            controller: controller,
+            searchController: searchController,
+            onOpenCall: onOpenCall,
+          ),
         ),
       ],
     ),
@@ -335,33 +347,36 @@ class _DashboardHeader extends StatelessWidget {
           const Text('Indicadores calculados sobre registros oficiais válidos.'),
         ],
       ),
-      Wrap(
-        spacing: CoeloSpacing.space3,
-        runSpacing: CoeloSpacing.space3,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          if (canCreate && onCreate != null)
-            FilledButton.icon(
-              onPressed: onCreate,
-              icon: const Icon(Icons.add_rounded),
-              label: const Text('Nova chamada'),
+      CoeloTourAnchor(
+        id: 'attendance.actions',
+        child: Wrap(
+          spacing: CoeloSpacing.space3,
+          runSpacing: CoeloSpacing.space3,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            if (canCreate && onCreate != null)
+              FilledButton.icon(
+                onPressed: onCreate,
+                icon: const Icon(Icons.add_rounded),
+                label: const Text('Nova chamada'),
+              ),
+            CoeloAdminFileActions(
+              compact: compact,
+              actions: [
+                CoeloAdminFileAction(
+                  label: 'Exportar CSV',
+                  icon: Icons.table_view_outlined,
+                  onPressed: () => showSuperadminNotice(context, 'Disponível depois do MVP'),
+                ),
+                CoeloAdminFileAction(
+                  label: 'Exportar XLSX',
+                  icon: Icons.grid_on_outlined,
+                  onPressed: () => showSuperadminNotice(context, 'Disponível depois do MVP'),
+                ),
+              ],
             ),
-          CoeloAdminFileActions(
-            compact: compact,
-            actions: [
-              CoeloAdminFileAction(
-                label: 'Exportar CSV',
-                icon: Icons.table_view_outlined,
-                onPressed: () => showSuperadminNotice(context, 'Disponível depois do MVP'),
-              ),
-              CoeloAdminFileAction(
-                label: 'Exportar XLSX',
-                icon: Icons.grid_on_outlined,
-                onPressed: () => showSuperadminNotice(context, 'Disponível depois do MVP'),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     ],
   );
@@ -443,8 +458,14 @@ class _TopBand extends StatelessWidget {
         },
       ),
     );
-    final kpis = _KpiGrid(kpis: snapshot.kpis);
-    final attention = _Attention(items: snapshot.attention);
+    final kpis = CoeloTourAnchor(
+      id: 'attendance.kpis',
+      child: _KpiGrid(kpis: snapshot.kpis),
+    );
+    final attention = CoeloTourAnchor(
+      id: 'attendance.attention',
+      child: _Attention(items: snapshot.attention),
+    );
     if (!wide) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

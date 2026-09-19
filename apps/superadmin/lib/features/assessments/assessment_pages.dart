@@ -403,70 +403,76 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
                   (item.unitId == null || item.unitId == _selectedContext!.unitId)),
         )
         .toList();
-    return _AssessmentSection(
-      title: 'Contexto do lançamento',
-      description: 'Somente Atividades e períodos autorizados são exibidos.',
-      child: Column(
-        children: [
-          CoeloAdminSingleSelectField<AssessmentContext>(
-            label: 'Instituição, unidade, turma e Atividade',
-            value: _selectedContext!,
-            options: assignments,
-            optionLabel: (item) =>
-                '${item.institutionName} · ${item.unitName} · ${item.groupName} · ${item.activityName}',
-            onChanged: (value) => setState(() {
-              _selectedContext = value;
-              _configurationMissing = false;
-              final matchingPeriods = options.periods
-                  .where(
-                    (period) =>
-                        (period.institutionId == null ||
-                            period.institutionId == value.institutionId) &&
-                        (period.unitId == null || period.unitId == value.unitId),
-                  )
-                  .toList();
-              _selectedPeriod =
-                  matchingPeriods.where((period) => period.isOpen).firstOrNull ??
-                  matchingPeriods.firstOrNull;
-            }),
-            prefixIcon: Icons.school_outlined,
-          ),
-          const SizedBox(height: CoeloSpacing.space4),
-          if (periods.isNotEmpty)
-            CoeloAdminSingleSelectField<AssessmentPeriodOption>(
-              label: 'Período avaliativo',
-              value: periods.contains(_selectedPeriod) ? _selectedPeriod! : periods.first,
-              options: periods,
-              optionLabel: (item) => item.name,
-              onChanged: (value) => setState(() => _selectedPeriod = value),
-              prefixIcon: Icons.calendar_month_outlined,
+    return CoeloTourAnchor(
+      id: 'assessment.context',
+      child: _AssessmentSection(
+        title: 'Contexto do lançamento',
+        description: 'Somente Atividades e períodos autorizados são exibidos.',
+        child: Column(
+          children: [
+            CoeloAdminSingleSelectField<AssessmentContext>(
+              label: 'Instituição, unidade, turma e Atividade',
+              value: _selectedContext!,
+              options: assignments,
+              optionLabel: (item) =>
+                  '${item.institutionName} · ${item.unitName} · ${item.groupName} · ${item.activityName}',
+              onChanged: (value) => setState(() {
+                _selectedContext = value;
+                _configurationMissing = false;
+                final matchingPeriods = options.periods
+                    .where(
+                      (period) =>
+                          (period.institutionId == null ||
+                              period.institutionId == value.institutionId) &&
+                          (period.unitId == null || period.unitId == value.unitId),
+                    )
+                    .toList();
+                _selectedPeriod =
+                    matchingPeriods.where((period) => period.isOpen).firstOrNull ??
+                    matchingPeriods.firstOrNull;
+              }),
+              prefixIcon: Icons.school_outlined,
             ),
-          if (periods.isEmpty) ...[
             const SizedBox(height: CoeloSpacing.space4),
-            const CoeloStatePanel(
-              title: 'Nenhum período avaliativo',
-              message: 'A Instituição ou Unidade precisa abrir um período para lançamento.',
-              icon: Icons.event_busy_outlined,
-            ),
+            if (periods.isNotEmpty)
+              CoeloTourAnchor(
+                id: 'assessment.period',
+                child: CoeloAdminSingleSelectField<AssessmentPeriodOption>(
+                  label: 'Período avaliativo',
+                  value: periods.contains(_selectedPeriod) ? _selectedPeriod! : periods.first,
+                  options: periods,
+                  optionLabel: (item) => item.name,
+                  onChanged: (value) => setState(() => _selectedPeriod = value),
+                  prefixIcon: Icons.calendar_month_outlined,
+                ),
+              ),
+            if (periods.isEmpty) ...[
+              const SizedBox(height: CoeloSpacing.space4),
+              const CoeloStatePanel(
+                title: 'Nenhum período avaliativo',
+                message: 'A Instituição ou Unidade precisa abrir um período para lançamento.',
+                icon: Icons.event_busy_outlined,
+              ),
+            ],
+            if (_configurationMissing) ...[
+              const SizedBox(height: CoeloSpacing.space4),
+              const CoeloStatePanel(
+                title: 'Atividade sem configuração avaliativa',
+                message:
+                    'A Instituição ou Unidade precisa configurá-la. O professor não pode improvisar uma escala.',
+                icon: Icons.rule_folder_outlined,
+              ),
+            ],
+            if (_selectedPeriod?.isOpen == false) ...[
+              const SizedBox(height: CoeloSpacing.space4),
+              const CoeloStatePanel(
+                title: 'Período fechado',
+                message: 'Este período não aceita novos lançamentos.',
+                icon: Icons.event_busy_outlined,
+              ),
+            ],
           ],
-          if (_configurationMissing) ...[
-            const SizedBox(height: CoeloSpacing.space4),
-            const CoeloStatePanel(
-              title: 'Atividade sem configuração avaliativa',
-              message:
-                  'A Instituição ou Unidade precisa configurá-la. O professor não pode improvisar uma escala.',
-              icon: Icons.rule_folder_outlined,
-            ),
-          ],
-          if (_selectedPeriod?.isOpen == false) ...[
-            const SizedBox(height: CoeloSpacing.space4),
-            const CoeloStatePanel(
-              title: 'Período fechado',
-              message: 'Este período não aceita novos lançamentos.',
-              icon: Icons.event_busy_outlined,
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }
@@ -500,10 +506,10 @@ final class _AssessmentEntryPageState extends State<AssessmentEntryPage> {
       children: [
         _progress(book),
         const SizedBox(height: CoeloSpacing.space4),
-        if (!compact) _modeToolbar(),
+        if (!compact) CoeloTourAnchor(id: 'assessment.toolbar', child: _modeToolbar()),
         if (!compact && _batch) ...[
           const SizedBox(height: CoeloSpacing.space4),
-          _batchTable(book),
+          CoeloTourAnchor(id: 'assessment.gradebook', child: _batchTable(book)),
           const SizedBox(height: CoeloSpacing.space4),
         ],
         _studentDetail(book, compact),
@@ -1559,87 +1565,96 @@ final class _AssessmentClosingPageState extends State<AssessmentClosingPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CoeloAdminListingToolbar(
-            search: SizedBox(
-              width: 320,
-              height: CoeloSize.touchMin,
-              child: CoeloSearchField(
-                key: const Key('assessment-closing-search'),
-                controller: _search,
-                semanticLabel: 'Buscar fechamento',
-                hintText: 'Buscar turma ou Atividade',
-                onChanged: (_) => setState(() => _page = 0),
+            search: CoeloTourAnchor(
+              id: CoeloAdminDirectoryTourAnchors.search,
+              child: SizedBox(
+                width: 320,
+                height: CoeloSize.touchMin,
+                child: CoeloSearchField(
+                  key: const Key('assessment-closing-search'),
+                  controller: _search,
+                  semanticLabel: 'Buscar fechamento',
+                  hintText: 'Buscar turma ou Atividade',
+                  onChanged: (_) => setState(() => _page = 0),
+                ),
               ),
             ),
             filters: const [],
             actions: const [],
           ),
           const SizedBox(height: CoeloSpacing.space4),
-          CoeloAdminResizableTable<AssessmentClosingItem>(
-            items: visible,
-            rowKey: (item) => item.id,
-            onRowPressed: (item) => widget.onOpen(item.id),
-            pinnedColumn: CoeloAdminTableColumn(
-              id: 'activity',
-              label: 'Atividade',
-              initialWidth: 220,
-              minWidth: 160,
-              maxWidth: 360,
-              cellBuilder: (_, item) => Text(item.activityName),
+          CoeloTourAnchor(
+            id: CoeloAdminDirectoryTourAnchors.body,
+            child: CoeloAdminResizableTable<AssessmentClosingItem>(
+              items: visible,
+              rowKey: (item) => item.id,
+              onRowPressed: (item) => widget.onOpen(item.id),
+              pinnedColumn: CoeloAdminTableColumn(
+                id: 'activity',
+                label: 'Atividade',
+                initialWidth: 220,
+                minWidth: 160,
+                maxWidth: 360,
+                cellBuilder: (_, item) => Text(item.activityName),
+              ),
+              columns: [
+                CoeloAdminTableColumn(
+                  id: 'context',
+                  label: 'Turma',
+                  initialWidth: 180,
+                  minWidth: 140,
+                  maxWidth: 280,
+                  cellBuilder: (_, item) => Text('${item.unitName} · ${item.groupName}'),
+                ),
+                CoeloAdminTableColumn(
+                  id: 'period',
+                  label: 'Período',
+                  initialWidth: 160,
+                  minWidth: 140,
+                  maxWidth: 220,
+                  cellBuilder: (_, item) => Text(item.periodName),
+                ),
+                CoeloAdminTableColumn(
+                  id: 'pending',
+                  label: 'Pendências',
+                  initialWidth: 160,
+                  minWidth: 140,
+                  maxWidth: 220,
+                  cellBuilder: (_, item) => Text('${item.pendingCount}'),
+                ),
+                CoeloAdminTableColumn(
+                  id: 'status',
+                  label: 'Situação',
+                  initialWidth: 160,
+                  minWidth: 140,
+                  maxWidth: 220,
+                  cellBuilder: (_, item) => _bookStatusChip(item.status),
+                ),
+              ],
+              headerHeight: 56,
+              rowHeight: 64,
             ),
-            columns: [
-              CoeloAdminTableColumn(
-                id: 'context',
-                label: 'Turma',
-                initialWidth: 180,
-                minWidth: 140,
-                maxWidth: 280,
-                cellBuilder: (_, item) => Text('${item.unitName} · ${item.groupName}'),
-              ),
-              CoeloAdminTableColumn(
-                id: 'period',
-                label: 'Período',
-                initialWidth: 160,
-                minWidth: 140,
-                maxWidth: 220,
-                cellBuilder: (_, item) => Text(item.periodName),
-              ),
-              CoeloAdminTableColumn(
-                id: 'pending',
-                label: 'Pendências',
-                initialWidth: 160,
-                minWidth: 140,
-                maxWidth: 220,
-                cellBuilder: (_, item) => Text('${item.pendingCount}'),
-              ),
-              CoeloAdminTableColumn(
-                id: 'status',
-                label: 'Situação',
-                initialWidth: 160,
-                minWidth: 140,
-                maxWidth: 220,
-                cellBuilder: (_, item) => _bookStatusChip(item.status),
-              ),
-            ],
-            headerHeight: 56,
-            rowHeight: 64,
           ),
           const SizedBox(height: CoeloSpacing.space4),
           Align(
             alignment: Alignment.centerRight,
-            child: CoeloAdminPagination(
-              currentPage: safePage + 1,
-              totalPages: totalPages,
-              pageSize: _pageSize,
-              pageSizeOptions: const [8, 20, 50],
-              onPageSelected: (page) => setState(() => _page = page - 1),
-              onPageSizeChanged: (size) => setState(() {
-                _pageSize = size;
-                _page = 0;
-              }),
-              onPrevious: safePage == 0 ? null : () => setState(() => _page = safePage - 1),
-              onNext: safePage + 1 >= totalPages
-                  ? null
-                  : () => setState(() => _page = safePage + 1),
+            child: CoeloTourAnchor(
+              id: CoeloAdminDirectoryTourAnchors.pagination,
+              child: CoeloAdminPagination(
+                currentPage: safePage + 1,
+                totalPages: totalPages,
+                pageSize: _pageSize,
+                pageSizeOptions: const [8, 20, 50],
+                onPageSelected: (page) => setState(() => _page = page - 1),
+                onPageSizeChanged: (size) => setState(() {
+                  _pageSize = size;
+                  _page = 0;
+                }),
+                onPrevious: safePage == 0 ? null : () => setState(() => _page = safePage - 1),
+                onNext: safePage + 1 >= totalPages
+                    ? null
+                    : () => setState(() => _page = safePage + 1),
+              ),
             ),
           ),
         ],

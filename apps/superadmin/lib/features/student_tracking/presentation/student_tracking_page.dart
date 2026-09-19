@@ -201,37 +201,45 @@ final class _StudentTrackingPageState extends State<StudentTrackingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _Selectors(viewModel: _viewModel),
-        const SizedBox(height: CoeloSpacing.space4),
-        SuperadminUnderlineTabs<StudentTrackingTab>(
-          key: const Key('student-tracking-tabs'),
-          selected: _tab,
-          tabs: const [
-            SuperadminUnderlineTab(value: StudentTrackingTab.overview, label: 'Visão geral'),
-            SuperadminUnderlineTab(value: StudentTrackingTab.attendance, label: 'Assiduidade'),
-            SuperadminUnderlineTab(value: StudentTrackingTab.assessments, label: 'Avaliações'),
-            SuperadminUnderlineTab(value: StudentTrackingTab.competencies, label: 'Competências'),
-            SuperadminUnderlineTab(value: StudentTrackingTab.reportCards, label: 'Boletins'),
-          ],
-          onSelected: (value) => setState(() => _tab = value),
+        CoeloTourAnchor(
+          id: 'students.selectors',
+          child: _Selectors(viewModel: _viewModel),
         ),
         const SizedBox(height: CoeloSpacing.space4),
-        if (!contextHasData)
-          const CoeloStatePanel(
-            key: Key('student-tracking-no-data'),
-            title: 'Nenhum dado publicado',
-            message:
-                'Este contexto ainda não possui informações visíveis para o período selecionado.',
-            icon: Icons.inbox_outlined,
-          )
-        else
-          switch (_tab) {
-            StudentTrackingTab.overview => _overview(snapshot, width),
-            StudentTrackingTab.attendance => _AttendanceSection(snapshot: snapshot),
-            StudentTrackingTab.assessments => _AssessmentsSection(snapshot: snapshot),
-            StudentTrackingTab.competencies => _CompetenciesSection(snapshot: snapshot),
-            StudentTrackingTab.reportCards => _ReportCardsSection(snapshot: snapshot),
-          },
+        CoeloTourAnchor(
+          id: 'students.tabs',
+          child: SuperadminUnderlineTabs<StudentTrackingTab>(
+            key: const Key('student-tracking-tabs'),
+            selected: _tab,
+            tabs: const [
+              SuperadminUnderlineTab(value: StudentTrackingTab.overview, label: 'Visão geral'),
+              SuperadminUnderlineTab(value: StudentTrackingTab.attendance, label: 'Assiduidade'),
+              SuperadminUnderlineTab(value: StudentTrackingTab.assessments, label: 'Avaliações'),
+              SuperadminUnderlineTab(value: StudentTrackingTab.competencies, label: 'Competências'),
+              SuperadminUnderlineTab(value: StudentTrackingTab.reportCards, label: 'Boletins'),
+            ],
+            onSelected: (value) => setState(() => _tab = value),
+          ),
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+        CoeloTourAnchor(
+          id: 'students.body',
+          child: !contextHasData
+              ? const CoeloStatePanel(
+                  key: Key('student-tracking-no-data'),
+                  title: 'Nenhum dado publicado',
+                  message:
+                      'Este contexto ainda não possui informações visíveis para o período selecionado.',
+                  icon: Icons.inbox_outlined,
+                )
+              : switch (_tab) {
+                  StudentTrackingTab.overview => _overview(snapshot, width),
+                  StudentTrackingTab.attendance => _AttendanceSection(snapshot: snapshot),
+                  StudentTrackingTab.assessments => _AssessmentsSection(snapshot: snapshot),
+                  StudentTrackingTab.competencies => _CompetenciesSection(snapshot: snapshot),
+                  StudentTrackingTab.reportCards => _ReportCardsSection(snapshot: snapshot),
+                },
+        ),
       ],
     );
   }

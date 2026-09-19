@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
+import '../tour/coelo_tour.dart';
+
 enum CoeloCreateActionVariant { tile, banner }
 
 final class CoeloCreateAction extends StatelessWidget {
@@ -22,13 +24,20 @@ final class CoeloCreateAction extends StatelessWidget {
   final String? description;
 
   @override
+  /// Âncora do tour por tela: o Criar de qualquer diretório.
+  static const tourAnchorId = 'directory.create';
+
+  @override
   Widget build(BuildContext context) {
-    return _CoeloCreateActionContent(
-      label: label,
-      onPressed: onPressed,
-      icon: icon,
-      variant: variant,
-      description: description,
+    return CoeloTourAnchor(
+      id: tourAnchorId,
+      child: _CoeloCreateActionContent(
+        label: label,
+        onPressed: onPressed,
+        icon: icon,
+        variant: variant,
+        description: description,
+      ),
     );
   }
 }

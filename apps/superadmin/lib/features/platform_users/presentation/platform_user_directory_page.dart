@@ -293,110 +293,135 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
         runSpacing: CoeloSpacing.space2,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          SizedBox(
-            width: searchWidth,
-            height: CoeloSize.touchMin,
-            child: CoeloSearchField(
-              key: const Key('platform-user-search'),
-              controller: _searchController,
-              hintText: 'Buscar por nome, e-mail, CPF, celular ou cargo',
-              semanticLabel:
-                  'Buscar usuário interno por nome, e-mail, CPF ou celular protegido, ou cargo',
-              onChanged: _search,
+          CoeloTourAnchor(
+            id: CoeloAdminDirectoryTourAnchors.search,
+            child: SizedBox(
+              width: searchWidth,
+              height: CoeloSize.touchMin,
+              child: CoeloSearchField(
+                key: const Key('platform-user-search'),
+                controller: _searchController,
+                hintText: 'Buscar por nome, e-mail, CPF, celular ou cargo',
+                semanticLabel:
+                    'Buscar usuário interno por nome, e-mail, CPF ou celular protegido, ou cargo',
+                onChanged: _search,
+              ),
             ),
           ),
-          SizedBox(
-            width: filterWidth,
-            child: CoeloAdminMultiSelectFilter<String>(
-              key: const Key('platform-user-role-filter'),
-              label: 'Perfil',
-              options: widget.repository.profiles.map((item) => item.id).toList(),
-              selectedValues: _profileIds,
-              optionLabel: (id) =>
-                  widget.repository.profiles.firstWhere((item) => item.id == id).name,
-              onChanged: (profiles) {
-                setState(() {
-                  _profileIds = profiles;
-                  _page = 1;
-                });
-                unawaited(_load());
-              },
+          CoeloTourAnchor(
+            id: CoeloAdminDirectoryTourAnchors.filters,
+            union: true,
+            child: SizedBox(
+              width: filterWidth,
+              child: CoeloAdminMultiSelectFilter<String>(
+                key: const Key('platform-user-role-filter'),
+                label: 'Perfil',
+                options: widget.repository.profiles.map((item) => item.id).toList(),
+                selectedValues: _profileIds,
+                optionLabel: (id) =>
+                    widget.repository.profiles.firstWhere((item) => item.id == id).name,
+                onChanged: (profiles) {
+                  setState(() {
+                    _profileIds = profiles;
+                    _page = 1;
+                  });
+                  unawaited(_load());
+                },
+              ),
             ),
           ),
-          SizedBox(
-            width: filterWidth,
-            child: CoeloAdminMultiSelectFilter<PlatformMembershipStatus>(
-              key: const Key('platform-user-status-filter'),
-              label: 'Vínculo',
-              options: PlatformMembershipStatus.values,
-              selectedValues: _statuses,
-              optionLabel: (status) => status.label,
-              onChanged: (statuses) {
-                setState(() {
-                  _statuses = statuses;
-                  _page = 1;
-                });
-                unawaited(_load());
-              },
+          CoeloTourAnchor(
+            id: CoeloAdminDirectoryTourAnchors.filters,
+            union: true,
+            child: SizedBox(
+              width: filterWidth,
+              child: CoeloAdminMultiSelectFilter<PlatformMembershipStatus>(
+                key: const Key('platform-user-status-filter'),
+                label: 'Vínculo',
+                options: PlatformMembershipStatus.values,
+                selectedValues: _statuses,
+                optionLabel: (status) => status.label,
+                onChanged: (statuses) {
+                  setState(() {
+                    _statuses = statuses;
+                    _page = 1;
+                  });
+                  unawaited(_load());
+                },
+              ),
             ),
           ),
-          SizedBox(
-            width: filterWidth,
-            child: CoeloAdminMultiSelectFilter<PlatformUserScope>(
-              key: const Key('platform-user-scope-filter'),
-              label: 'Alcance',
-              options: PlatformUserScope.values,
-              selectedValues: _scopes,
-              optionLabel: (scope) => scope.label,
-              onChanged: (scopes) {
-                setState(() {
-                  _scopes = scopes;
-                  _page = 1;
-                });
-                unawaited(_load());
-              },
+          CoeloTourAnchor(
+            id: CoeloAdminDirectoryTourAnchors.filters,
+            union: true,
+            child: SizedBox(
+              width: filterWidth,
+              child: CoeloAdminMultiSelectFilter<PlatformUserScope>(
+                key: const Key('platform-user-scope-filter'),
+                label: 'Alcance',
+                options: PlatformUserScope.values,
+                selectedValues: _scopes,
+                optionLabel: (scope) => scope.label,
+                onChanged: (scopes) {
+                  setState(() {
+                    _scopes = scopes;
+                    _page = 1;
+                  });
+                  unawaited(_load());
+                },
+              ),
             ),
           ),
           if (_profileIds.isNotEmpty ||
               _statuses.isNotEmpty ||
               _scopes.isNotEmpty ||
               _searchController.text.isNotEmpty)
-            TextButton.icon(
-              onPressed: () {
-                _searchController.clear();
-                setState(() {
-                  _profileIds = {};
-                  _statuses = {};
-                  _scopes = {};
-                  _page = 1;
-                });
-                unawaited(_load());
-              },
-              icon: const Icon(Icons.filter_alt_off_outlined),
-              label: const Text('Limpar filtros'),
+            CoeloTourAnchor(
+              id: CoeloAdminDirectoryTourAnchors.filters,
+              union: true,
+              child: TextButton.icon(
+                onPressed: () {
+                  _searchController.clear();
+                  setState(() {
+                    _profileIds = {};
+                    _statuses = {};
+                    _scopes = {};
+                    _page = 1;
+                  });
+                  unawaited(_load());
+                },
+                icon: const Icon(Icons.filter_alt_off_outlined),
+                label: const Text('Limpar filtros'),
+              ),
             ),
         ],
       ),
       filters: const [],
       actions: [
-        SizedBox(
-          key: const Key('platform-user-display-toggle'),
-          height: CoeloSize.touchMin,
-          child: SuperadminDirectoryViewToggle<PlatformUserTableView>(
-            cardsSelected: _view == PlatformUserDirectoryView.cards,
-            groupedView: PlatformUserTableView.grouped,
-            selectedTableView: _tableView,
-            tableViews: [
-              for (final view in PlatformUserTableView.values)
-                SuperadminDirectoryTableViewOption(value: view, label: view.label),
-            ],
-            cardsKey: const Key('platform-user-view-cards'),
-            tableKey: const Key('platform-user-view-table'),
-            onCardsSelected: () => _changeView(PlatformUserDirectoryView.cards),
-            onTableViewSelected: _changeTableView,
+        CoeloTourAnchor(
+          id: CoeloAdminDirectoryTourAnchors.view,
+          child: SizedBox(
+            key: const Key('platform-user-display-toggle'),
+            height: CoeloSize.touchMin,
+            child: SuperadminDirectoryViewToggle<PlatformUserTableView>(
+              cardsSelected: _view == PlatformUserDirectoryView.cards,
+              groupedView: PlatformUserTableView.grouped,
+              selectedTableView: _tableView,
+              tableViews: [
+                for (final view in PlatformUserTableView.values)
+                  SuperadminDirectoryTableViewOption(value: view, label: view.label),
+              ],
+              cardsKey: const Key('platform-user-view-cards'),
+              tableKey: const Key('platform-user-view-table'),
+              onCardsSelected: () => _changeView(PlatformUserDirectoryView.cards),
+              onTableViewSelected: _changeTableView,
+            ),
           ),
         ),
-        PlatformUserFileActions(compact: compact),
+        CoeloTourAnchor(
+          id: CoeloAdminDirectoryTourAnchors.files,
+          child: PlatformUserFileActions(compact: compact),
+        ),
       ],
     );
   }
@@ -453,7 +478,10 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
             : null,
       );
     }
-    return _view == PlatformUserDirectoryView.cards ? _cards() : _table();
+    return CoeloTourAnchor(
+      id: CoeloAdminDirectoryTourAnchors.body,
+      child: _view == PlatformUserDirectoryView.cards ? _cards() : _table(),
+    );
   }
 
   Widget _cards() {

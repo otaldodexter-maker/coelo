@@ -1,7 +1,16 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
+
+/// Âncoras do tour por tela, uma vez para todos os formulários:
+/// `form.navigation` (trilho de seções), `form.body` e `form.footer`.
+abstract final class SuperadminFormFrameTourAnchors {
+  static const navigation = 'form.navigation';
+  static const body = 'form.body';
+  static const footer = 'form.footer';
+}
 
 /// Canonical private frame for Superadmin entity forms.
 final class SuperadminFormFrame extends StatelessWidget {
@@ -28,6 +37,10 @@ final class SuperadminFormFrame extends StatelessWidget {
       builder: (context, constraints) {
         final localWidth = constraints.maxWidth;
         final showRail = localWidth >= CoeloBreakpoints.medium.minWidth;
+        final navigation = CoeloTourAnchor(
+          id: SuperadminFormFrameTourAnchors.navigation,
+          child: this.navigation,
+        );
         final inset = showRail && localWidth >= CoeloBreakpoints.expanded.minWidth
             ? CoeloSpacing.space10
             : showRail
@@ -51,7 +64,10 @@ final class SuperadminFormFrame extends StatelessWidget {
                       Center(
                         child: ConstrainedBox(
                           constraints: BoxConstraints(maxWidth: bodyMaxWidth),
-                          child: body,
+                          child: CoeloTourAnchor(
+                            id: SuperadminFormFrameTourAnchors.body,
+                            child: body,
+                          ),
                         ),
                       ),
                     ],
@@ -72,7 +88,9 @@ final class SuperadminFormFrame extends StatelessWidget {
                     double.infinity,
                   ),
                 ),
-                child: SingleChildScrollView(child: footer),
+                child: SingleChildScrollView(
+                  child: CoeloTourAnchor(id: SuperadminFormFrameTourAnchors.footer, child: footer),
+                ),
               ),
             ],
           ),

@@ -368,24 +368,27 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
                     children: [
                       _toolbar(compact, constraints.maxWidth, textScale > 1.3),
                       const SizedBox(height: CoeloSpacing.space4),
-                      SuperadminUnderlineTabs<RoutineEntryKind>(
-                        key: const Key('daily-routine-type-tabs'),
-                        selected: _selectedType,
-                        tabs: const [
-                          SuperadminUnderlineTab(value: RoutineEntryKind.model, label: 'Modelos'),
-                          SuperadminUnderlineTab(
-                            value: RoutineEntryKind.application,
-                            label: 'Rotinas',
-                          ),
-                        ],
-                        onSelected: (value) => updateDirectory(() => _selectedType = value),
+                      CoeloTourAnchor(
+                        id: CoeloAdminDirectoryTourAnchors.tabs,
+                        child: SuperadminUnderlineTabs<RoutineEntryKind>(
+                          key: const Key('daily-routine-type-tabs'),
+                          selected: _selectedType,
+                          tabs: const [
+                            SuperadminUnderlineTab(value: RoutineEntryKind.model, label: 'Modelos'),
+                            SuperadminUnderlineTab(
+                              value: RoutineEntryKind.application,
+                              label: 'Rotinas',
+                            ),
+                          ],
+                          onSelected: (value) => updateDirectory(() => _selectedType = value),
+                        ),
                       ),
                       const SizedBox(height: CoeloSpacing.space4),
                       if (state.page != null && !_canManage) ...[
                         const Text('Modo somente leitura'),
                         const SizedBox(height: CoeloSpacing.space4),
                       ],
-                      _content(),
+                      CoeloTourAnchor(id: CoeloAdminDirectoryTourAnchors.body, child: _content()),
                     ],
                   ),
                 ),
@@ -406,62 +409,79 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
         maxWidth: amplifiedText ? CoeloBreakpoints.compact.maxWidth : double.infinity,
       ),
       child: CoeloAdminListingToolbar(
-        search: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: compact ? availableWidth : 280),
-          child: CoeloSearchField(
-            key: const Key('daily-routine-search'),
-            controller: _search,
-            semanticLabel: _selectedType == RoutineEntryKind.model
-                ? 'Buscar modelos de rotina diária'
-                : 'Buscar rotinas diárias',
-            hintText: _selectedType == RoutineEntryKind.model ? 'Buscar modelos' : 'Buscar rotinas',
-            onChanged: (_) => updateDirectory(() {}),
+        search: CoeloTourAnchor(
+          id: CoeloAdminDirectoryTourAnchors.search,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: compact ? availableWidth : 280),
+            child: CoeloSearchField(
+              key: const Key('daily-routine-search'),
+              controller: _search,
+              semanticLabel: _selectedType == RoutineEntryKind.model
+                  ? 'Buscar modelos de rotina diária'
+                  : 'Buscar rotinas diárias',
+              hintText: _selectedType == RoutineEntryKind.model
+                  ? 'Buscar modelos'
+                  : 'Buscar rotinas',
+              onChanged: (_) => updateDirectory(() {}),
+            ),
           ),
         ),
         filters: [
           if (_selectedType != RoutineEntryKind.launch)
-            CoeloAdminSingleSelectField<String>(
-              key: const Key('daily-routine-status-filter'),
-              isFilter: true,
-              unselectedValue: 'Todos',
-              label: 'Status',
-              value: _selectedStatus ?? 'Todos',
-              options: _statusFilterOptions,
-              optionLabel: _statusFilterLabel,
-              searchable: false,
-              onChanged: (value) =>
-                  updateDirectory(() => _selectedStatus = value == 'Todos' ? null : value),
+            CoeloTourAnchor(
+              id: CoeloAdminDirectoryTourAnchors.filters,
+              child: CoeloAdminSingleSelectField<String>(
+                key: const Key('daily-routine-status-filter'),
+                isFilter: true,
+                unselectedValue: 'Todos',
+                label: 'Status',
+                value: _selectedStatus ?? 'Todos',
+                options: _statusFilterOptions,
+                optionLabel: _statusFilterLabel,
+                searchable: false,
+                onChanged: (value) =>
+                    updateDirectory(() => _selectedStatus = value == 'Todos' ? null : value),
+              ),
             ),
         ],
         actions: [
-          SuperadminDirectoryViewToggle<_RoutineTableView>(
-            cardsSelected: _display == _RoutineDisplay.cards,
-            groupedView: _RoutineTableView.grouped,
-            selectedTableView: _RoutineTableView.grouped,
-            tableViews: const [
-              SuperadminDirectoryTableViewOption(value: _RoutineTableView.grouped, label: 'Tabela'),
-            ],
-            cardsKey: const Key('daily-routine-view-cards'),
-            tableKey: const Key('daily-routine-view-table'),
-            onCardsSelected: () => updateDirectory(() => _display = _RoutineDisplay.cards),
-            onTableViewSelected: (_) => updateDirectory(() => _display = _RoutineDisplay.table),
+          CoeloTourAnchor(
+            id: CoeloAdminDirectoryTourAnchors.view,
+            child: SuperadminDirectoryViewToggle<_RoutineTableView>(
+              cardsSelected: _display == _RoutineDisplay.cards,
+              groupedView: _RoutineTableView.grouped,
+              selectedTableView: _RoutineTableView.grouped,
+              tableViews: const [
+                SuperadminDirectoryTableViewOption(
+                  value: _RoutineTableView.grouped,
+                  label: 'Tabela',
+                ),
+              ],
+              cardsKey: const Key('daily-routine-view-cards'),
+              tableKey: const Key('daily-routine-view-table'),
+              onCardsSelected: () => updateDirectory(() => _display = _RoutineDisplay.cards),
+              onTableViewSelected: (_) => updateDirectory(() => _display = _RoutineDisplay.table),
+            ),
           ),
-          CoeloAdminFileActions(
-            compact: compact,
-            actions: [
-              CoeloAdminFileAction(
-                key: const Key('daily-routine-files-import'),
-                label: 'Importar configuração',
-                icon: Icons.upload_file_outlined,
-                onPressed: widget.onImport ?? () => _showUnavailable(context),
-              ),
-              CoeloAdminFileAction(
-                key: const Key('daily-routine-files-export'),
-                label: 'Exportar configuração',
-                icon: Icons.download_outlined,
-                onPressed: widget.onExport ?? () => _showUnavailable(context),
-              ),
-            ],
+          CoeloTourAnchor(
+            id: CoeloAdminDirectoryTourAnchors.files,
+            child: CoeloAdminFileActions(
+              compact: compact,
+              actions: [
+                CoeloAdminFileAction(
+                  key: const Key('daily-routine-files-import'),
+                  label: 'Importar configuração',
+                  icon: Icons.upload_file_outlined,
+                  onPressed: widget.onImport ?? () => _showUnavailable(context),
+                ),
+                CoeloAdminFileAction(
+                  key: const Key('daily-routine-files-export'),
+                  label: 'Exportar configuração',
+                  icon: Icons.download_outlined,
+                  onPressed: widget.onExport ?? () => _showUnavailable(context),
+                ),
+              ],
+            ),
           ),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../auth/domain/logout_action.dart';
@@ -170,52 +171,57 @@ class _HelpCenterBody extends StatelessWidget {
             ? Column(
                 key: const Key('superadmin-help-history-stacked'),
                 children: [
-                  _StackedHistory(
-                    conversations: conversations,
-                    selectedId: selectedConversation?.id,
-                    onNewConversation: onNewConversation,
-                    onConversationSelected: onConversationSelected,
+                  CoeloTourAnchor(
+                    id: 'home.history',
+                    child: _StackedHistory(
+                      conversations: conversations,
+                      selectedId: selectedConversation?.id,
+                      onNewConversation: onNewConversation,
+                      onConversationSelected: onConversationSelected,
+                    ),
                   ),
                   Expanded(child: _thread()),
                 ],
               )
             : Row(
                 children: [
-                  if (isExpanded && !showCollapsedHistory)
-                    SizedBox(
-                      key: const Key('superadmin-help-history-panel'),
-                      width: 296,
-                      child: _HistoryPanel(
-                        conversations: conversations,
-                        selectedId: selectedConversation?.id,
-                        onNewConversation: onNewConversation,
-                        onConversationSelected: onConversationSelected,
-                        onCollapse: () => onHistoryCollapsedChanged(true),
-                      ),
-                    )
-                  else if (isExpanded)
-                    SizedBox(
-                      key: const Key('superadmin-help-history-collapsed'),
-                      width: 88,
-                      child: _HistoryRail(
-                        conversations: conversations,
-                        selectedId: selectedConversation?.id,
-                        onNewConversation: onNewConversation,
-                        onConversationSelected: onConversationSelected,
-                        onExpand: () => onHistoryCollapsedChanged(false),
-                      ),
-                    )
-                  else
-                    SizedBox(
-                      key: const Key('superadmin-help-history-rail'),
-                      width: 88,
-                      child: _HistoryRail(
-                        conversations: conversations,
-                        selectedId: selectedConversation?.id,
-                        onNewConversation: onNewConversation,
-                        onConversationSelected: onConversationSelected,
-                      ),
-                    ),
+                  CoeloTourAnchor(
+                    id: 'home.history',
+                    child: isExpanded && !showCollapsedHistory
+                        ? SizedBox(
+                            key: const Key('superadmin-help-history-panel'),
+                            width: 296,
+                            child: _HistoryPanel(
+                              conversations: conversations,
+                              selectedId: selectedConversation?.id,
+                              onNewConversation: onNewConversation,
+                              onConversationSelected: onConversationSelected,
+                              onCollapse: () => onHistoryCollapsedChanged(true),
+                            ),
+                          )
+                        : isExpanded
+                        ? SizedBox(
+                            key: const Key('superadmin-help-history-collapsed'),
+                            width: 88,
+                            child: _HistoryRail(
+                              conversations: conversations,
+                              selectedId: selectedConversation?.id,
+                              onNewConversation: onNewConversation,
+                              onConversationSelected: onConversationSelected,
+                              onExpand: () => onHistoryCollapsedChanged(false),
+                            ),
+                          )
+                        : SizedBox(
+                            key: const Key('superadmin-help-history-rail'),
+                            width: 88,
+                            child: _HistoryRail(
+                              conversations: conversations,
+                              selectedId: selectedConversation?.id,
+                              onNewConversation: onNewConversation,
+                              onConversationSelected: onConversationSelected,
+                            ),
+                          ),
+                  ),
                   VerticalDivider(width: 1, color: Theme.of(context).colorScheme.outlineVariant),
                   Expanded(child: _thread()),
                 ],
@@ -527,7 +533,10 @@ class _HelpThread extends StatelessWidget {
               ? _HelpEmptyState(controller: composerController)
               : _MessageList(conversation: conversation!),
         ),
-        _HelpComposer(controller: composerController, onSend: onSend),
+        CoeloTourAnchor(
+          id: 'home.question',
+          child: _HelpComposer(controller: composerController, onSend: onSend),
+        ),
       ],
     );
   }

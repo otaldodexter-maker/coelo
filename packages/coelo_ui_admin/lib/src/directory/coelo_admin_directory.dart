@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../listing/coelo_admin_create_action.dart';
@@ -170,6 +171,23 @@ final class CoeloAdminDirectoryStatusTabs extends StatelessWidget {
     tabs: [for (final tab in tabs) CoeloAdminUnderlineTab(value: tab, label: tab.label)],
     onSelected: onSelected,
   );
+}
+
+/// Âncoras do tour por tela (`CoeloTourAnchor`), uma vez para todos os
+/// diretórios: `directory.search`, `directory.filters` (união dos filtros e
+/// do "Limpar"), `directory.view`, `directory.files`, `directory.leading`,
+/// `directory.tabs`, `directory.create` (no `CoeloAdminCreateAction`),
+/// `directory.body` e `directory.pagination` (no `CoeloAdminPaginationFooter`).
+abstract final class CoeloAdminDirectoryTourAnchors {
+  static const search = 'directory.search';
+  static const filters = 'directory.filters';
+  static const view = 'directory.view';
+  static const files = 'directory.files';
+  static const leading = 'directory.leading';
+  static const tabs = 'directory.tabs';
+  static const create = 'directory.create';
+  static const body = 'directory.body';
+  static const pagination = 'directory.pagination';
 }
 
 /// Composto único de diretório administrativo (decisão do Owner de
@@ -357,20 +375,27 @@ final class _CoeloAdminDirectoryState<TView> extends State<CoeloAdminDirectory<T
             padding: EdgeInsets.fromLTRB(padding, padding, padding, padding + footerInset),
             children: [
               for (final item in widget.leading) ...[
-                item,
+                CoeloTourAnchor(
+                  id: CoeloAdminDirectoryTourAnchors.leading,
+                  union: true,
+                  child: item,
+                ),
                 const SizedBox(height: CoeloSpacing.space4),
               ],
               _Toolbar<TView>(directory: widget),
               if (widget.tabs case final tabs?) ...[
                 const SizedBox(height: CoeloSpacing.space4),
-                tabs,
+                CoeloTourAnchor(id: CoeloAdminDirectoryTourAnchors.tabs, child: tabs),
               ],
               const SizedBox(height: CoeloSpacing.space4),
               for (final item in widget.beforeResults) ...[
                 item,
                 const SizedBox(height: CoeloSpacing.space4),
               ],
-              _Results<TView>(directory: widget),
+              CoeloTourAnchor(
+                id: CoeloAdminDirectoryTourAnchors.body,
+                child: _Results<TView>(directory: widget),
+              ),
             ],
           ),
           if (showFooter)
@@ -426,20 +451,34 @@ final class _Toolbar<TView> extends StatelessWidget {
             runSpacing: CoeloSpacing.space2,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              SizedBox(
-                width: searchWidth.clamp(0, filterConstraints.maxWidth),
-                height: CoeloSize.touchMin,
-                child: directory.search,
+              CoeloTourAnchor(
+                id: CoeloAdminDirectoryTourAnchors.search,
+                child: SizedBox(
+                  width: searchWidth.clamp(0, filterConstraints.maxWidth),
+                  height: CoeloSize.touchMin,
+                  child: directory.search,
+                ),
               ),
               for (final filter in directory.filters)
                 // Um filtro entregue em SizedBox com largura própria (campo de
                 // período, por exemplo) mantém sua largura; os demais usam a
                 // largura padrão da família.
-                if (filter case SizedBox(width: final width?))
-                  SizedBox(width: width.clamp(0, filterConstraints.maxWidth), child: filter.child)
-                else
-                  SizedBox(width: filterWidth, child: filter),
-              ...directory.trailing,
+                CoeloTourAnchor(
+                  id: CoeloAdminDirectoryTourAnchors.filters,
+                  union: true,
+                  child: filter is SizedBox && filter.width != null
+                      ? SizedBox(
+                          width: filter.width!.clamp(0, filterConstraints.maxWidth),
+                          child: filter.child,
+                        )
+                      : SizedBox(width: filterWidth, child: filter),
+                ),
+              for (final item in directory.trailing)
+                CoeloTourAnchor(
+                  id: CoeloAdminDirectoryTourAnchors.filters,
+                  union: true,
+                  child: item,
+                ),
             ],
           );
         },
@@ -452,18 +491,22 @@ final class _Toolbar<TView> extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (directory.showDisplayToggle)
-              CoeloAdminDirectoryViewToggle<TView>(
-                key: directory.toggleKey,
-                cardsKey: directory.cardsKey,
-                tableKey: directory.tableKey,
-                cardsSelected: directory.display == CoeloAdminDirectoryDisplay.cards,
-                groupedView: directory.groupedTableView,
-                selectedTableView: directory.selectedTableView,
-                tableViews: directory.tableViews,
-                onCardsSelected: () => directory.onDisplayChanged(CoeloAdminDirectoryDisplay.cards),
-                // Quem recebe a visão de tabela troca o display para tabela; o
-                // composto não dispara duas recargas.
-                onTableViewSelected: directory.onTableViewSelected,
+              CoeloTourAnchor(
+                id: CoeloAdminDirectoryTourAnchors.view,
+                child: CoeloAdminDirectoryViewToggle<TView>(
+                  key: directory.toggleKey,
+                  cardsKey: directory.cardsKey,
+                  tableKey: directory.tableKey,
+                  cardsSelected: directory.display == CoeloAdminDirectoryDisplay.cards,
+                  groupedView: directory.groupedTableView,
+                  selectedTableView: directory.selectedTableView,
+                  tableViews: directory.tableViews,
+                  onCardsSelected: () =>
+                      directory.onDisplayChanged(CoeloAdminDirectoryDisplay.cards),
+                  // Quem recebe a visão de tabela troca o display para tabela; o
+                  // composto não dispara duas recargas.
+                  onTableViewSelected: directory.onTableViewSelected,
+                ),
               ),
             if (directory.fileActionsBusyLabel case final busy?) ...[
               const SizedBox(width: CoeloSpacing.space2),
@@ -473,7 +516,10 @@ final class _Toolbar<TView> extends StatelessWidget {
               ),
             ] else if (fileActions != null) ...[
               const SizedBox(width: CoeloSpacing.space2),
-              CoeloAdminFileActions(compact: narrowActions, actions: fileActions),
+              CoeloTourAnchor(
+                id: CoeloAdminDirectoryTourAnchors.files,
+                child: CoeloAdminFileActions(compact: narrowActions, actions: fileActions),
+              ),
             ],
           ],
         ),
