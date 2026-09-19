@@ -521,3 +521,8 @@
 # PT409/SAI_CONCURRENT_CHANGE, auditoria locations.update, escopo por instituição). A planta em si é entity image 'floor_plan'
 # (pedido à sessão de mídia). pgTAP location_map_markers_v1_test 24/24 no espelho; ledger 20260920010000 reparado.
 20260920010000_location_map_markers_v1.sql
+# Lote 97 (Sessão ETAPA-3, 20/09/2026): spec 066 para unidades e turmas. app_private.superadmin_structure_lifecycle_v1 (units.update /
+# groups.manage, motivo obrigatório em inativar/excluir, PT409, recibo idempotente, auditoria) com fachadas
+# superadmin_unit_change_status_v1 / _delete_v1 e superadmin_group_change_status_v1 / _delete_v1; exclusão real só quando
+# lifecycle_can_hard_delete_v1 (turma/unidade vazia), senão archived; units/groups.lifecycle_reason. pgTAP structure_lifecycle_v1_test 15/15.
+20260920013000_structure_lifecycle_v1.sql
