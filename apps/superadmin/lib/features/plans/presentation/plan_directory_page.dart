@@ -516,8 +516,7 @@ final class _PlanStatusIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final statusColors =
-        context.coeloStatusColors;
+    final statusColors = context.coeloStatusColors;
     final pair = plan.status == PlanStatus.active
         ? (statusColors.successContainer, statusColors.onSuccessContainer)
         : (colors.surfaceContainerHighest, colors.onSurfaceVariant);
@@ -561,27 +560,19 @@ final class _PlanActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) => CoeloAdminFlyout<_PlanAction>(
     items: [
-      const CoeloAdminFlyoutItem(
-        value: _PlanAction.edit,
-        label: 'Editar plano',
-        icon: Icons.edit_outlined,
-      ),
-      CoeloAdminFlyoutItem(
-        value: plan.status == PlanStatus.active ? _PlanAction.archive : _PlanAction.restore,
-        label: plan.status == PlanStatus.active ? 'Arquivar plano' : 'Restaurar plano',
-        icon: plan.status == PlanStatus.active ? Icons.archive_outlined : Icons.restore_rounded,
-        startsGroup: true,
-        tone: plan.status == PlanStatus.active
-            ? CoeloAdminFlyoutTone.negative
-            : CoeloAdminFlyoutTone.standard,
-      ),
+      CoeloAdminEntityActions.edit(_PlanAction.edit, label: 'Editar plano'),
+      if (plan.status == PlanStatus.active)
+        CoeloAdminEntityActions.archive(_PlanAction.archive, label: 'Arquivar plano')
+      else
+        CoeloAdminEntityActions.restore(
+          _PlanAction.restore,
+          label: 'Restaurar plano',
+          startsGroup: true,
+        ),
     ],
     onSelected: onSelected,
-    builder: (context, controller) => IconButton(
-      tooltip: 'Ações de ${plan.name}',
-      onPressed: controller.open,
-      icon: const Icon(Icons.more_vert_rounded),
-    ),
+    builder: (context, controller) =>
+        CoeloAdminEntityActionsTrigger(controller: controller, tooltip: 'Ações de ${plan.name}'),
   );
 }
 

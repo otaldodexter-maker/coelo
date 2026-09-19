@@ -84,3 +84,16 @@ administrativo).
 
 Aprovação já concedida continua válida. Ausência de teste exige verificação;
 ausência de definição visual exige proposta antes de oficializar padrão novo.
+
+## ⋯ de entidade (cards e linhas)
+
+Um só padrão em todas as telas: `CoeloAdminEntityActionsTrigger` (botão ⋯,
+`more_horiz`, alvo de 48 px, spinner quando ocupado) abrindo `CoeloAdminFlyout`
+com itens de `CoeloAdminEntityActions` (`view`, `edit`, `duplicate`, `publish`,
+`activate`, `inactivate`, `restore`, `archive`, `cancel`, `delete`), ícones em
+`CoeloAdminActionIcons`. Ordem: ver → editar → duplicar → transições → grupo
+negativo (arquivar, cancelar/revogar, excluir) em tom `negative` com separador
+no primeiro. Rótulo pode variar (`label:`), ícone e tom não. Item que não é
+ciclo de vida (ex.: "Ver respostas", "Agendamentos") continua
+`CoeloAdminFlyoutItem` cru.
+

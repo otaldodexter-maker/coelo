@@ -423,16 +423,10 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
 
   Widget _rowActionMenu(MealPlan item) {
     final items = <CoeloAdminFlyoutItem<_DirectoryAction>>[
-      if (_canEdit(item))
-        const CoeloAdminFlyoutItem(
-          value: _DirectoryAction.edit,
-          icon: Icons.edit_outlined,
-          label: 'Editar',
-        ),
+      if (_canEdit(item)) CoeloAdminEntityActions.edit(_DirectoryAction.edit),
       if (widget.onCreate != null)
-        CoeloAdminFlyoutItem(
-          value: _DirectoryAction.duplicate,
-          icon: Icons.content_copy_rounded,
+        CoeloAdminEntityActions.duplicate(
+          _DirectoryAction.duplicate,
           label: item.isTemplate ? 'Duplicar modelo' : 'Duplicar card\u00e1pio',
         ),
       if (item.status == MealPlanStatus.draft)
@@ -441,38 +435,21 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
           icon: Icons.rule_folder_outlined,
           label: 'Enviar revis\u00e3o',
         ),
-      if (_canPublish(item))
-        const CoeloAdminFlyoutItem(
-          value: _DirectoryAction.publish,
-          icon: Icons.publish_outlined,
-          label: 'Publicar',
-        ),
+      if (_canPublish(item)) CoeloAdminEntityActions.publish(_DirectoryAction.publish),
       // Arquivar e excluir entram por decisao do Owner de 10/09/2026 ao aprovar
       // os goldens do diretorio. Arquivar tira do ar preservando o historico;
       // excluir so alcanca o que nunca chegou ao publico ou o que ja foi
       // arquivado, e o servidor recusa o resto.
       if (item.status != MealPlanStatus.archived)
-        const CoeloAdminFlyoutItem(
-          value: _DirectoryAction.archive,
-          icon: Icons.inventory_2_outlined,
-          label: 'Arquivar',
-        ),
-      if (_canDelete(item))
-        const CoeloAdminFlyoutItem(
-          value: _DirectoryAction.remove,
-          icon: Icons.delete_outline_rounded,
-          label: 'Excluir',
-        ),
+        CoeloAdminEntityActions.archive(_DirectoryAction.archive),
+      if (_canDelete(item)) CoeloAdminEntityActions.delete(_DirectoryAction.remove),
     ];
     if (items.isEmpty) return const SizedBox.shrink();
     return CoeloAdminFlyout<_DirectoryAction>(
       items: items,
       onSelected: (action) => _runAction(action, item),
-      builder: (context, controller) => IconButton(
-        tooltip: 'A\u00e7\u00f5es',
-        onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-        icon: const Icon(Icons.more_horiz_rounded),
-      ),
+      builder: (context, controller) =>
+          CoeloAdminEntityActionsTrigger(controller: controller, tooltip: 'Ações de ${item.name}'),
     );
   }
 
@@ -993,19 +970,13 @@ final class _MealPlanCard extends StatelessWidget {
                   _mealPlanCanPublish(item))
                 CoeloAdminFlyout<_DirectoryAction>(
                   items: [
-                    if (onOpen != null)
-                      const CoeloAdminFlyoutItem(
-                        value: _DirectoryAction.edit,
-                        label: 'Editar',
-                        icon: Icons.edit_outlined,
-                      ),
+                    if (onOpen != null) CoeloAdminEntityActions.edit(_DirectoryAction.edit),
                     // Decisao do Owner de 10/09: o menu traz editar, duplicar,
                     // arquivar e excluir. O icone ARQUIVO no cabecalho e atalho.
                     if (canDuplicate)
-                      CoeloAdminFlyoutItem(
-                        value: _DirectoryAction.duplicate,
+                      CoeloAdminEntityActions.duplicate(
+                        _DirectoryAction.duplicate,
                         label: item.isTemplate ? 'Duplicar modelo' : 'Duplicar cardápio',
-                        icon: Icons.content_copy_rounded,
                       ),
                     if (item.status == MealPlanStatus.draft)
                       const CoeloAdminFlyoutItem(
@@ -1014,29 +985,16 @@ final class _MealPlanCard extends StatelessWidget {
                         icon: Icons.rate_review_outlined,
                       ),
                     if (_mealPlanCanPublish(item))
-                      const CoeloAdminFlyoutItem(
-                        value: _DirectoryAction.publish,
-                        label: 'Publicar',
-                        icon: Icons.publish_outlined,
-                      ),
+                      CoeloAdminEntityActions.publish(_DirectoryAction.publish),
                     if (item.status != MealPlanStatus.archived)
-                      const CoeloAdminFlyoutItem(
-                        value: _DirectoryAction.archive,
-                        label: 'Arquivar',
-                        icon: Icons.inventory_2_outlined,
-                      ),
+                      CoeloAdminEntityActions.archive(_DirectoryAction.archive),
                     if (_mealPlanCanDelete(item))
-                      const CoeloAdminFlyoutItem(
-                        value: _DirectoryAction.remove,
-                        label: 'Excluir',
-                        icon: Icons.delete_outline_rounded,
-                      ),
+                      CoeloAdminEntityActions.delete(_DirectoryAction.remove),
                   ],
                   onSelected: onAction,
-                  builder: (context, controller) => IconButton(
-                    tooltip: 'A\u00e7\u00f5es',
-                    onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-                    icon: const Icon(Icons.more_horiz_rounded),
+                  builder: (context, controller) => CoeloAdminEntityActionsTrigger(
+                    controller: controller,
+                    tooltip: 'Ações de ${item.name}',
                   ),
                 ),
             ],
@@ -1087,8 +1045,7 @@ final class _MealPlanStatusIndicator extends StatelessWidget {
 }
 
 (Color, Color) _statusColors(BuildContext context, MealPlanStatus status) {
-  final colors =
-      context.coeloStatusColors;
+  final colors = context.coeloStatusColors;
   return switch (status) {
     MealPlanStatus.draft => (colors.historyContainer, colors.onHistoryContainer),
     MealPlanStatus.inReview => (colors.warningContainer, colors.onWarningContainer),

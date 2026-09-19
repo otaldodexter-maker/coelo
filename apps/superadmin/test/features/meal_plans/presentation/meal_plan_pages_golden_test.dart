@@ -321,7 +321,11 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Ações').first);
+    await tester.tap(
+      find
+          .byWidgetPredicate((w) => w is Tooltip && (w.message ?? '').startsWith('Ações de'))
+          .first,
+    );
     await tester.pumpAndSettle();
 
     await expectLater(

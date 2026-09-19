@@ -63,18 +63,8 @@ final class _FormsLifecycleActionsState extends State<FormsLifecycleActions> {
             label: 'Ver respostas',
             icon: Icons.forum_outlined,
           ),
-        if (canMutate && widget.onEdit != null)
-          const CoeloAdminFlyoutItem(
-            value: _LifecycleAction.edit,
-            label: 'Editar',
-            icon: Icons.edit_outlined,
-          ),
-        if (canMutate)
-          const CoeloAdminFlyoutItem(
-            value: _LifecycleAction.duplicate,
-            label: 'Duplicar',
-            icon: Icons.content_copy_rounded,
-          ),
+        if (canMutate && widget.onEdit != null) CoeloAdminEntityActions.edit(_LifecycleAction.edit),
+        if (canMutate) CoeloAdminEntityActions.duplicate(_LifecycleAction.duplicate),
         if (canMutate && widget.canTransferCrossInstitution) ...const [
           CoeloAdminFlyoutItem(
             value: _LifecycleAction.copy,
@@ -93,33 +83,17 @@ final class _FormsLifecycleActionsState extends State<FormsLifecycleActions> {
             label: 'Agendamentos',
             icon: Icons.event_repeat_outlined,
           ),
-        if (canMutate) ...const [
-          CoeloAdminFlyoutItem(
-            value: _LifecycleAction.archive,
-            label: 'Arquivar',
-            icon: Icons.archive_outlined,
-            startsGroup: true,
-            tone: CoeloAdminFlyoutTone.negative,
-          ),
-          CoeloAdminFlyoutItem(
-            value: _LifecycleAction.delete,
-            label: 'Excluir',
-            icon: Icons.delete_outline_rounded,
-            tone: CoeloAdminFlyoutTone.negative,
-          ),
+        if (canMutate) ...[
+          CoeloAdminEntityActions.archive(_LifecycleAction.archive),
+          CoeloAdminEntityActions.delete(_LifecycleAction.delete),
         ],
       ],
       onSelected: _loading ? (_) {} : _select,
-      builder: (context, controller) => IconButton(
+      builder: (context, controller) => CoeloAdminEntityActionsTrigger(
         key: ValueKey('form-lifecycle-actions-${widget.formId}'),
+        controller: controller,
         tooltip: 'Ações do formulário ${widget.formTitle}',
-        onPressed: _loading ? null : controller.open,
-        icon: _loading
-            ? const SizedBox.square(
-                dimension: CoeloSize.iconMd,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : const Icon(Icons.more_vert_rounded),
+        busy: _loading,
       ),
     );
   }

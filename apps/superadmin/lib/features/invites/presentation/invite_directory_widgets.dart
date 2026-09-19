@@ -224,8 +224,7 @@ final class _InviteCardStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColors =
-        context.coeloStatusColors;
+    final statusColors = context.coeloStatusColors;
     final (background, foreground) = switch (status) {
       InviteStatus.pending => (statusColors.warningContainer, statusColors.onWarningContainer),
       InviteStatus.accepted => (statusColors.successContainer, statusColors.onSuccessContainer),
@@ -377,12 +376,7 @@ final class _InviteRowActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = <CoeloAdminFlyoutItem<InviteRowAction>>[
-      if (showDetails)
-        const CoeloAdminFlyoutItem(
-          value: InviteRowAction.details,
-          icon: Icons.visibility_outlined,
-          label: 'Ver detalhes',
-        ),
+      if (showDetails) CoeloAdminEntityActions.view(InviteRowAction.details),
       if (allowCommands && invite.canResend)
         const CoeloAdminFlyoutItem(
           value: InviteRowAction.resend,
@@ -390,30 +384,16 @@ final class _InviteRowActions extends StatelessWidget {
           label: 'Reenviar convite',
         ),
       if (allowCommands && invite.canRevoke)
-        const CoeloAdminFlyoutItem(
-          value: InviteRowAction.revoke,
-          icon: Icons.block_rounded,
-          label: 'Revogar convite',
-          startsGroup: true,
-          tone: CoeloAdminFlyoutTone.negative,
-        ),
+        CoeloAdminEntityActions.cancel(InviteRowAction.revoke, label: 'Revogar convite'),
     ];
     return CoeloAdminFlyout<InviteRowAction>(
       items: items,
       onSelected: onSelected,
-      builder: (context, controller) => IconButton(
+      builder: (context, controller) => CoeloAdminEntityActionsTrigger(
         key: Key('invite-actions-${invite.id}'),
+        controller: controller,
         tooltip: busy ? 'Processando convite' : 'Ações do convite',
-        style: const ButtonStyle(
-          minimumSize: WidgetStatePropertyAll(Size.square(CoeloSize.touchMin)),
-        ),
-        onPressed: busy ? null : () => controller.isOpen ? controller.close() : controller.open(),
-        icon: busy
-            ? const SizedBox.square(
-                dimension: CoeloSize.iconSm,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : const Icon(Icons.more_horiz_rounded),
+        busy: busy,
       ),
     );
   }

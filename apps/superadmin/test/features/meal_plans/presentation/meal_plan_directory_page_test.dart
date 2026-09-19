@@ -8,6 +8,10 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+Finder _actionsTrigger() => find
+    .byWidgetPredicate((w) => w is Tooltip && (w.message ?? '').startsWith('Ações de'))
+    .first;
+
 void main() {
   testWidgets('opens with Models first and exposes honest file actions', (tester) async {
     await tester.pumpWidget(
@@ -103,7 +107,7 @@ void main() {
 
     await tester.pumpWidget(_app(pageKey: pageKey, repository: repositoryA));
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Ações'));
+    await tester.tap(_actionsTrigger());
     await tester.pumpAndSettle();
     await tester.tap(find.text('Publicar'));
     await tester.pump();
@@ -119,7 +123,7 @@ void main() {
     expect(find.byType(SnackBar), findsNothing);
     expect(find.text('Cardápio B'), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Ações'));
+    await tester.tap(_actionsTrigger());
     await tester.pumpAndSettle();
     await tester.tap(find.text('Publicar'));
     await tester.pumpAndSettle();
@@ -146,7 +150,7 @@ void main() {
 
       await tester.pumpWidget(_app(repository: repository));
       await tester.pumpAndSettle();
-      await tester.tap(find.byTooltip('Ações'));
+      await tester.tap(_actionsTrigger());
       await tester.pumpAndSettle();
       await tester.tap(find.text('Publicar'));
       await tester.pumpAndSettle();
@@ -184,7 +188,7 @@ void main() {
     await tester.pumpWidget(_app(repository: repository));
     await tester.pumpAndSettle();
     for (var attempt = 0; attempt < 2; attempt++) {
-      await tester.tap(find.byTooltip('Ações'));
+      await tester.tap(_actionsTrigger());
       await tester.pumpAndSettle();
       await tester.tap(find.text('Publicar'));
       await tester.pumpAndSettle();
@@ -212,7 +216,7 @@ void main() {
     await tester.pumpWidget(_app(repository: repository));
     await tester.pumpAndSettle();
     for (var attempt = 0; attempt < 2; attempt++) {
-      await tester.tap(find.byTooltip('Ações'));
+      await tester.tap(_actionsTrigger());
       await tester.pumpAndSettle();
       await tester.tap(find.text('Publicar'));
       await tester.pumpAndSettle();
@@ -283,7 +287,7 @@ void main() {
           expect(pagination.pageSize, 8);
           expect(pagination.pageSizeOptions, const [8, 20, 50, 100]);
         }
-        expect(find.byTooltip('Ações'), findsOneWidget);
+        expect(_actionsTrigger(), findsOneWidget);
         expect(
           tester.takeException(),
           isNull,
@@ -321,7 +325,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip('Ações').first);
+    await tester.tap(_actionsTrigger().first);
     await tester.pumpAndSettle();
 
     expect(find.text('Editar'), findsOneWidget);
@@ -350,7 +354,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip('Ações').first);
+    await tester.tap(_actionsTrigger().first);
     await tester.pumpAndSettle();
 
     expect(find.text('Arquivar'), findsOneWidget);

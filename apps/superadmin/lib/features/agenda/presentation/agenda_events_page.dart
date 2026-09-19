@@ -435,42 +435,23 @@ final class _AgendaEventActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = <CoeloAdminFlyoutItem<_AgendaEventAction>>[
-      if (onOpen != null)
-        const CoeloAdminFlyoutItem(
-          value: _AgendaEventAction.open,
-          icon: Icons.visibility_outlined,
-          label: 'Ver detalhes',
-        ),
-      if (onEdit != null)
-        const CoeloAdminFlyoutItem(
-          value: _AgendaEventAction.edit,
-          icon: Icons.edit_outlined,
-          label: 'Editar',
-        ),
+      if (onOpen != null) CoeloAdminEntityActions.view(_AgendaEventAction.open),
+      if (onEdit != null) CoeloAdminEntityActions.edit(_AgendaEventAction.edit),
       if ((item.status == AgendaItemStatus.scheduled ||
               item.status == AgendaItemStatus.published) &&
           onCancel != null)
-        const CoeloAdminFlyoutItem(
-          value: _AgendaEventAction.cancel,
-          icon: Icons.event_busy_outlined,
-          label: 'Cancelar evento',
-          startsGroup: true,
-          tone: CoeloAdminFlyoutTone.negative,
-        ),
+        CoeloAdminEntityActions.cancel(_AgendaEventAction.cancel, label: 'Cancelar evento'),
       if (item.status == AgendaItemStatus.canceled && onRestore != null)
-        const CoeloAdminFlyoutItem(
-          value: _AgendaEventAction.restore,
-          icon: Icons.restore_rounded,
+        CoeloAdminEntityActions.restore(
+          _AgendaEventAction.restore,
           label: 'Restaurar evento',
           startsGroup: true,
         ),
       if (item.status == AgendaItemStatus.draft && onDeleteDraft != null)
-        const CoeloAdminFlyoutItem(
-          value: _AgendaEventAction.deleteDraft,
-          icon: Icons.delete_outline_rounded,
+        CoeloAdminEntityActions.delete(
+          _AgendaEventAction.deleteDraft,
           label: 'Excluir rascunho',
           startsGroup: true,
-          tone: CoeloAdminFlyoutTone.negative,
         ),
     ];
     return CoeloAdminFlyout<_AgendaEventAction>(
@@ -482,11 +463,10 @@ final class _AgendaEventActions extends StatelessWidget {
         _AgendaEventAction.restore => onRestore?.call(),
         _AgendaEventAction.deleteDraft => onDeleteDraft?.call(),
       },
-      builder: (context, controller) => IconButton(
+      builder: (context, controller) => CoeloAdminEntityActionsTrigger(
         key: Key('agenda-event-actions-${item.id}'),
+        controller: controller,
         tooltip: 'Ações de ${item.title}',
-        onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-        icon: const Icon(Icons.more_horiz_rounded),
       ),
     );
   }
@@ -528,8 +508,7 @@ final class _AgendaEventStatusChip extends StatelessWidget {
 }
 
 (Color, Color) _statusColors(BuildContext context, AgendaItemStatus status) {
-  final colors =
-      context.coeloStatusColors;
+  final colors = context.coeloStatusColors;
   return switch (status) {
     AgendaItemStatus.draft => (colors.historyContainer, colors.onHistoryContainer),
     AgendaItemStatus.scheduled => (colors.warningContainer, colors.onWarningContainer),
