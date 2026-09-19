@@ -576,3 +576,7 @@
 # Cores, Escola Raízes do Saber: 2 unidades, 4 turmas, coordenação, professores, responsáveis, crianças) + 3 logins de responsável
 # (fic-*@coelo.me, Auth Admin) + 4 publicações Para você por audiência. pgTAP fictitious_institutions_for_you_v1_test 9/9; prova pela API.
 20260920090000_fictitious_institutions_for_you_v1.sql
+# Lote 107 (Sessão ETAPA-3, 20/09/2026): posts do perfil oficial no feed Acontece (spec 068 §4) — official_posts, publish/withdraw/list
+# no Superadmin, list_visible_happens_feed = contexto (lote 103, renomeado _context_v1) ∪ posts oficiais; perfil no Principal traz posts.
+# pgTAP official_posts_v1_test 13/13.
+20260920100000_official_posts_v1.sql
