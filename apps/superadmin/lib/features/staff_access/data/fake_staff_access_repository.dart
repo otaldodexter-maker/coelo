@@ -17,6 +17,26 @@ final class FakeStaffAccessRepository implements StaffAccessRepository {
   /// Chamadas recebidas (para asserções nos testes).
   final List<StaffAccessRuleDraft> savedRules = [];
   final List<StaffLeaveDraft> savedLeaves = [];
+  final List<StaffAccessRuleDraft> savedProfileRules = [];
+
+  /// Regras por perfil (roleId -> regra), como `staff_access_profile_rules`.
+  final Map<String, StaffAccessRule> profileRules = {
+    'role-educador': StaffAccessRule(
+      id: 'profile-rule-educador',
+      roleId: 'role-educador',
+      roleName: 'Educador(a)',
+      surfaces: StaffAccessSurface.values.toSet(),
+      windows: [
+        for (var d = 1; d <= 5; d++) StaffAccessWindow(weekday: d, start: '07:30', end: '18:30'),
+      ],
+      validFrom: null,
+      validUntil: null,
+      validitySurfaces: StaffAccessSurface.values.toSet(),
+      popupEnabled: true,
+      popupShowValidity: false,
+      version: 1,
+    ),
+  };
 
   Future<void> _tick() async {
     if (delay > Duration.zero) await Future<void>.delayed(delay);
@@ -33,6 +53,7 @@ final class FakeStaffAccessRepository implements StaffAccessRepository {
         .where((item) => query.institutionId == null || item.institutionId == query.institutionId)
         .where((item) => query.unitId == null || item.unitId == query.unitId)
         .where((item) => query.states.isEmpty || query.states.contains(item.state))
+        .where((item) => query.sources.isEmpty || query.sources.contains(item.source))
         .toList()
       ..sort((a, b) => a.institutionName.compareTo(b.institutionName) != 0
           ? a.institutionName.compareTo(b.institutionName)
@@ -106,9 +127,72 @@ final class FakeStaffAccessRepository implements StaffAccessRepository {
             popupShowValidity: draft.popupShowValidity,
             version: (item.rule?.version ?? 0) + 1,
           );
-    final updated = _copy(item, rule: rule, state: _stateFor(rule, item.leaves));
+    final updated = _copy(item, rule: rule, state: _stateFor(rule ?? item.profileRule, item.leaves));
     _items[membershipId] = updated;
     return updated;
+  }
+
+  @override
+  Future<StaffAccessProfileRule> fetchProfileRule(String roleId) async {
+    await _tick();
+    return _profile(roleId);
+  }
+
+  @override
+  Future<StaffAccessProfileRule> saveProfileRule(
+    String roleId,
+    int? expectedVersion,
+    StaffAccessRuleDraft draft,
+  ) async {
+    await _tick();
+    if (failNextSaveWithConflict) {
+      failNextSaveWithConflict = false;
+      throw const StaffAccessConflictException();
+    }
+    final existing = profileRules[roleId];
+    if (existing?.version != expectedVersion) throw const StaffAccessConflictException();
+    savedProfileRules.add(draft);
+    if (draft.clear) {
+      profileRules.remove(roleId);
+    } else {
+      profileRules[roleId] = StaffAccessRule(
+        id: existing?.id ?? 'profile-rule-$roleId',
+        roleId: roleId,
+        roleName: existing?.roleName ?? roleId,
+        surfaces: draft.surfaces,
+        windows: draft.windows,
+        validFrom: draft.validFrom,
+        validUntil: draft.validUntil,
+        validitySurfaces: draft.validitySurfaces,
+        popupEnabled: draft.popupEnabled,
+        popupShowValidity: draft.popupShowValidity,
+        version: (existing?.version ?? 0) + 1,
+      );
+    }
+    // Vínculos que herdam deste perfil refletem a mudança.
+    for (final entry in _items.entries.toList()) {
+      final item = entry.value;
+      if (item.profileRule?.roleId != roleId) continue;
+      final profileRule = profileRules[roleId];
+      _items[entry.key] = _copy(
+        item,
+        profileRule: () => profileRule,
+        state: _stateFor(item.rule ?? profileRule, item.leaves),
+      );
+    }
+    return _profile(roleId);
+  }
+
+  StaffAccessProfileRule _profile(String roleId) {
+    final rule = profileRules[roleId];
+    final linked = _items.values.where((i) => i.profileRule?.roleId == roleId || i.roleCode == roleId);
+    return StaffAccessProfileRule(
+      roleId: roleId,
+      roleName: rule?.roleName ?? roleId,
+      rule: rule,
+      membershipCount: linked.length,
+      ownRuleCount: linked.where((i) => i.rule != null).length,
+    );
   }
 
   @override
@@ -204,10 +288,13 @@ final class FakeStaffAccessRepository implements StaffAccessRepository {
   static StaffAccessItem _copy(
     StaffAccessItem item, {
     StaffAccessRule? rule,
+    StaffAccessRule? Function()? profileRule,
     List<StaffLeave>? leaves,
     StaffAccessState? state,
   }) {
     final nextLeaves = leaves ?? item.leaves;
+    final nextRule = leaves == null && rule == null && state == null ? item.rule : rule;
+    final nextProfileRule = profileRule == null ? item.profileRule : profileRule();
     final now = DateTime.now();
     final day = DateTime(now.year, now.month, now.day);
     return StaffAccessItem(
@@ -224,7 +311,14 @@ final class FakeStaffAccessRepository implements StaffAccessRepository {
       groupName: item.groupName,
       timezone: item.timezone,
       state: state ?? item.state,
-      rule: leaves == null && rule == null && state == null ? item.rule : rule,
+      rule: nextRule,
+      profileRule: nextProfileRule,
+      profileName: nextProfileRule?.roleName,
+      source: nextRule != null
+          ? StaffAccessSource.own
+          : nextProfileRule != null
+          ? StaffAccessSource.profile
+          : StaffAccessSource.none,
       currentLeave: nextLeaves
           .where((l) => !l.startsOn.isAfter(day) && !l.endsOn.isBefore(day))
           .firstOrNull,
@@ -246,6 +340,7 @@ List<StaffAccessItem> sampleStaffAccessItems() {
     String? group,
     StaffAccessState state = StaffAccessState.free,
     StaffAccessRule? rule,
+    StaffAccessRule? profileRule,
     List<StaffLeave> leaves = const [],
   }) => StaffAccessItem(
     membershipId: id,
@@ -267,12 +362,34 @@ List<StaffAccessItem> sampleStaffAccessItems() {
     timezone: 'America/Sao_Paulo',
     state: state,
     rule: rule,
+    profileRule: profileRule,
+    profileName: profileRule?.roleName,
+    source: rule != null
+        ? StaffAccessSource.own
+        : profileRule != null
+        ? StaffAccessSource.profile
+        : StaffAccessSource.none,
     currentLeave: null,
     leavesCount: leaves.length,
     canManage: true,
     leaves: leaves,
   );
   final year = DateTime.now().year + 1;
+  final educadorRule = StaffAccessRule(
+    id: 'profile-rule-educador',
+    roleId: 'role-educador',
+    roleName: 'Educador(a)',
+    surfaces: StaffAccessSurface.values.toSet(),
+    windows: [
+      for (var d = 1; d <= 5; d++) StaffAccessWindow(weekday: d, start: '07:30', end: '18:30'),
+    ],
+    validFrom: null,
+    validUntil: null,
+    validitySurfaces: StaffAccessSurface.values.toSet(),
+    popupEnabled: true,
+    popupShowValidity: false,
+    version: 1,
+  );
   return [
     item(
       id: 'm-ana',
@@ -282,6 +399,7 @@ List<StaffAccessItem> sampleStaffAccessItems() {
       unit: 'Unidade Centro',
       group: 'Turma 3A',
       state: StaffAccessState.schedule,
+      profileRule: educadorRule,
       rule: StaffAccessRule(
         id: 'rule-m-ana',
         membershipId: 'm-ana',
@@ -348,6 +466,8 @@ List<StaffAccessItem> sampleStaffAccessItems() {
       institution: 'Escola Aurora',
       unit: 'Sede',
       group: 'Berçário II',
+      state: StaffAccessState.schedule,
+      profileRule: educadorRule,
     ),
     item(
       id: 'm-elisa',

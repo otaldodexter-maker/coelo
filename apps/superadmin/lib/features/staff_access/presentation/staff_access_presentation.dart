@@ -102,7 +102,7 @@ final class StaffAccessCard extends StatelessWidget {
     return CoeloAdminInteractiveCard(
       key: Key('staff-access-card-${item.membershipId}'),
       surfaceKey: Key('staff-access-card-surface-${item.membershipId}'),
-      minHeight: 216,
+      minHeight: 252,
       semanticLabel: '${item.personName}. ${item.roleName}. ${item.scopeLabel}. Estado: ${item.state.label}',
       onPressed: onPressed,
       child: Padding(
@@ -177,7 +177,18 @@ final class StaffAccessCard extends StatelessWidget {
             _Detail(
               icon: Icons.schedule_rounded,
               label: 'Regra',
-              value: staffAccessRuleSummary(item.rule),
+              value: staffAccessRuleSummary(item.rule ?? item.profileRule),
+            ),
+            const SizedBox(height: CoeloSpacing.space3),
+            _Detail(
+              key: Key('staff-access-source-${item.membershipId}'),
+              icon: switch (item.source) {
+                StaffAccessSource.profile => Icons.badge_outlined,
+                StaffAccessSource.own => Icons.tune_rounded,
+                StaffAccessSource.none => Icons.lock_open_rounded,
+              },
+              label: 'Origem do horário',
+              value: item.sourceLabel,
             ),
             const SizedBox(height: CoeloSpacing.space3),
             _Detail(
@@ -197,7 +208,7 @@ final class StaffAccessCard extends StatelessWidget {
 }
 
 final class _Detail extends StatelessWidget {
-  const _Detail({required this.icon, required this.label, required this.value});
+  const _Detail({required this.icon, required this.label, required this.value, super.key});
   final IconData icon;
   final String label;
   final String value;
@@ -233,6 +244,7 @@ enum _StaffAccessColumn {
   institution('institution', 'Instituição', 200, 140),
   unit('unit', 'Unidade / turma', 220, 140),
   state('state', 'Estado', 160, 120),
+  source('source', 'Origem do horário', 220, 140),
   rule('rule', 'Regra', 320, 160),
   leaves('leaves', 'Afastamentos', 160, 120);
 
@@ -290,7 +302,8 @@ final class StaffAccessTableRows extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: StaffAccessStateChip(state: item.state),
           ),
-          _StaffAccessColumn.rule => _text(staffAccessRuleSummary(item.rule)),
+          _StaffAccessColumn.source => _text(item.sourceLabel),
+          _StaffAccessColumn.rule => _text(staffAccessRuleSummary(item.rule ?? item.profileRule)),
           _StaffAccessColumn.leaves => _text(
             item.currentLeave != null
                 ? 'Até ${staffAccessDateLabel(item.currentLeave!.endsOn)}'

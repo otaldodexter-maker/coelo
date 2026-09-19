@@ -66,6 +66,26 @@ void main() {
       expect(find.text('Limpar filtros'), findsWidgets);
     });
 
+    testWidgets('mostra a origem do horário e filtra por ela', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final repository = FakeStaffAccessRepository();
+      await tester.pumpWidget(
+        _app(StaffAccessDirectoryPage(repository: repository, logout: _logout)),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Fora do padrão do perfil Educador(a)'), findsOneWidget); // Ana
+      expect(find.text('Padrão do perfil Educador(a)'), findsOneWidget); // Diego
+      expect(find.text('Regra própria do vínculo'), findsOneWidget); // Bruno (sem perfil)
+      expect(find.text('Sem restrição'), findsAtLeastNWidgets(2)); // Carla, Elisa
+
+      final page = await repository.fetchPage(
+        const StaffAccessQuery(sources: {StaffAccessSource.profile}),
+      );
+      expect(page.items.map((i) => i.personName), ['Diego Santos']);
+      expect(find.byKey(const Key('staff-access-source-filter')), findsOneWidget);
+    });
+
     testWidgets('tabela mostra as colunas de estado e regra', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1440, 1000));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -175,6 +195,64 @@ void main() {
       await tester.tap(find.byKey(const Key('staff-access-form-save')));
       await tester.pumpAndSettle();
       expect(repository.savedRules.single.clear, isTrue);
+    });
+
+    testWidgets('origem do horário: fora do padrão mostra o banner e "Voltar ao padrão" limpa a regra', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final repository = FakeStaffAccessRepository();
+      StaffAccessItem? saved;
+      await tester.pumpWidget(
+        _app(
+          StaffAccessFormPage(
+            repository: repository,
+            membershipId: 'm-ana',
+            onCancel: () {},
+            onSaved: (item) => saved = item,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('staff-access-source-own')), findsOneWidget);
+      expect(find.textContaining('fora do padrão do perfil Educador(a)'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('staff-access-reset-to-profile')));
+      await tester.pumpAndSettle();
+      expect(repository.savedRules.single.clear, isTrue);
+      expect(saved!.rule, isNull);
+      expect(saved!.source, StaffAccessSource.profile);
+    });
+
+    testWidgets('origem do horário: vínculo que herda do perfil parte do rascunho do perfil', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(1440, 1000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final repository = FakeStaffAccessRepository();
+      await tester.pumpWidget(
+        _app(
+          StaffAccessFormPage(
+            repository: repository,
+            membershipId: 'm-diego',
+            onCancel: () {},
+            onSaved: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('staff-access-source-profile')), findsOneWidget);
+      expect(find.byKey(const Key('staff-access-reset-to-profile')), findsNothing);
+      // ligar a restrição abre as seções já preenchidas com o padrão do perfil
+      await tester.tap(find.byKey(const Key('staff-access-restricted-toggle')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('staff-access-form-save')));
+      await tester.pumpAndSettle();
+      final draft = repository.savedRules.single;
+      expect(draft.clear, isFalse);
+      expect(draft.windows.length, 5);
+      expect(draft.windows.first.start, '07:30');
     });
 
     testWidgets('vínculo livre: ligar a restrição exige ao menos uma superfície', (tester) async {

@@ -209,6 +209,17 @@ final class _StaffAccessDirectoryPageState extends State<StaffAccessDirectoryPag
           optionLabel: (state) => state.label,
           onChanged: viewModel.setStates,
         ),
+        CoeloTourAnchor(
+          id: 'staff-access.source-filter',
+          child: CoeloAdminMultiSelectFilter<StaffAccessSource>(
+            key: const Key('staff-access-source-filter'),
+            label: 'Origem do horário',
+            options: StaffAccessSource.values,
+            selectedValues: viewModel.query.sources,
+            optionLabel: (source) => source.label,
+            onChanged: viewModel.setSources,
+          ),
+        ),
       ],
       trailing: [
         if (viewModel.query.hasActiveFilters)

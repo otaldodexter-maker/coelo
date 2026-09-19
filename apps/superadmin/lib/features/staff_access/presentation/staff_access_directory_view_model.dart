@@ -43,6 +43,8 @@ final class StaffAccessDirectoryViewModel extends ChangeNotifier {
   Future<void> setUnit(String? value) => _replace(_query.copyWith(unitId: () => value, page: 0));
   Future<void> setStates(Set<StaffAccessState> value) =>
       _replace(_query.copyWith(states: value, page: 0));
+  Future<void> setSources(Set<StaffAccessSource> value) =>
+      _replace(_query.copyWith(sources: value, page: 0));
   Future<void> goToPage(int value) =>
       value < 0 ? Future.value() : _replace(_query.copyWith(page: value));
   Future<void> setPageSize(int value) => _replace(_query.copyWith(pageSize: value, page: 0));

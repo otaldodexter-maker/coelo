@@ -44,6 +44,24 @@ enum StaffAccessState {
   };
 }
 
+/// De onde vem o horário do vínculo (calculado no servidor): padrão do perfil
+/// atribuído, regra própria diferente do perfil, ou nenhuma restrição.
+enum StaffAccessSource {
+  profile('profile', 'Padrão do perfil'),
+  own('own', 'Fora do padrão do perfil'),
+  none('none', 'Sem restrição');
+
+  const StaffAccessSource(this.databaseValue, this.label);
+  final String databaseValue;
+  final String label;
+
+  static StaffAccessSource fromDatabase(String? value) => switch (value) {
+    'profile' => StaffAccessSource.profile,
+    'own' => StaffAccessSource.own,
+    _ => StaffAccessSource.none,
+  };
+}
+
 /// Janela de horário: dia ISO (1 = segunda … 7 = domingo) e "HH:MM"; fim menor
 /// ou igual ao início cruza a meia-noite e pertence ao dia de início.
 final class StaffAccessWindow {
@@ -98,10 +116,13 @@ final class StaffAccessWindow {
   int get hashCode => Object.hash(weekday, start, end);
 }
 
+/// Regra de acesso (do vínculo ou do perfil: mesma forma, dono diferente).
 final class StaffAccessRule {
   const StaffAccessRule({
     required this.id,
-    required this.membershipId,
+    this.membershipId,
+    this.roleId,
+    this.roleName,
     required this.surfaces,
     required this.windows,
     required this.validFrom,
@@ -113,7 +134,9 @@ final class StaffAccessRule {
   });
 
   final String id;
-  final String membershipId;
+  final String? membershipId;
+  final String? roleId;
+  final String? roleName;
   final Set<StaffAccessSurface> surfaces;
   final List<StaffAccessWindow> windows;
   final DateTime? validFrom;
@@ -125,7 +148,9 @@ final class StaffAccessRule {
 
   static StaffAccessRule fromJson(Map<String, dynamic> json) => StaffAccessRule(
     id: json['id'] as String,
-    membershipId: json['membership_id'] as String,
+    membershipId: json['membership_id'] as String?,
+    roleId: json['role_id'] as String?,
+    roleName: json['role_name'] as String?,
     surfaces: _surfaces(json['surfaces']),
     windows: (json['windows'] as List<dynamic>? ?? const [])
         .map((item) => StaffAccessWindow.fromJson(Map<String, dynamic>.from(item as Map)))
@@ -136,6 +161,45 @@ final class StaffAccessRule {
     popupEnabled: json['popup_enabled'] == true,
     popupShowValidity: json['popup_show_validity'] == true,
     version: (json['version'] as num?)?.toInt() ?? 1,
+  );
+
+  StaffAccessRuleDraft toDraft() => StaffAccessRuleDraft(
+    surfaces: surfaces,
+    windows: windows,
+    validFrom: validFrom,
+    validUntil: validUntil,
+    validitySurfaces: validitySurfaces,
+    popupEnabled: popupEnabled,
+    popupShowValidity: popupShowValidity,
+  );
+}
+
+/// Regra do perfil de funcionário (`staff_access_profile_rule_get_v1`).
+final class StaffAccessProfileRule {
+  const StaffAccessProfileRule({
+    required this.roleId,
+    required this.roleName,
+    required this.rule,
+    required this.membershipCount,
+    required this.ownRuleCount,
+  });
+
+  final String roleId;
+  final String roleName;
+  final StaffAccessRule? rule;
+  final int membershipCount;
+
+  /// Vínculos deste perfil com regra própria (fora do padrão).
+  final int ownRuleCount;
+
+  static StaffAccessProfileRule fromJson(Map<String, dynamic> json) => StaffAccessProfileRule(
+    roleId: json['role_id'] as String,
+    roleName: json['role_name'] as String? ?? '',
+    rule: json['rule'] is Map
+        ? StaffAccessRule.fromJson(Map<String, dynamic>.from(json['rule'] as Map))
+        : null,
+    membershipCount: (json['membership_count'] as num?)?.toInt() ?? 0,
+    ownRuleCount: (json['own_rule_count'] as num?)?.toInt() ?? 0,
   );
 }
 
@@ -196,6 +260,9 @@ final class StaffAccessItem {
     required this.currentLeave,
     required this.leavesCount,
     required this.canManage,
+    this.source = StaffAccessSource.none,
+    this.profileName,
+    this.profileRule,
     this.leaves = const [],
   });
 
@@ -216,6 +283,22 @@ final class StaffAccessItem {
   final StaffLeave? currentLeave;
   final int leavesCount;
   final bool canManage;
+  final StaffAccessSource source;
+
+  /// Nome do perfil atribuído que tem horário (quando houver).
+  final String? profileName;
+
+  /// Regra do perfil atribuído (herdada quando não há regra própria).
+  final StaffAccessRule? profileRule;
+
+  /// Rótulo da origem do horário para o diretório.
+  String get sourceLabel => switch (source) {
+    StaffAccessSource.profile => 'Padrão do perfil ${profileName ?? ''}'.trim(),
+    StaffAccessSource.own => profileName == null
+        ? 'Regra própria do vínculo'
+        : 'Fora do padrão do perfil $profileName',
+    StaffAccessSource.none => 'Sem restrição',
+  };
 
   /// Só no detalhe (`staff_access_rule_get_v1`).
   final List<StaffLeave> leaves;
@@ -252,6 +335,11 @@ final class StaffAccessItem {
         : null,
     leavesCount: (json['leaves_count'] as num?)?.toInt() ?? 0,
     canManage: json['can_manage'] == true,
+    source: StaffAccessSource.fromDatabase(json['source'] as String?),
+    profileName: json['profile_name'] as String?,
+    profileRule: json['profile_rule'] is Map
+        ? StaffAccessRule.fromJson(Map<String, dynamic>.from(json['profile_rule'] as Map))
+        : null,
     leaves: (json['leaves'] as List<dynamic>? ?? const [])
         .map((item) => StaffLeave.fromJson(Map<String, dynamic>.from(item as Map)))
         .toList(growable: false),
@@ -277,6 +365,7 @@ final class StaffAccessQuery {
     this.institutionId,
     this.unitId,
     this.states = const {},
+    this.sources = const {},
     this.page = 0,
     this.pageSize = 11,
   });
@@ -285,17 +374,23 @@ final class StaffAccessQuery {
   final String? institutionId;
   final String? unitId;
   final Set<StaffAccessState> states;
+  final Set<StaffAccessSource> sources;
   final int page;
   final int pageSize;
 
   bool get hasActiveFilters =>
-      search.trim().isNotEmpty || institutionId != null || unitId != null || states.isNotEmpty;
+      search.trim().isNotEmpty ||
+      institutionId != null ||
+      unitId != null ||
+      states.isNotEmpty ||
+      sources.isNotEmpty;
 
   StaffAccessQuery copyWith({
     String? search,
     String? Function()? institutionId,
     String? Function()? unitId,
     Set<StaffAccessState>? states,
+    Set<StaffAccessSource>? sources,
     int? page,
     int? pageSize,
   }) => StaffAccessQuery(
@@ -303,6 +398,7 @@ final class StaffAccessQuery {
     institutionId: institutionId == null ? this.institutionId : institutionId(),
     unitId: unitId == null ? this.unitId : unitId(),
     states: states ?? this.states,
+    sources: sources ?? this.sources,
     page: page ?? this.page,
     pageSize: pageSize ?? this.pageSize,
   );
@@ -437,6 +533,10 @@ abstract interface class StaffAccessRepository {
   Future<StaffAccessPage> fetchPage(StaffAccessQuery query);
   Future<StaffAccessItem> fetchDetail(String membershipId);
   Future<StaffAccessItem> saveRule(String membershipId, int? expectedVersion, StaffAccessRuleDraft draft);
+
+  /// Horário de uso do PERFIL de funcionário (`staff_access_profile_rule_*_v1`).
+  Future<StaffAccessProfileRule> fetchProfileRule(String roleId);
+  Future<StaffAccessProfileRule> saveProfileRule(String roleId, int? expectedVersion, StaffAccessRuleDraft draft);
   Future<StaffLeavePage> fetchLeaves(StaffLeaveQuery query);
   Future<StaffLeave?> saveLeave({
     String? leaveId,
@@ -457,6 +557,12 @@ final class UnavailableStaffAccessRepository implements StaffAccessRepository {
       Future.error(const StaffAccessUnavailableException());
   @override
   Future<StaffAccessItem> saveRule(String membershipId, int? expectedVersion, StaffAccessRuleDraft draft) =>
+      Future.error(const StaffAccessUnavailableException());
+  @override
+  Future<StaffAccessProfileRule> fetchProfileRule(String roleId) =>
+      Future.error(const StaffAccessUnavailableException());
+  @override
+  Future<StaffAccessProfileRule> saveProfileRule(String roleId, int? expectedVersion, StaffAccessRuleDraft draft) =>
       Future.error(const StaffAccessUnavailableException());
   @override
   Future<StaffLeavePage> fetchLeaves(StaffLeaveQuery query) =>

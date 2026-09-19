@@ -11,8 +11,8 @@ import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/staff_access.dart';
-import '../domain/staff_access_popup_text.dart';
 import 'staff_access_presentation.dart';
+import 'staff_access_rule_fields.dart';
 
 enum _Section { membership, surfaces, schedule, validity, popup }
 
@@ -97,7 +97,9 @@ final class _StaffAccessFormPageState extends State<StaffAccessFormPage> {
       if (!mounted || revision != _revision) return;
       setState(() {
         _item = item;
-        _applyRule(item.rule);
+        // Sem regra própria o rascunho parte do padrão do perfil (herdado).
+        _applyRule(item.rule ?? item.profileRule);
+        _restricted = item.rule != null;
         _loadState = _LoadState.ready;
       });
     } on StaffAccessUnauthorizedException {
@@ -183,6 +185,45 @@ final class _StaffAccessFormPageState extends State<StaffAccessFormPage> {
     'STAFF_ACCESS_MEMBERSHIP_INACTIVE' => 'O vínculo não está ativo.',
     _ => 'O servidor recusou a regra. Revise os campos.',
   };
+
+  /// "Voltar ao padrão do perfil": apaga a regra própria (auditada no servidor);
+  /// o vínculo volta a herdar o horário do perfil.
+  Future<void> _resetToProfile() async {
+    final item = _item;
+    if (item == null || item.rule == null || _saving) return;
+    final revision = _revision;
+    setState(() {
+      _saving = true;
+      _saveError = null;
+      _conflict = false;
+    });
+    try {
+      final saved = await widget.repository.saveRule(
+        widget.membershipId,
+        item.rule!.version,
+        StaffAccessRuleDraft(
+          surfaces: const {},
+          windows: const [],
+          validFrom: null,
+          validUntil: null,
+          validitySurfaces: const {},
+          popupEnabled: false,
+          popupShowValidity: false,
+          clear: true,
+        ),
+      );
+      if (!mounted || revision != _revision) return;
+      widget.onSaved?.call(saved);
+    } on StaffAccessConflictException {
+      if (mounted && revision == _revision) setState(() => _conflict = true);
+    } on Object {
+      if (mounted && revision == _revision) {
+        setState(() => _saveError = 'Não foi possível voltar ao padrão do perfil. Tente novamente.');
+      }
+    } finally {
+      if (mounted && revision == _revision) setState(() => _saving = false);
+    }
+  }
 
   void _update(VoidCallback change) => setState(() {
     change();
@@ -329,11 +370,41 @@ final class _StaffAccessFormPageState extends State<StaffAccessFormPage> {
           ],
         ),
         const SizedBox(height: CoeloSpacing.space4),
+        if (item.source == StaffAccessSource.own && item.profileName != null) ...[
+          CoeloTourAnchor(
+            id: 'staff-access.source',
+            child: _SourceBanner(
+              key: const Key('staff-access-source-own'),
+              icon: Icons.tune_rounded,
+              text: 'Este vínculo está fora do padrão do perfil ${item.profileName}.',
+              action: TextButton(
+                key: const Key('staff-access-reset-to-profile'),
+                onPressed: _saving ? null : _resetToProfile,
+                child: const Text('Voltar ao padrão do perfil'),
+              ),
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+        ] else if (item.source == StaffAccessSource.profile) ...[
+          CoeloTourAnchor(
+            id: 'staff-access.source',
+            child: StaffAccessInfoBanner(
+              key: const Key('staff-access-source-profile'),
+              icon: Icons.badge_outlined,
+              text: 'Herda o horário do perfil ${item.profileName}. Ligue a restrição abaixo para ajustar só este vínculo.',
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+        ],
         CoeloAdminToggleField(
           key: const Key('staff-access-restricted-toggle'),
-          label: 'Restringir o acesso deste vínculo',
+          label: item.profileRule != null
+              ? 'Ajustar o acesso só deste vínculo'
+              : 'Restringir o acesso deste vínculo',
           description: _restricted
               ? 'Superfícies, horários, vigência e popup nas próximas seções.'
+              : item.profileRule != null
+              ? 'Desligado: vale o padrão do perfil.'
               : 'Desligado: tudo liberado (sem configuração).',
           value: _restricted,
           onChanged: (value) => _update(() {
@@ -343,7 +414,7 @@ final class _StaffAccessFormPageState extends State<StaffAccessFormPage> {
         ),
         if (item.currentLeave != null) ...[
           const SizedBox(height: CoeloSpacing.space4),
-          _InfoBanner(
+          StaffAccessInfoBanner(
             icon: Icons.beach_access_outlined,
             text:
                 'Afastado até ${staffAccessDateLabel(item.currentLeave!.endsOn)}. O afastamento prevalece sobre horário e vigência.',
@@ -378,31 +449,10 @@ final class _StaffAccessFormPageState extends State<StaffAccessFormPage> {
     title: 'Superfícies liberadas',
     description: 'Onde este vínculo pode usar o app. O cliente declara a superfície; o servidor aplica a regra à superfície declarada.',
     children: [
-      for (final surface in StaffAccessSurface.values)
-        Padding(
-          padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
-          child: CoeloAdminToggleField(
-            key: Key('staff-access-surface-${surface.name}'),
-            label: surface.label,
-            description: surface == StaffAccessSurface.installedApp
-                ? 'Vale quando o app instalado existir (Etapa 4).'
-                : null,
-            value: _surfaces.contains(surface),
-            onChanged: (value) => _update(() {
-              if (value) {
-                _surfaces = {..._surfaces, surface};
-              } else {
-                _surfaces = {..._surfaces}..remove(surface);
-              }
-            }),
-          ),
-        ),
-      if (_surfaces.isEmpty)
-        Text(
-          'Escolha ao menos uma superfície.',
-          key: const Key('staff-access-surfaces-error'),
-          style: TextStyle(color: Theme.of(context).colorScheme.error),
-        ),
+      StaffAccessSurfaceToggles(
+        surfaces: _surfaces,
+        onChanged: (value) => _update(() => _surfaces = value),
+      ),
     ],
   );
 
@@ -421,52 +471,15 @@ final class _StaffAccessFormPageState extends State<StaffAccessFormPage> {
     title: 'Vigência do acesso',
     description: 'Datas inclusivas. Fora da vigência o acesso é negado, nas superfícies escolhidas abaixo.',
     children: [
-      LayoutBuilder(
-        builder: (context, constraints) {
-          final stack = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
-          final from = _DateField(
-            key: const Key('staff-access-valid-from'),
-            label: 'De',
-            value: _validFrom,
-            onChanged: (value) => _update(() => _validFrom = value),
-          );
-          final until = _DateField(
-            key: const Key('staff-access-valid-until'),
-            label: 'Até',
-            value: _validUntil,
-            onChanged: (value) => _update(() => _validUntil = value),
-          );
-          if (stack) {
-            return Column(children: [from, const SizedBox(height: CoeloSpacing.space3), until]);
-          }
-          return Row(
-            children: [
-              Expanded(child: from),
-              const SizedBox(width: CoeloSpacing.space4),
-              Expanded(child: until),
-            ],
-          );
-        },
-      ),
-      if (_validFrom != null && _validUntil != null && _validUntil!.isBefore(_validFrom!))
-        Padding(
-          padding: const EdgeInsets.only(top: CoeloSpacing.space2),
-          child: Text(
-            'A vigência precisa terminar depois de começar.',
-            key: const Key('staff-access-validity-error'),
-            style: TextStyle(color: Theme.of(context).colorScheme.error),
-          ),
-        ),
-      const SizedBox(height: CoeloSpacing.space4),
-      CoeloAdminMultiSelectField<StaffAccessSurface>(
-        key: const Key('staff-access-validity-surfaces'),
-        label: 'Superfícies da vigência',
-        options: StaffAccessSurface.values,
-        selectedValues: _validitySurfaces,
-        optionLabel: (surface) => surface.label,
-        onChanged: (value) => _update(() => _validitySurfaces = value),
-        prefixIcon: Icons.devices_outlined,
-        emptyLabel: 'Todas as superfícies',
+      StaffAccessValidityFields(
+        validFrom: _validFrom,
+        validUntil: _validUntil,
+        validitySurfaces: _validitySurfaces,
+        onChanged: (from, until, surfaces) => _update(() {
+          _validFrom = from;
+          _validUntil = until;
+          _validitySurfaces = surfaces;
+        }),
       ),
     ],
   );
@@ -475,266 +488,17 @@ final class _StaffAccessFormPageState extends State<StaffAccessFormPage> {
     title: 'Popup informativo',
     description: 'Só informa. Desligar o popup não desliga a restrição: sem ele, o funcionário vê "Este contexto não está disponível agora".',
     children: [
-      CoeloAdminToggleField(
-        key: const Key('staff-access-popup-toggle'),
-        label: 'Mostrar o horário permitido ao funcionário',
-        value: _popupEnabled,
-        onChanged: (value) => _update(() => _popupEnabled = value),
+      StaffAccessPopupFields(
+        popupEnabled: _popupEnabled,
+        popupShowValidity: _popupShowValidity,
+        windows: _windows,
+        validFrom: _validFrom,
+        validUntil: _validUntil,
+        onChanged: (enabled, showValidity) => _update(() {
+          _popupEnabled = enabled;
+          _popupShowValidity = showValidity;
+        }),
       ),
-      const SizedBox(height: CoeloSpacing.space2),
-      CoeloAdminToggleField(
-        key: const Key('staff-access-popup-validity-toggle'),
-        label: 'Incluir as datas da vigência no popup',
-        value: _popupShowValidity,
-        onChanged: _popupEnabled ? (value) => _update(() => _popupShowValidity = value) : null,
-      ),
-      const SizedBox(height: CoeloSpacing.space4),
-      _InfoBanner(
-        icon: Icons.visibility_outlined,
-        text: 'Prévia: ${staffAccessPopupPreview(
-          windows: _windows,
-          validFrom: _popupShowValidity ? _validFrom : null,
-          validUntil: _popupShowValidity ? _validUntil : null,
-          enabled: _popupEnabled,
-        )}',
-      ),
-    ],
-  );
-}
-
-/// Grade dias × janelas com adicionar/remover. Uma linha por dia da semana.
-final class StaffAccessWindowsEditor extends StatelessWidget {
-  const StaffAccessWindowsEditor({required this.windows, required this.onChanged, super.key});
-
-  final List<StaffAccessWindow> windows;
-  final ValueChanged<List<StaffAccessWindow>> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (var weekday = 1; weekday <= 7; weekday++) ...[
-          _WeekdayRow(
-            weekday: weekday,
-            windows: [
-              for (var i = 0; i < windows.length; i++)
-                if (windows[i].weekday == weekday) (i, windows[i]),
-            ],
-            onAdd: () => onChanged([
-              ...windows,
-              StaffAccessWindow(weekday: weekday, start: '08:00', end: '18:00'),
-            ]),
-            onRemove: (index) => onChanged([...windows]..removeAt(index)),
-            onEdit: (index, value) {
-              final next = [...windows];
-              next[index] = value;
-              onChanged(next);
-            },
-          ),
-          if (weekday < 7) Divider(height: CoeloSpacing.space4, color: colors.outlineVariant),
-        ],
-        const SizedBox(height: CoeloSpacing.space3),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: TextButton.icon(
-            key: const Key('staff-access-windows-weekdays'),
-            onPressed: () => onChanged([
-              for (var d = 1; d <= 5; d++)
-                if (!windows.any((w) => w.weekday == d))
-                  StaffAccessWindow(weekday: d, start: '08:00', end: '18:00'),
-              ...windows,
-            ]..sort((a, b) => a.weekday.compareTo(b.weekday))),
-            icon: const Icon(Icons.work_history_outlined),
-            label: const Text('Preencher seg–sex 08:00–18:00'),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-final class _WeekdayRow extends StatelessWidget {
-  const _WeekdayRow({
-    required this.weekday,
-    required this.windows,
-    required this.onAdd,
-    required this.onRemove,
-    required this.onEdit,
-  });
-
-  final int weekday;
-  final List<(int, StaffAccessWindow)> windows;
-  final VoidCallback onAdd;
-  final ValueChanged<int> onRemove;
-  final void Function(int index, StaffAccessWindow value) onEdit;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                StaffAccessWindow.weekdayLabels[weekday]!,
-                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-              ),
-            ),
-            if (windows.isEmpty)
-              Text(
-                'Sem acesso',
-                style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-              ),
-            const SizedBox(width: CoeloSpacing.space2),
-            TextButton.icon(
-              key: Key('staff-access-window-add-$weekday'),
-              onPressed: onAdd,
-              icon: const Icon(Icons.add_rounded),
-              label: const Text('Janela'),
-            ),
-          ],
-        ),
-        for (final (index, window) in windows)
-          Padding(
-            padding: const EdgeInsets.only(top: CoeloSpacing.space2),
-            child: _WindowRow(
-              index: index,
-              window: window,
-              onRemove: () => onRemove(index),
-              onChanged: (value) => onEdit(index, value),
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-final class _WindowRow extends StatelessWidget {
-  const _WindowRow({
-    required this.index,
-    required this.window,
-    required this.onRemove,
-    required this.onChanged,
-  });
-
-  final int index;
-  final StaffAccessWindow window;
-  final VoidCallback onRemove;
-  final ValueChanged<StaffAccessWindow> onChanged;
-
-  TimeOfDay _time(String value) {
-    final parts = value.split(':');
-    return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
-  }
-
-  String _text(TimeOfDay value) =>
-      '${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final start = CoeloTimeField(
-      key: Key('staff-access-window-start-$index'),
-      labelText: 'Início',
-      value: _time(window.start),
-      onChanged: (value) {
-        if (value == null) return;
-        onChanged(StaffAccessWindow(weekday: window.weekday, start: _text(value), end: window.end));
-      },
-    );
-    final end = CoeloTimeField(
-      key: Key('staff-access-window-end-$index'),
-      labelText: window.crossesMidnight ? 'Fim (dia seguinte)' : 'Fim',
-      value: _time(window.end),
-      onChanged: (value) {
-        if (value == null) return;
-        onChanged(StaffAccessWindow(weekday: window.weekday, start: window.start, end: _text(value)));
-      },
-    );
-    final remove = IconButton(
-      key: Key('staff-access-window-remove-$index'),
-      tooltip: 'Remover janela',
-      onPressed: onRemove,
-      icon: Icon(Icons.delete_outline_rounded, color: colors.error),
-    );
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth < CoeloBreakpoints.medium.minWidth) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              start,
-              const SizedBox(height: CoeloSpacing.space2),
-              end,
-              Align(alignment: Alignment.centerRight, child: remove),
-            ],
-          );
-        }
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Expanded(child: start),
-            const SizedBox(width: CoeloSpacing.space3),
-            Expanded(child: end),
-            const SizedBox(width: CoeloSpacing.space2),
-            Padding(padding: const EdgeInsets.only(bottom: CoeloSpacing.space1), child: remove),
-          ],
-        );
-      },
-    );
-  }
-}
-
-/// Campo de data (mesma anatomia do campo de data de Medicação).
-final class _DateField extends StatelessWidget {
-  const _DateField({required this.label, required this.value, required this.onChanged, super.key});
-  final String label;
-  final DateTime? value;
-  final ValueChanged<DateTime?> onChanged;
-
-  @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      Expanded(
-        child: CoeloAdminInteractiveCard(
-          semanticLabel: '$label: ${value == null ? 'Não informada' : staffAccessDateLabel(value!)}',
-          minHeight: CoeloSize.touchMin,
-          onPressed: () async {
-            final now = DateUtils.dateOnly(DateTime.now());
-            final selected = await showCoeloDateRangePicker(
-              context: context,
-              value: value == null ? null : DateTimeRange(start: value!, end: value!),
-              firstDate: DateTime(now.year - 1),
-              lastDate: DateTime(now.year + 10, 12, 31),
-              currentDate: now,
-              showQuickRanges: false,
-              selectionMode: CoeloDateSelectionMode.single,
-            );
-            if (!context.mounted || selected == null) return;
-            onChanged(DateUtils.dateOnly(selected.start));
-          },
-          child: InputDecorator(
-            decoration: InputDecoration(
-              labelText: label,
-              prefixIcon: const Icon(Icons.calendar_today_outlined),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-            ),
-            child: Text(value == null ? 'Sem limite' : staffAccessDateLabel(value!)),
-          ),
-        ),
-      ),
-      if (value != null)
-        IconButton(
-          tooltip: 'Limpar $label',
-          onPressed: () => onChanged(null),
-          icon: const Icon(Icons.close_rounded),
-        ),
     ],
   );
 }
@@ -794,26 +558,39 @@ final class _ReadOnlyRow extends StatelessWidget {
   }
 }
 
-final class _InfoBanner extends StatelessWidget {
-  const _InfoBanner({required this.icon, required this.text});
+/// Aviso de origem do horário (fora do padrão do perfil) com ação.
+final class _SourceBanner extends StatelessWidget {
+  const _SourceBanner({required this.icon, required this.text, required this.action, super.key});
   final IconData icon;
   final String text;
+  final Widget action;
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final status = context.coeloStatusColors;
     return Container(
       padding: const EdgeInsets.all(CoeloSpacing.space3),
       decoration: BoxDecoration(
-        border: Border.all(color: colors.outlineVariant),
+        color: status.warningContainer,
         borderRadius: BorderRadius.circular(CoeloRadius.md),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Icon(icon, size: CoeloSize.iconSm, color: colors.onSurfaceVariant),
-          const SizedBox(width: CoeloSpacing.space2),
-          Expanded(child: Text(text, style: Theme.of(context).textTheme.bodySmall)),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, size: CoeloSize.iconSm, color: status.onWarningContainer),
+              const SizedBox(width: CoeloSpacing.space2),
+              Expanded(
+                child: Text(
+                  text,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: status.onWarningContainer),
+                ),
+              ),
+            ],
+          ),
+          Align(alignment: Alignment.centerRight, child: action),
         ],
       ),
     );

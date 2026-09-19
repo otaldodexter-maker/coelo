@@ -23,6 +23,9 @@ final class SupabaseStaffAccessRepository implements StaffAccessRepository {
               : query.states.map((s) => s.databaseValue).toList(growable: false),
           'p_page': query.page + 1,
           'p_page_size': query.pageSize,
+          'p_sources': query.sources.isEmpty
+              ? null
+              : query.sources.map((s) => s.databaseValue).toList(growable: false),
         },
       );
       final payload = Map<String, dynamic>.from(response as Map);
@@ -72,6 +75,40 @@ final class SupabaseStaffAccessRepository implements StaffAccessRepository {
         },
       );
       return StaffAccessItem.fromJson(Map<String, dynamic>.from(response as Map));
+    } on PostgrestException catch (error) {
+      throw _mapError(error);
+    }
+  }
+
+  @override
+  Future<StaffAccessProfileRule> fetchProfileRule(String roleId) async {
+    try {
+      final response = await _client.rpc<dynamic>(
+        'staff_access_profile_rule_get_v1',
+        params: {'p_role_id': roleId},
+      );
+      return StaffAccessProfileRule.fromJson(Map<String, dynamic>.from(response as Map));
+    } on PostgrestException catch (error) {
+      throw _mapError(error);
+    }
+  }
+
+  @override
+  Future<StaffAccessProfileRule> saveProfileRule(
+    String roleId,
+    int? expectedVersion,
+    StaffAccessRuleDraft draft,
+  ) async {
+    try {
+      final response = await _client.rpc<dynamic>(
+        'staff_access_profile_rule_save_v1',
+        params: {
+          'p_role_id': roleId,
+          'p_expected_version': expectedVersion,
+          'p_payload': draft.toJson(),
+        },
+      );
+      return StaffAccessProfileRule.fromJson(Map<String, dynamic>.from(response as Map));
     } on PostgrestException catch (error) {
       throw _mapError(error);
     }
