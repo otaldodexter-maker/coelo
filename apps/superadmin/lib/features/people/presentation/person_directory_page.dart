@@ -218,6 +218,7 @@ final class _PersonDirectoryContent extends StatelessWidget {
         onRetry: viewModel.retry,
         onClearFilters: () => clearPeopleFilters(searchController, viewModel),
         search: CoeloSearchField(
+          key: const Key('people-directory-search'),
           controller: searchController,
           hintText: 'Buscar por nome',
           semanticLabel: 'Buscar pessoas por nome',
@@ -508,7 +509,11 @@ final class _PersonCard extends StatelessWidget {
     return CoeloAdminInteractiveCard(
       surfaceKey: Key('person-card-${item.id}'),
       minHeight: 216,
-      semanticLabel: '${item.displayName}. ${item.type.label}. Status: ${item.status.label}',
+      // Com o ⋯ o card não pode colapsar a semântica, senão o botão some para
+      // leitores de tela; o nome, tipo e status já estão nos filhos.
+      semanticLabel: menu == null
+          ? '${item.displayName}. ${item.type.label}. Status: ${item.status.label}'
+          : null,
       onPressed: onEdit == null ? null : () => onEdit!(item.id),
       child: Padding(
         padding: const EdgeInsets.symmetric(
