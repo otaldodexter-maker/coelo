@@ -531,8 +531,9 @@ class _MultipleContextSheetState extends State<_MultipleContextSheet> {
                     hoverColor: Colors.transparent,
                     controlAffinity: ListTileControlAffinity.leading,
                     secondary: item.accessBlocked ? const Icon(Icons.lock_outline_rounded) : null,
+                    // Bloqueado: nao marca; explica (popup do servidor) e fica no seletor.
                     onChanged: item.accessBlocked
-                        ? null
+                        ? (_) => showPrincipalBlockedContextDialog(context, item)
                         : (value) => setState(() {
                             if (value == true) {
                               selected.add(item.membershipId);

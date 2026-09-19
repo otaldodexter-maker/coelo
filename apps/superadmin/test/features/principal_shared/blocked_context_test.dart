@@ -106,4 +106,34 @@ class _Contexts implements PrincipalRuntimeContextRepository {
             : null,
       ),
   ];
+
+  testWidgets('"ver como" múltiplo: o bloqueado não marca e abre o popup', (tester) async {
+    resetPrincipalContextSelectionForTests();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: PrincipalRuntimeContextRoute(
+            repository: _Contexts(blockedFirst: true),
+            avatarInitials: 'QA',
+            multipleBuilder: (_, selected) => Text('Selected: ${selected.length}'),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Selected: 1'), findsOneWidget);
+    await tester.tap(find.byTooltip('Abrir menu do perfil'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ver como'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('principal-context-a')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('principal-context-blocked-dialog')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('principal-context-blocked-switch')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Aplicar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Selected: 1'), findsOneWidget);
+  });
 }
