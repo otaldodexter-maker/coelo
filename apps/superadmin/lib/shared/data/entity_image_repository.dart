@@ -233,8 +233,9 @@ final class SupabaseEntityImageRepository implements EntityImageRepository {
       'icon_spec': ?iconSpec,
     });
     final assetId = prepared['asset_id'];
-    if (assetId is! String)
+    if (assetId is! String) {
       throw const EntityImageRepositoryException('Não foi possível preparar a foto.');
+    }
     final finalized = await _json(
       bytes,
       headers: {'x-coelo-asset-id': assetId},
