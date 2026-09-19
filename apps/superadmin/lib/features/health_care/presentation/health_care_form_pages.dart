@@ -3,6 +3,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_section.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
 import 'health_care_responsive_surface.dart';
@@ -402,7 +403,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (_currentStep == _HealthCareProfileFormStep.child)
-            _FormSection(
+            SuperadminFormSection(
               title: 'Criança',
               description: widget.childId == null
                   ? 'Selecione a criança que receberá o perfil.'
@@ -421,7 +422,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
                   : _LockedIdentity(label: 'Criança', value: _childLabel(_childId)),
             ),
           if (_currentStep == _HealthCareProfileFormStep.allergies)
-            _FormSection(
+            SuperadminFormSection(
               title: 'Alergias e restrições',
               description:
                   'A gravidade descreve somente o episódio registrado e não prevê reações futuras.',
@@ -453,7 +454,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
               ),
             ),
           if (_currentStep == _HealthCareProfileFormStep.guidance)
-            _FormSection(
+            SuperadminFormSection(
               title: 'Perfil de cuidado',
               description:
                   'Use características e orientações objetivas, sem classificação por semáforo.',
@@ -810,7 +811,7 @@ final class _ReviewSection extends StatelessWidget {
   final VoidCallback onEdit;
 
   @override
-  Widget build(BuildContext context) => _FormSection(
+  Widget build(BuildContext context) => SuperadminFormSection(
     title: title,
     description: 'Confira as informações antes de salvar.',
     child: Column(
@@ -832,36 +833,6 @@ final class _ReviewSection extends StatelessWidget {
       ],
     ),
   );
-}
-
-final class _FormSection extends StatelessWidget {
-  const _FormSection({required this.title, required this.description, required this.child});
-
-  final String title;
-  final String description;
-  final Widget child;
-
-  /// Cabeçalho de etapa no padrão administrativo, igual a Criar instituição.
-  ///
-  /// O Owner apontou em 10/09/2026 que o wizard de Perfis de cuidado não seguia
-  /// 100% o padrão, citando o contêiner interno. Era este: o título e a
-  /// descrição da etapa viviam dentro de um card com borda, enquanto em
-  /// Instituições eles são cabeçalho do corpo da página e só os grupos
-  /// auxiliares ganham card. Uma borda diz "objeto separado"; a etapa não é um
-  /// objeto dentro da página, ela é a página.
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(title, style: Theme.of(context).textTheme.headlineSmall),
-        const SizedBox(height: CoeloSpacing.space1),
-        Text(description, style: Theme.of(context).textTheme.bodyMedium),
-        const SizedBox(height: CoeloSpacing.space5),
-        child,
-      ],
-    );
-  }
 }
 
 final class _ResponsiveFields extends StatelessWidget {

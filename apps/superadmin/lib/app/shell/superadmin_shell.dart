@@ -19,6 +19,7 @@ import '../theme/superadmin_theme_mode_scope.dart';
 import '../tour/superadmin_menu_tour_steps.dart';
 import '../tour/superadmin_screen_tours.dart';
 import '../tour/superadmin_tour_store.dart';
+import '../widgets/superadmin_page_heading.dart';
 import 'superadmin_activity_center.dart';
 import 'superadmin_bug_report_dialog.dart';
 import 'superadmin_notice.dart';
@@ -2254,53 +2255,13 @@ class _PageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     return LayoutBuilder(
       builder: (context, constraints) {
         final compactProfile = constraints.maxWidth < 900;
         final visibleActions = compact && compactActions.isNotEmpty ? compactActions : actions;
-        if (compact && visibleActions.isNotEmpty) {
-          return ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: _headerHeight),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space5),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CoeloTourAnchor(
-                      id: SuperadminPageTourAnchors.header,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(title, style: theme.textTheme.headlineSmall),
-                          const SizedBox(height: CoeloSpacing.space1),
-                          Text(
-                            subtitle,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colors.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: CoeloSpacing.space1),
-                  CoeloTourAnchor(
-                    id: SuperadminPageTourAnchors.actions,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: visibleActions
-                          .expand((action) => [action, const SizedBox(width: CoeloSpacing.space1)])
-                          .toList(growable: false),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
+        // No compacto com ações o espaço é curto: gaps menores.
+        final tight = compact && visibleActions.isNotEmpty;
+        final actionGap = tight ? CoeloSpacing.space1 : CoeloSpacing.space2;
         return ConstrainedBox(
           constraints: const BoxConstraints(minHeight: _headerHeight),
           child: Padding(
@@ -2310,37 +2271,21 @@ class _PageHeader extends StatelessWidget {
                 Expanded(
                   child: CoeloTourAnchor(
                     id: SuperadminPageTourAnchors.header,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          maxLines: compact ? null : 1,
-                          overflow: compact ? null : TextOverflow.ellipsis,
-                          style: theme.textTheme.headlineSmall,
-                        ),
-                        const SizedBox(height: CoeloSpacing.space1),
-                        Text(
-                          subtitle,
-                          maxLines: compact ? null : 1,
-                          overflow: compact ? null : TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
+                    child: SuperadminPageHeading(
+                      title: title,
+                      subtitle: subtitle,
+                      singleLine: !compact,
                     ),
                   ),
                 ),
                 if (visibleActions.isNotEmpty) ...[
-                  const SizedBox(width: CoeloSpacing.space4),
+                  SizedBox(width: tight ? CoeloSpacing.space1 : CoeloSpacing.space4),
                   CoeloTourAnchor(
                     id: SuperadminPageTourAnchors.actions,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: visibleActions
-                          .expand((action) => [action, const SizedBox(width: CoeloSpacing.space2)])
+                          .expand((action) => [action, SizedBox(width: actionGap)])
                           .toList(growable: false),
                     ),
                   ),

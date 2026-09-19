@@ -6,6 +6,7 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_section.dart';
 
 import '../../../../app/widgets/superadmin_advanced_color_picker_dialog.dart';
 import '../../../locations/domain/location_catalog_reader.dart';
@@ -18,12 +19,15 @@ import '../../../../shared/presentation/widgets/superadmin_location_map_preview.
 import '../view_models/institution_form_controller.dart';
 import 'institution_form_dialogs.dart';
 import 'institution_logo_picker.dart';
+import '../../../../shared/data/entity_image_repository.dart';
+import '../../../../shared/presentation/widgets/entity_images_section.dart';
 
 final class InstitutionFormSection extends StatelessWidget {
   const InstitutionFormSection({
     required this.controller,
     required this.locationService,
     required this.imagePicker,
+    this.images,
     this.locationScope,
     this.locationCatalogReader = const UnavailableLocationCatalogReader(),
     this.locationSessionAvailable = false,
@@ -35,6 +39,9 @@ final class InstitutionFormSection extends StatelessWidget {
   final InstitutionFormController controller;
   final InstitutionLocationService locationService;
   final InstitutionLogoPicker imagePicker;
+
+  /// Fotos reais (R2) quando há repositório; sem ele os cartões seguem indisponíveis.
+  final EntityImagesController? images;
   final LocationScope? locationScope;
   final LocationCatalogReader locationCatalogReader;
   final bool locationSessionAvailable;
@@ -59,7 +66,7 @@ final class InstitutionFormSection extends StatelessWidget {
       ),
       InstitutionFormStep.administrators => _AdministratorsSection(controller: controller),
       InstitutionFormStep.plan => _PlanSection(controller: controller),
-      InstitutionFormStep.branding => _BrandingSection(controller: controller),
+      InstitutionFormStep.branding => _BrandingSection(controller: controller, images: images),
       InstitutionFormStep.review => _ReviewSection(controller: controller),
     };
   }
@@ -71,7 +78,7 @@ final class _ProfileSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _Section(
+    return SuperadminFormSection(
       title: 'Perfil da instituição',
       description: 'Identifique a instituição e defina como ela funcionará no Coelo.',
       child: Column(
@@ -187,7 +194,7 @@ final class _LocationSectionState extends State<_LocationSection> {
     final state = controller.text(InstitutionFormField.state);
     final municipality = controller.text(InstitutionFormField.city);
     final municipalityOptions = ['', ..._municipalities];
-    return _Section(
+    return SuperadminFormSection(
       title: 'Localização e contato',
       description: 'Organize o endereço principal e os canais institucionais.',
       child: Column(
@@ -412,7 +419,7 @@ final class _LegalRepresentativesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _Section(
+    return SuperadminFormSection(
       title: 'Representantes legais',
       description: 'Cadastre as pessoas legalmente responsáveis pela instituição.',
       child: Column(
@@ -509,7 +516,7 @@ final class _AdministratorsSectionState extends State<_AdministratorsSection> {
     final candidates = controller.legalRepresentatives
         .where((item) => controller.recommendedAdministratorRepresentativeIds.contains(item.id))
         .toList(growable: false);
-    return _Section(
+    return SuperadminFormSection(
       title: 'Administradores',
       description: 'Confirme quem administrará a instituição e acompanhe os convites locais.',
       child: Column(
@@ -829,6 +836,10 @@ final class _AdministratorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Administrador já persistido: a foto é a da pessoa (R2, entity-media);
+    // antes disso (ou sem repositório) vale o rascunho local.
+    final personId = administrator.personId;
+    final realPhoto = personId != null && EntityImageScope.maybeOf(context) != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -841,6 +852,17 @@ final class _AdministratorCard extends StatelessWidget {
           onEdit: onEdit,
           onRemove: onRemove,
         ),
+        if (realPhoto)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space4),
+            child: EntityImagesSection(
+              key: Key('institution-administrator-images-${administrator.id}'),
+              kind: EntityKind.person,
+              entityId: personId,
+              showCover: false,
+              profileTitle: 'Foto do administrador',
+            ),
+          ),
         Padding(
           padding: const EdgeInsets.only(
             left: CoeloSpacing.space4,
@@ -866,14 +888,16 @@ final class _AdministratorCard extends StatelessWidget {
                       : 'Reenviar convite',
                 ),
               ),
-              OutlinedButton.icon(
-                key: Key('institution-administrator-avatar-${administrator.id}'),
-                onPressed: onPickAvatar,
-                icon: const Icon(Icons.add_a_photo_outlined),
-                label: Text(administrator.avatarBytes == null ? 'Adicionar foto' : 'Trocar foto'),
-              ),
-              if (administrator.avatarBytes != null)
-                TextButton(onPressed: onRemoveAvatar, child: const Text('Remover foto')),
+              if (!realPhoto) ...[
+                OutlinedButton.icon(
+                  key: Key('institution-administrator-avatar-${administrator.id}'),
+                  onPressed: onPickAvatar,
+                  icon: const Icon(Icons.add_a_photo_outlined),
+                  label: Text(administrator.avatarBytes == null ? 'Adicionar foto' : 'Trocar foto'),
+                ),
+                if (administrator.avatarBytes != null)
+                  TextButton(onPressed: onRemoveAvatar, child: const Text('Remover foto')),
+              ],
               if (administrator.sourceRepresentativeId != null) ...[
                 OutlinedButton(
                   key: Key('institution-sync-representative-to-admin-${administrator.id}'),
@@ -1328,7 +1352,7 @@ final class _PlanSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _Section(
+    return SuperadminFormSection(
       title: 'Plano',
       description: 'Selecione a oferta e acompanhe o estado da assinatura.',
       child: Column(
@@ -1444,8 +1468,9 @@ final class _PlanSection extends StatelessWidget {
 }
 
 final class _BrandingSection extends StatelessWidget {
-  const _BrandingSection({required this.controller});
+  const _BrandingSection({required this.controller, this.images});
   final InstitutionFormController controller;
+  final EntityImagesController? images;
 
   @override
   Widget build(BuildContext context) {
@@ -1458,7 +1483,7 @@ final class _BrandingSection extends StatelessWidget {
       controller.text(InstitutionFormField.secondaryColor),
       fallback: colors.secondary,
     );
-    return _Section(
+    return SuperadminFormSection(
       title: 'Identidade visual',
       description: 'Defina como a instituição será reconhecida no Coelo.',
       child: Column(
@@ -1466,9 +1491,25 @@ final class _BrandingSection extends StatelessWidget {
         children: [
           _InstitutionBrandPreview(controller: controller, accent: accent, secondary: secondary),
           const SizedBox(height: CoeloSpacing.space5),
-          _LogoPicker(controller: controller, accent: accent),
-          const SizedBox(height: CoeloSpacing.space4),
-          _CoverPicker(controller: controller, accent: accent),
+          if (images case final images?)
+            EntityImagesSection(
+              kind: EntityKind.institution,
+              entityId: images.entityId,
+              controller: images,
+              onChanged: () {
+                if (images.has(EntityImageKind.profile) != controller.hasSimulatedLogo) {
+                  controller.setSimulatedLogo(images.has(EntityImageKind.profile));
+                }
+                if (images.has(EntityImageKind.cover) != controller.hasSimulatedCover) {
+                  controller.setSimulatedCover(images.has(EntityImageKind.cover));
+                }
+              },
+            )
+          else ...[
+            _LogoPicker(controller: controller, accent: accent),
+            const SizedBox(height: CoeloSpacing.space4),
+            _CoverPicker(controller: controller, accent: accent),
+          ],
           const SizedBox(height: CoeloSpacing.space5),
           _FieldGrid(
             children: [
@@ -2291,7 +2332,7 @@ final class _ReviewSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _Section(
+    return SuperadminFormSection(
       title: 'Revisão',
       description: 'Confira os dados antes de concluir. Você pode editar qualquer seção.',
       child: Column(
@@ -2349,28 +2390,6 @@ final class _ReviewSection extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-final class _Section extends StatelessWidget {
-  const _Section({required this.title, required this.description, required this.child});
-  final String title;
-  final String description;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      key: ValueKey(title),
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: Theme.of(context).textTheme.headlineSmall),
-        const SizedBox(height: CoeloSpacing.space1),
-        Text(description, style: Theme.of(context).textTheme.bodyMedium),
-        const SizedBox(height: CoeloSpacing.space5),
-        child,
-      ],
     );
   }
 }

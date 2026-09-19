@@ -2,6 +2,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_section.dart';
 
 import '../domain/platform_invite.dart';
 import 'invite_presentation_support.dart';
@@ -39,7 +40,7 @@ final class InviteScopeProfileSection extends StatelessWidget {
   final ValueChanged<InviteProfileOption?> onProfileChanged;
 
   @override
-  Widget build(BuildContext context) => _Section(
+  Widget build(BuildContext context) => SuperadminFormSection(
     title: 'Contexto e perfil',
     description: 'Busque somente nos contextos e perfis que você pode administrar.',
     children: [
@@ -112,7 +113,7 @@ final class InviteRecipientSection extends StatelessWidget {
   final ValueChanged<InviteRecipientOption?> onRecipientChanged;
 
   @override
-  Widget build(BuildContext context) => _Section(
+  Widget build(BuildContext context) => SuperadminFormSection(
     title: 'Destinatário',
     description:
         'Use uma Pessoa global existente ou informe um novo e-mail. Nunca duplicamos Pessoas.',
@@ -187,7 +188,7 @@ final class InviteDeliverySection extends StatelessWidget {
   final bool showErrors;
 
   @override
-  Widget build(BuildContext context) => _Section(
+  Widget build(BuildContext context) => SuperadminFormSection(
     title: 'Entrega',
     description: 'Selecione um ou dois canais. Não há envio por SMS.',
     children: [
@@ -245,7 +246,7 @@ final class InviteReviewSection extends StatelessWidget {
   final int expiresInHours;
 
   @override
-  Widget build(BuildContext context) => _Section(
+  Widget build(BuildContext context) => SuperadminFormSection(
     title: 'Revisão',
     description: 'Confira a intenção. O banco recalculará escopo, perfil e autorização ao emitir.',
     children: [
@@ -267,7 +268,7 @@ final class InviteDeliveryResult extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final link = result.invite.channels.contains(InviteChannel.link) ? result.link : null;
-    return _Section(
+    return SuperadminFormSection(
       title: 'Convite emitido',
       description: result.replayed
           ? 'A solicitação já havia sido processada. Por segurança, o link não é reexibido em replay.'
@@ -337,32 +338,6 @@ final class InviteDeliveryResult extends StatelessWidget {
       ],
     );
   }
-}
-
-final class _Section extends StatelessWidget {
-  const _Section({required this.title, required this.description, required this.children});
-
-  final String title;
-  final String description;
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) => Column(
-    key: ValueKey(title),
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Text(title, style: Theme.of(context).textTheme.headlineSmall),
-      const SizedBox(height: CoeloSpacing.space1),
-      Text(
-        description,
-        style: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-      ),
-      const SizedBox(height: CoeloSpacing.space5),
-      ...children,
-    ],
-  );
 }
 
 final class _ReviewRow extends StatelessWidget {

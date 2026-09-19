@@ -6,6 +6,7 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_section.dart';
 
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
@@ -324,25 +325,16 @@ final class _PlanFormPageState extends State<PlanFormPage> {
     return _review();
   }
 
-  Widget _sectionHeader(String title, String description) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(title, style: Theme.of(context).textTheme.titleLarge),
-      const SizedBox(height: CoeloSpacing.space1),
-      Text(description, style: Theme.of(context).textTheme.bodyMedium),
-      const SizedBox(height: CoeloSpacing.space5),
-    ],
-  );
-
   Widget _identity() => Form(
     key: _identityKey,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _sectionHeader(
-          'Identificação',
-          'Dados estáveis e apresentação do plano no catálogo global.',
+        SuperadminFormSectionHeader(
+          title: 'Identificação',
+          description: 'Dados estáveis e apresentação do plano no catálogo global.',
         ),
+        const SizedBox(height: CoeloSpacing.space5),
         CoeloFormTextField(
           key: const Key('plan-name-field'),
           controller: _name,
@@ -402,10 +394,11 @@ final class _PlanFormPageState extends State<PlanFormPage> {
   Widget _capabilities() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      _sectionHeader(
-        'Capacidades incluídas',
-        'Fixtures locais de oferta comercial. Não representam permissões de pessoas.',
+      SuperadminFormSectionHeader(
+        title: 'Capacidades incluídas',
+        description: 'Fixtures locais de oferta comercial. Não representam permissões de pessoas.',
       ),
+      const SizedBox(height: CoeloSpacing.space5),
       PlanCapabilityMatrix(
         searchController: _capabilitySearch,
         selected: _features,
@@ -421,10 +414,11 @@ final class _PlanFormPageState extends State<PlanFormPage> {
   Widget _limits() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      _sectionHeader(
-        'Limites',
-        'Valores informativos; não produzem bloqueio automático no cliente.',
+      SuperadminFormSectionHeader(
+        title: 'Limites',
+        description: 'Valores informativos; não produzem bloqueio automático no cliente.',
       ),
+      const SizedBox(height: CoeloSpacing.space5),
       const _InformationPanel(
         icon: Icons.info_outline_rounded,
         title: 'Informativo no MVP',
@@ -456,10 +450,11 @@ final class _PlanFormPageState extends State<PlanFormPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _sectionHeader(
-          'Instituições vinculadas',
-          'Consulta somente leitura das subscriptions que utilizam este plano.',
+        SuperadminFormSectionHeader(
+          title: 'Instituições vinculadas',
+          description: 'Consulta somente leitura das subscriptions que utilizam este plano.',
         ),
+        const SizedBox(height: CoeloSpacing.space5),
         if (linked.isEmpty)
           const CoeloStatePanel(
             title: 'Nenhuma instituição vinculada',
@@ -478,7 +473,11 @@ final class _PlanFormPageState extends State<PlanFormPage> {
   Widget _review() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      _sectionHeader('Revisão', 'Confira o impacto antes de salvar como única ação primária.'),
+      SuperadminFormSectionHeader(
+        title: 'Revisão',
+        description: 'Confira o impacto antes de salvar como única ação primária.',
+      ),
+      const SizedBox(height: CoeloSpacing.space5),
       if ((_original?.usedByInstitutionCount ?? 0) > 0) ...[
         _InformationPanel(
           icon: Icons.warning_amber_rounded,
