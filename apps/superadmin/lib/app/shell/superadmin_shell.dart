@@ -643,16 +643,34 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     return true;
   }
 
-  /// Espera a página do destino montar (âncora do primeiro passo ou qualquer
-  /// âncora do tour), até [frames] frames.
+  int _mountedAnchorCount(SuperadminScreenTour tour) =>
+      tour.steps.where((step) => _tourRegistry.contextOf(step.anchorId) != null).length;
+
+  /// Espera a página do destino montar (qualquer âncora do tour), até
+  /// [frames] frames, e depois assentar: telas que carregam dados mostram o
+  /// cabeçalho antes do conteúdo, então aguarda pelo menos 1,5 s (até 4 s)
+  /// enquanto novas âncoras aparecem. Com animações desligadas não espera.
   Future<void> _waitForScreen(SuperadminScreenTour tour, {int frames = 120}) async {
+    var mountedAny = false;
     for (var frame = 0; frame < frames; frame++) {
-      if (widget.currentDestination == tour.destinationId &&
-          tour.steps.any((step) => _tourRegistry.contextOf(step.anchorId) != null)) {
-        return;
+      if (widget.currentDestination == tour.destinationId && _mountedAnchorCount(tour) > 0) {
+        mountedAny = true;
+        break;
       }
       await WidgetsBinding.instance.endOfFrame;
       if (!mounted) return;
+    }
+    if (!mountedAny || _reduceMotion) return;
+    final started = DateTime.now();
+    var last = _mountedAnchorCount(tour);
+    while (DateTime.now().difference(started) < const Duration(seconds: 4)) {
+      await Future<void>.delayed(const Duration(milliseconds: 150));
+      if (!mounted) return;
+      final count = _mountedAnchorCount(tour);
+      if (count == tour.steps.length) break;
+      final settled = DateTime.now().difference(started) >= const Duration(milliseconds: 1500);
+      if (settled && count == last) break;
+      last = count;
     }
   }
 

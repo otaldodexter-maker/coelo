@@ -11,6 +11,7 @@ Uma linha por item: tela · o que falta · quem pediu · data. Apague a linha qu
 - Principal · spec 068 perfis oficiais · Owner · 18/09
 - Acessos · acesso contextual de funcionários (horários, vigência, afastamentos, popups) · Owner · ADR 0035
 - Tour · textos dos 42 roteiros são propostas (rascunho `tour-telas-rascunho-20260918.md`, fonte executável em `apps/superadmin/lib/app/tour/screens/`): Owner revisa olhando a tela · Owner · 19/09
+- Tour · balão "Mensagens" (launcher do chat) fica acima do escurecimento do tour em todas as telas; passos de elementos ausentes (estado vazio, paginação de 1 página, painel sem seleção) somem do tour da tela mas seguem contados no "N" do tour completo (282 declarados, 256 mostrados em 1440) · Sessão TOUR-TELAS · 19/09
 - Tour · Planos (dev-only) sem tour por decisão; telas de editar/detalhe (`/…/:id`) e Permissões da Agenda não são destinos do menu e ficam sem tour · Sessão TOUR-TELAS · 19/09
 - Fim da Etapa 3 · dez nomes para "Para você" + três instituições fictícias · Owner · 18/09
 - Etapa 4 · publicação (host, Auth, CORS, SMTP), apps/admin, apps/principal + spec 064, push preparado, analytics, IA · Owner · ADR 0045
