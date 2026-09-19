@@ -767,17 +767,61 @@ const healthCareProfileCatalog = <HealthCareProfileCatalogGroup>[
 ];
 
 final class HealthCareProfileItem {
-  HealthCareProfileItem({required this.catalogItemId, this.otherText}) {
-    final known = healthCareProfileCatalog
-        .expand((group) => group.items)
-        .any((item) => item.id == catalogItemId);
-    if (!known) throw ArgumentError.value(catalogItemId, 'catalogItemId');
+  HealthCareProfileItem({required this.catalogItemId, this.otherText, this.label}) {
+    if (catalogItemId.trim().isEmpty) throw ArgumentError.value(catalogItemId, 'catalogItemId');
     if (catalogItemId == 'other' && (otherText == null || otherText!.trim().isEmpty)) {
       throw ArgumentError('Other care profile items require free text.');
     }
   }
   final String catalogItemId;
   final String? otherText;
+
+  /// Rótulo resolvido pelo servidor (catálogo do lote 93) ou pelo catálogo local.
+  final String? label;
+
+  String get displayLabel =>
+      label ??
+      (catalogItemId == 'other'
+          ? otherText!
+          : healthCareProfileCatalog
+                    .expand((group) => group.items)
+                    .where((item) => item.id == catalogItemId)
+                    .map((item) => item.label)
+                    .firstOrNull ??
+                catalogItemId);
+}
+
+/// Coleções do catálogo de cuidado (spec 065): alimentos e restrições alimentam
+/// `health_care_allergies`; orientações alimentam `health_care_profile_items`.
+enum HealthCareCatalogCollection { food, restriction, guidance }
+
+/// Catálogo de uma coleção, já categorizado pelo servidor.
+final class HealthCareCatalog {
+  const HealthCareCatalog({required this.collection, required this.groups});
+  final HealthCareCatalogCollection collection;
+  final List<HealthCareProfileCatalogGroup> groups;
+}
+
+typedef HealthCareCatalogLoad =
+    Future<HealthCareCatalog> Function(HealthCareCatalogCollection collection, String? search);
+
+/// Linha escolhida do catálogo (ou "Outro" com texto livre).
+final class HealthCareCatalogChoice {
+  const HealthCareCatalogChoice({required this.catalogItemId, required this.label, this.otherText});
+  final String catalogItemId;
+  final String label;
+  final String? otherText;
+  bool get isOther => catalogItemId == 'other';
+}
+
+/// Orientação de cuidado no rascunho: item do catálogo ou "Outro" com texto.
+final class HealthCareProfileItemDraft {
+  const HealthCareProfileItemDraft({required this.catalogItemId, this.otherText, this.label});
+  final String catalogItemId;
+  final String? otherText;
+  final String? label;
+  String get displayLabel =>
+      label ?? (catalogItemId == 'other' ? (otherText ?? 'Outro') : catalogItemId);
 }
 
 final class HealthCareAllergyDraft {
@@ -790,6 +834,10 @@ final class HealthCareAllergyDraft {
     this.observedReaction = '',
     this.allergyGuidance = '',
     this.allergyNotes = '',
+    this.catalogItemId,
+    this.otherText,
+    this.label,
+    this.whatToDo = '',
   });
 
   final String? id;
@@ -801,12 +849,28 @@ final class HealthCareAllergyDraft {
   final String allergyGuidance;
   final String allergyNotes;
 
+  /// Item do catálogo (spec 065) — `other` exige [otherText]. Nulo em registros
+  /// legados descritos só por tipo.
+  final String? catalogItemId;
+  final String? otherText;
+
+  /// Rótulo resolvido pelo servidor; o cliente só exibe.
+  final String? label;
+
+  /// "O que fazer se consumido?" (alimentos) / "se exposto?" (restrições).
+  final String whatToDo;
+
+  String get displayLabel =>
+      label ?? (catalogItemId == 'other' ? (otherText ?? 'Outro') : catalogItemId ?? '');
+
   bool get hasContent =>
       id != null ||
+      catalogItemId != null ||
       lastEpisode.trim().isNotEmpty ||
       observedReaction.trim().isNotEmpty ||
       allergyGuidance.trim().isNotEmpty ||
-      allergyNotes.trim().isNotEmpty;
+      allergyNotes.trim().isNotEmpty ||
+      whatToDo.trim().isNotEmpty;
 }
 
 final class HealthCareProfileDraft {
@@ -821,11 +885,17 @@ final class HealthCareProfileDraft {
     this.allergyGuidance = '',
     this.allergyNotes = '',
     Set<String> careItemIds = const {},
+    List<HealthCareProfileItemDraft>? careItems,
     this.importantSigns = '',
     this.adaptations = '',
     this.justification = '',
     List<HealthCareAllergyDraft>? allergies,
-  }) : careItemIds = Set.unmodifiable(careItemIds),
+  }) : careItems = List.unmodifiable(
+         careItems ?? [for (final id in careItemIds) HealthCareProfileItemDraft(catalogItemId: id)],
+       ),
+       careItemIds = Set.unmodifiable(
+         careItems == null ? careItemIds : careItems.map((item) => item.catalogItemId),
+       ),
        allergies = List.unmodifiable(
          allergies ??
              [
@@ -853,10 +923,19 @@ final class HealthCareProfileDraft {
   final String allergyGuidance;
   final String allergyNotes;
   final Set<String> careItemIds;
+
+  /// Orientações na ordem persistida (spec 065). [careItemIds] é a projeção
+  /// por id, mantida para leitores antigos.
+  final List<HealthCareProfileItemDraft> careItems;
   final String importantSigns;
   final String adaptations;
   final String justification;
   final List<HealthCareAllergyDraft> allergies;
+
+  Iterable<HealthCareAllergyDraft> get foods =>
+      allergies.where((item) => item.allergyType == HealthCareAllergyType.food);
+  Iterable<HealthCareAllergyDraft> get restrictions =>
+      allergies.where((item) => item.allergyType != HealthCareAllergyType.food);
 }
 
 final class HealthCareAcknowledgement {

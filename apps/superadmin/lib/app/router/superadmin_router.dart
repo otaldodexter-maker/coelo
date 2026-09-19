@@ -3551,6 +3551,7 @@ GoRouter createSuperadminRouter({
               (options) => HealthCareProfileFormPage(
                 logout: logout,
                 childOptions: options,
+                loadCatalog: productionCareProfiles?.loadCatalog,
                 onCancel: () => context.goNamed(SuperadminRoutes.healthCareProfilesName),
                 onSaved: productionCareProfiles == null
                     ? null
@@ -3583,6 +3584,7 @@ GoRouter createSuperadminRouter({
                 ),
               ],
               loadDraft: productionCareProfiles?.loadCareProfileDraft,
+              loadCatalog: productionCareProfiles?.loadCatalog,
               onCancel: () => context.goNamed(SuperadminRoutes.healthCareProfilesName),
               onSaved: productionCareProfiles == null
                   ? null
@@ -5412,6 +5414,7 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => HealthCareProfileFormPage(
               logout: _previewLogout,
               childOptions: developmentCareProfileChildren,
+              loadCatalog: careProfilesPreviewRepository().loadCatalog,
               onCancel: () => context.goNamed(SuperadminRoutes.devHealthCareProfilesName),
               onSaved: (draft) async {
                 await careProfilesPreviewRepository().saveCareProfileDraft(draft);
@@ -5435,6 +5438,7 @@ GoRouter createSuperadminRouter({
               childOptions: developmentCareProfileChildren,
               childId: state.pathParameters['childId']!,
               loadDraft: careProfilesPreviewRepository().loadCareProfileDraft,
+              loadCatalog: careProfilesPreviewRepository().loadCatalog,
               onCancel: () => context.goNamed(SuperadminRoutes.devHealthCareProfilesName),
               onSaved: (draft) async {
                 await careProfilesPreviewRepository().saveCareProfileDraft(draft);

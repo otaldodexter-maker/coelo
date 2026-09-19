@@ -26,7 +26,10 @@ void main() {
     addTearDown(controller.dispose);
     final handle = tester.ensureSemantics();
     await tester.pumpWidget(
-      MaterialApp(theme: CoeloTheme.light, home: Scaffold(body: build(controller))),
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(body: build(controller)),
+      ),
     );
     await tester.pumpAndSettle();
     if (tapSize) await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
@@ -84,10 +87,7 @@ void main() {
       MaterialApp(
         theme: CoeloTheme.light,
         home: Scaffold(
-          body: HealthCareProfileFormPage(
-            logout: unavailableSuperadminLogout,
-            onCancel: () {},
-          ),
+          body: HealthCareProfileFormPage(logout: unavailableSuperadminLogout, onCancel: () {}),
         ),
       ),
     );

@@ -12,6 +12,7 @@ import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/health_care.dart';
+import 'health_care_catalog_picker.dart';
 
 typedef HealthCareProfileFormSave = Future<void> Function(HealthCareProfileDraft draft);
 typedef HealthCareProfileFormLoad = Future<HealthCareProfileDraft?> Function(String childId);
@@ -24,7 +25,7 @@ final class HealthCareProfileChildOption {
   final String label;
 }
 
-enum _HealthCareProfileFormStep { child, allergies, guidance, review }
+enum _HealthCareProfileFormStep { child, foods, restrictions, guidance, review }
 
 final class HealthCareProfileFormPage extends StatefulWidget {
   const HealthCareProfileFormPage({
@@ -33,6 +34,7 @@ final class HealthCareProfileFormPage extends StatefulWidget {
     this.onSaved,
     this.onSaveSucceeded,
     this.loadDraft,
+    this.loadCatalog,
     this.childOptions = const [],
     this.childId,
     super.key,
@@ -43,6 +45,9 @@ final class HealthCareProfileFormPage extends StatefulWidget {
   final HealthCareProfileFormSave? onSaved;
   final VoidCallback? onSaveSucceeded;
   final HealthCareProfileFormLoad? loadDraft;
+
+  /// Catálogo categorizado (spec 065). Sem leitor, o seletor oferece só "Outro".
+  final HealthCareCatalogLoad? loadCatalog;
   final List<HealthCareProfileChildOption> childOptions;
   final String? childId;
 
@@ -54,8 +59,8 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
   var _currentStep = _HealthCareProfileFormStep.child;
   late String _childId =
       widget.childId ?? (widget.childOptions.isEmpty ? '' : widget.childOptions.first.id);
-  var _allergies = <_AllergyEditor>[_AllergyEditor()];
-  var _careItems = <String>{};
+  var _allergies = <_AllergyEditor>[];
+  var _careItems = <HealthCareProfileItemDraft>[];
   var _saving = false;
   var _loadingDraft = false;
   var _draftReady = false;
@@ -141,10 +146,14 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
       if (!_isCurrentCommand(generation, requestedChildId, onSaved)) return;
       setState(() => _dirty = false);
       onSaveSucceeded?.call();
-    } catch (_) {
+    } catch (error) {
       if (_isCurrentCommand(generation, requestedChildId, onSaved)) {
         setState(() {
-          _validationError = 'Não foi possível salvar. Revise os dados e tente novamente.';
+          // O repositório traduz o erro do servidor numa mensagem segura
+          // (conflito de versão, criança já com perfil, dados obrigatórios).
+          _validationError = error is StateError
+              ? error.message
+              : 'Não foi possível salvar. Revise os dados e tente novamente.';
         });
       }
     } finally {
@@ -192,8 +201,8 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
   void _applyDraft(HealthCareProfileDraft draft) {
     _childId = draft.childId;
     _loadedChildLabel = draft.childLabel;
-    _replaceAllergies(draft.allergies);
-    _careItems = Set.of(draft.careItemIds);
+    _replaceAllergies(draft.allergies.where((item) => item.hasContent));
+    _careItems = List.of(draft.careItems);
     _signs.text = draft.importantSigns;
     _adaptations.text = draft.adaptations;
     _justification.text = draft.justification;
@@ -213,15 +222,19 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
     _currentStep = _HealthCareProfileFormStep.child;
     _childId = widget.childId ?? (widget.childOptions.isEmpty ? '' : widget.childOptions.first.id);
     _replaceAllergies(const []);
-    _careItems = <String>{};
+    _careItems = <HealthCareProfileItemDraft>[];
     for (final controller in _textControllers) {
       controller.clear();
     }
   }
 
   HealthCareProfileDraft get _draft {
-    final allergies = [for (final allergy in _allergies) allergy.toDraft()];
-    final first = allergies.first;
+    // Alimentos primeiro, depois restrições: a posição persistida é a ordem da lista.
+    final allergies = [
+      for (final allergy in _foods) allergy.toDraft(),
+      for (final allergy in _restrictions) allergy.toDraft(),
+    ];
+    final first = allergies.firstOrNull ?? HealthCareAllergyDraft();
     return HealthCareProfileDraft(
       childId: _childId,
       allergyType: first.allergyType,
@@ -232,7 +245,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
       allergyGuidance: first.allergyGuidance,
       allergyNotes: first.allergyNotes,
       allergies: allergies,
-      careItemIds: _careItems,
+      careItems: _careItems,
       importantSigns: _signs.text,
       adaptations: _adaptations.text,
       justification: _justification.text,
@@ -253,7 +266,6 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
       allergy.dispose();
     }
     _allergies = [for (final draft in drafts) _AllergyEditor(draft)];
-    if (_allergies.isEmpty) _allergies = [_AllergyEditor()];
     for (final allergy in _allergies) {
       for (final controller in allergy.controllers) {
         controller.addListener(_markDirty);
@@ -261,20 +273,100 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
     }
   }
 
-  void _addAllergy() => _change(() {
-    final allergy = _AllergyEditor();
-    for (final controller in allergy.controllers) {
-      controller.addListener(_markDirty);
-    }
-    _allergies = [..._allergies, allergy];
-  });
+  List<_AllergyEditor> get _foods =>
+      _allergies.where((item) => item.allergyType == HealthCareAllergyType.food).toList();
+  List<_AllergyEditor> get _restrictions =>
+      _allergies.where((item) => item.allergyType != HealthCareAllergyType.food).toList();
 
-  void _removeAllergy(int index) {
-    if (_allergies.length == 1) return;
+  HealthCareCatalogCollection _collectionOf(HealthCareAllergyType type) =>
+      type == HealthCareAllergyType.food
+      ? HealthCareCatalogCollection.food
+      : HealthCareCatalogCollection.restriction;
+
+  /// "+ Adicionar": abre o catálogo da coleção e cria UMA linha (spec 065 §5.1).
+  Future<void> _addAllergy(HealthCareAllergyType type) async {
+    final choice = await showHealthCareCatalogPicker(
+      context,
+      collection: _collectionOf(type),
+      loadCatalog: widget.loadCatalog,
+    );
+    if (choice == null || !mounted) return;
     _change(() {
-      _allergies.removeAt(index).dispose();
+      final allergy = _AllergyEditor(
+        HealthCareAllergyDraft(
+          allergyType: type,
+          catalogItemId: choice.catalogItemId,
+          otherText: choice.otherText,
+          label: choice.label,
+        ),
+      );
+      for (final controller in allergy.controllers) {
+        controller.addListener(_markDirty);
+      }
+      _allergies = [..._allergies, allergy];
     });
   }
+
+  void _removeAllergy(_AllergyEditor editor) => _change(() {
+    _allergies = [..._allergies]..remove(editor);
+    editor.dispose();
+  });
+
+  /// Move dentro da própria coleção; a ordem global (alimentos, depois
+  /// restrições) é recomposta em [_draft].
+  void _moveAllergy(_AllergyEditor editor, int delta) {
+    final isFood = editor.allergyType == HealthCareAllergyType.food;
+    final siblings = isFood ? _foods : _restrictions;
+    final others = isFood ? _restrictions : _foods;
+    final from = siblings.indexOf(editor);
+    final to = from + delta;
+    if (from < 0 || to < 0 || to >= siblings.length) return;
+    _change(() {
+      siblings.removeAt(from);
+      siblings.insert(to, editor);
+      _allergies = isFood ? [...siblings, ...others] : [...others, ...siblings];
+    });
+  }
+
+  Future<void> _addCareItem() async {
+    final choice = await showHealthCareCatalogPicker(
+      context,
+      collection: HealthCareCatalogCollection.guidance,
+      loadCatalog: widget.loadCatalog,
+    );
+    if (choice == null || !mounted) return;
+    if (!choice.isOther && _careItems.any((item) => item.catalogItemId == choice.catalogItemId)) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('${choice.label} já está na lista.')));
+      return;
+    }
+    _change(() {
+      _careItems = [
+        ..._careItems,
+        HealthCareProfileItemDraft(
+          catalogItemId: choice.catalogItemId,
+          otherText: choice.otherText,
+          label: choice.label,
+        ),
+      ];
+    });
+  }
+
+  void _moveCareItem(int from, int delta) {
+    final to = from + delta;
+    if (to < 0 || to >= _careItems.length) return;
+    _change(() {
+      final items = [..._careItems];
+      final item = items.removeAt(from);
+      items.insert(to, item);
+      _careItems = items;
+    });
+  }
+
+  void _removeCareItem(int index) => _change(() {
+    _careItems = [..._careItems]..removeAt(index);
+  });
 
   Future<void> _requestCancel() async {
     if (!_dirty) {
@@ -308,7 +400,8 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
       SuperadminFormStep(
         label: switch (step) {
           _HealthCareProfileFormStep.child => 'Criança',
-          _HealthCareProfileFormStep.allergies => 'Alergias e restrições',
+          _HealthCareProfileFormStep.foods => 'Alimentos',
+          _HealthCareProfileFormStep.restrictions => 'Restrições',
           _HealthCareProfileFormStep.guidance => 'Orientações de cuidado',
           _HealthCareProfileFormStep.review => 'Revisão',
         },
@@ -418,37 +511,35 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
                     )
                   : _LockedIdentity(label: 'Criança', value: _childLabel(_childId)),
             ),
-          if (_currentStep == _HealthCareProfileFormStep.allergies)
-            SuperadminFormSection(
-              title: 'Alergias e restrições',
+          if (_currentStep == _HealthCareProfileFormStep.foods)
+            _CollectionStep(
+              title: 'Alimentos',
               description:
-                  'A gravidade descreve somente o episódio registrado e não prevê reações futuras.',
-              child: Column(
-                children: [
-                  for (final entry in _allergies.indexed) ...[
-                    _AllergyEditorCard(
-                      key: Key('health-care-allergy-card-${entry.$1}'),
-                      index: entry.$1,
-                      editor: entry.$2,
-                      canRemove: _allergies.length > 1,
-                      onChanged: _change,
-                      onRemove: () => _removeAllergy(entry.$1),
-                    ),
-                    if (entry.$1 < _allergies.length - 1)
-                      const SizedBox(height: CoeloSpacing.space4),
-                  ],
-                  const SizedBox(height: CoeloSpacing.space4),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      key: const Key('health-care-profile-add-allergy'),
-                      onPressed: _addAllergy,
-                      icon: const Icon(Icons.add),
-                      label: const Text('Adicionar alergia ou restrição'),
-                    ),
-                  ),
-                ],
-              ),
+                  'Alergias e intolerâncias alimentares, uma por linha. '
+                  'A gravidade descreve somente o episódio registrado.',
+              collectionKey: 'food',
+              editors: _foods,
+              emptyLabel: 'Nenhum alimento registrado.',
+              addLabel: 'Adicionar alimento',
+              whatToDoLabel: 'O que fazer se consumido?',
+              onAdd: () => _addAllergy(HealthCareAllergyType.food),
+              onChanged: _change,
+              onRemove: _removeAllergy,
+              onMove: _moveAllergy,
+            ),
+          if (_currentStep == _HealthCareProfileFormStep.restrictions)
+            _CollectionStep(
+              title: 'Restrições',
+              description: 'Contato, ambiente, medicamentos e dieta por regra, uma por linha.',
+              collectionKey: 'restriction',
+              editors: _restrictions,
+              emptyLabel: 'Nenhuma restrição registrada.',
+              addLabel: 'Adicionar restrição',
+              whatToDoLabel: 'O que fazer se exposto?',
+              onAdd: () => _addAllergy(HealthCareAllergyType.restriction),
+              onChanged: _change,
+              onRemove: _removeAllergy,
+              onMove: _moveAllergy,
             ),
           if (_currentStep == _HealthCareProfileFormStep.guidance)
             SuperadminFormSection(
@@ -457,17 +548,24 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
                   'Use características e orientações objetivas, sem classificação por semáforo.',
               child: Column(
                 children: [
-                  CoeloAdminMultiSelectField<String>(
-                    label: 'Caracter\u00edsticas de cuidado',
-                    options: healthCareProfileCatalog
-                        .expand((group) => group.items)
-                        .map((item) => item.id)
-                        .toList(growable: false),
-                    selectedValues: _careItems,
-                    optionLabel: _careItemLabel,
-                    onChanged: (values) => _change(() => _careItems = values),
-                    searchable: true,
-                    searchHintText: 'Buscar característica',
+                  _OrderedList(
+                    collectionKey: 'guidance',
+                    emptyLabel: 'Nenhuma orientação registrada.',
+                    addLabel: 'Adicionar orientação',
+                    onAdd: _addCareItem,
+                    children: [
+                      for (final entry in _careItems.indexed)
+                        _OrderedRow(
+                          key: Key('health-care-guidance-card-${entry.$1}'),
+                          index: entry.$1,
+                          total: _careItems.length,
+                          title: entry.$2.displayLabel,
+                          collectionKey: 'guidance',
+                          onMoveUp: () => _moveCareItem(entry.$1, -1),
+                          onMoveDown: () => _moveCareItem(entry.$1, 1),
+                          onRemove: () => _removeCareItem(entry.$1),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: CoeloSpacing.space4),
                   _ResponsiveFields(
@@ -532,16 +630,32 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
                 ),
                 const SizedBox(height: CoeloSpacing.space4),
                 _ReviewSection(
-                  title: 'Alergias e restrições',
-                  onEdit: () => _selectStep(_HealthCareProfileFormStep.allergies.index),
+                  title: 'Alimentos',
+                  onEdit: () => _selectStep(_HealthCareProfileFormStep.foods.index),
                   rows: [
-                    for (final entry in _allergies.indexed) ...[
-                      ('Registro ${entry.$1 + 1}', _allergyTypeLabel(entry.$2.allergyType)),
-                      ('Status', _allergyStatusLabel(entry.$2.allergyStatus)),
-                      ('Gravidade do episódio', _severityLabel(entry.$2.severity)),
-                      ('Último episódio registrado', entry.$2.lastEpisode.text),
-                      ('Reação observada', entry.$2.reaction.text),
-                      ('Orientação de cuidado', entry.$2.guidance.text),
+                    if (_foods.isEmpty) ('Alimentos', 'Nenhum'),
+                    for (final entry in _foods.indexed) ...[
+                      (
+                        '${entry.$1 + 1}. ${entry.$2.title}',
+                        _allergyStatusLabel(entry.$2.allergyStatus),
+                      ),
+                      ('O que fazer se consumido?', entry.$2.whatToDo.text),
+                      ('Observações', entry.$2.notes.text),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: CoeloSpacing.space4),
+                _ReviewSection(
+                  title: 'Restrições',
+                  onEdit: () => _selectStep(_HealthCareProfileFormStep.restrictions.index),
+                  rows: [
+                    if (_restrictions.isEmpty) ('Restrições', 'Nenhuma'),
+                    for (final entry in _restrictions.indexed) ...[
+                      (
+                        '${entry.$1 + 1}. ${entry.$2.title}',
+                        _allergyStatusLabel(entry.$2.allergyStatus),
+                      ),
+                      ('O que fazer se exposto?', entry.$2.whatToDo.text),
                       ('Observações', entry.$2.notes.text),
                     ],
                   ],
@@ -552,8 +666,10 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
                   onEdit: () => _selectStep(_HealthCareProfileFormStep.guidance.index),
                   rows: [
                     (
-                      'Características de cuidado',
-                      _careItems.isEmpty ? '' : _careItems.map(_careItemLabel).join(', '),
+                      'Orientações',
+                      _careItems.isEmpty
+                          ? 'Nenhuma'
+                          : _careItems.map((item) => item.displayLabel).join(', '),
                     ),
                     ('Sinais importantes', _signs.text),
                     ('Adaptações e orientações', _adaptations.text),
@@ -572,32 +688,57 @@ final class _AllergyEditor {
   _AllergyEditor([HealthCareAllergyDraft? draft])
     : id = draft?.id,
       allergyType = draft?.allergyType ?? HealthCareAllergyType.food,
+      catalogItemId = draft?.catalogItemId,
+      otherText = draft?.otherText,
+      label = draft?.label,
       allergyStatus = draft?.allergyStatus ?? HealthCareAllergyStatus.active,
       severity = draft?.severity ?? HealthCareEpisodeSeverity.moderate,
       lastEpisode = TextEditingController(text: draft?.lastEpisode ?? ''),
       reaction = TextEditingController(text: draft?.observedReaction ?? ''),
       guidance = TextEditingController(text: draft?.allergyGuidance ?? ''),
+      whatToDo = TextEditingController(text: draft?.whatToDo ?? ''),
       notes = TextEditingController(text: draft?.allergyNotes ?? '');
 
   final String? id;
-  HealthCareAllergyType allergyType;
+  final HealthCareAllergyType allergyType;
+  final String? catalogItemId;
+  final String? otherText;
+  final String? label;
   HealthCareAllergyStatus allergyStatus;
   HealthCareEpisodeSeverity severity;
   final TextEditingController lastEpisode;
   final TextEditingController reaction;
   final TextEditingController guidance;
+  final TextEditingController whatToDo;
   final TextEditingController notes;
 
-  Iterable<TextEditingController> get controllers => [lastEpisode, reaction, guidance, notes];
+  /// Nome da linha: catálogo/"Outro" ou, em registro legado sem item, o tipo.
+  String get title {
+    final resolved = label ?? (catalogItemId == 'other' ? otherText : null);
+    if (resolved != null && resolved.isNotEmpty) return resolved;
+    return _allergyTypeLabel(allergyType);
+  }
+
+  Iterable<TextEditingController> get controllers => [
+    lastEpisode,
+    reaction,
+    guidance,
+    whatToDo,
+    notes,
+  ];
 
   HealthCareAllergyDraft toDraft() => HealthCareAllergyDraft(
     id: id,
     allergyType: allergyType,
+    catalogItemId: catalogItemId,
+    otherText: otherText,
+    label: label,
     allergyStatus: allergyStatus,
     lastEpisode: lastEpisode.text,
     severity: severity,
     observedReaction: reaction.text,
     allergyGuidance: guidance.text,
+    whatToDo: whatToDo.text,
     allergyNotes: notes.text,
   );
 
@@ -608,21 +749,240 @@ final class _AllergyEditor {
   }
 }
 
-final class _AllergyEditorCard extends StatelessWidget {
-  const _AllergyEditorCard({
-    required this.index,
-    required this.editor,
-    required this.canRemove,
+/// Passo de coleção (Alimentos ou Restrições): lista ordenada de linhas, cada
+/// uma vinda do catálogo, com mover/remover e "+ Adicionar" (spec 065).
+final class _CollectionStep extends StatelessWidget {
+  const _CollectionStep({
+    required this.title,
+    required this.description,
+    required this.collectionKey,
+    required this.editors,
+    required this.emptyLabel,
+    required this.addLabel,
+    required this.whatToDoLabel,
+    required this.onAdd,
     required this.onChanged,
+    required this.onRemove,
+    required this.onMove,
+  });
+
+  final String title;
+  final String description;
+  final String collectionKey;
+  final List<_AllergyEditor> editors;
+  final String emptyLabel;
+  final String addLabel;
+  final String whatToDoLabel;
+  final VoidCallback onAdd;
+  final ValueChanged<VoidCallback> onChanged;
+  final ValueChanged<_AllergyEditor> onRemove;
+  final void Function(_AllergyEditor editor, int delta) onMove;
+
+  @override
+  Widget build(BuildContext context) => SuperadminFormSection(
+    title: title,
+    description: description,
+    child: _OrderedList(
+      collectionKey: collectionKey,
+      emptyLabel: emptyLabel,
+      addLabel: addLabel,
+      onAdd: onAdd,
+      children: [
+        for (final entry in editors.indexed)
+          _AllergyEditorCard(
+            key: Key('health-care-$collectionKey-card-${entry.$1}'),
+            index: entry.$1,
+            total: editors.length,
+            collectionKey: collectionKey,
+            editor: entry.$2,
+            whatToDoLabel: whatToDoLabel,
+            onChanged: onChanged,
+            onRemove: () => onRemove(entry.$2),
+            onMoveUp: () => onMove(entry.$2, -1),
+            onMoveDown: () => onMove(entry.$2, 1),
+          ),
+      ],
+    ),
+  );
+}
+
+final class _OrderedList extends StatelessWidget {
+  const _OrderedList({
+    required this.collectionKey,
+    required this.emptyLabel,
+    required this.addLabel,
+    required this.onAdd,
+    required this.children,
+  });
+
+  final String collectionKey;
+  final String emptyLabel;
+  final String addLabel;
+  final VoidCallback onAdd;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      if (children.isEmpty)
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space2),
+          child: Text(
+            emptyLabel,
+            key: Key('health-care-$collectionKey-empty'),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          ),
+        ),
+      for (final entry in children.indexed) ...[
+        entry.$2,
+        if (entry.$1 < children.length - 1) const SizedBox(height: CoeloSpacing.space3),
+      ],
+      const SizedBox(height: CoeloSpacing.space4),
+      Align(
+        alignment: Alignment.centerLeft,
+        child: TextButton.icon(
+          key: Key('health-care-profile-add-$collectionKey'),
+          onPressed: onAdd,
+          icon: const Icon(Icons.add),
+          label: Text(addLabel),
+        ),
+      ),
+    ],
+  );
+}
+
+/// Cabeçalho de linha ordenável: posição, nome, mover para cima/baixo, remover.
+/// Botões, não só arrasto (spec 065 §5.4), para teclado e leitor de tela.
+final class _OrderedRowHeader extends StatelessWidget {
+  const _OrderedRowHeader({
+    required this.index,
+    required this.total,
+    required this.title,
+    required this.collectionKey,
+    required this.onMoveUp,
+    required this.onMoveDown,
+    required this.onRemove,
+  });
+
+  final int index;
+  final int total;
+  final String title;
+  final String collectionKey;
+  final VoidCallback onMoveUp;
+  final VoidCallback onMoveDown;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 14,
+          backgroundColor: theme.colorScheme.secondaryContainer,
+          foregroundColor: theme.colorScheme.onSecondaryContainer,
+          child: Text('${index + 1}', style: theme.textTheme.labelLarge),
+        ),
+        const SizedBox(width: CoeloSpacing.space3),
+        Expanded(
+          child: Text(
+            title,
+            style: theme.textTheme.titleMedium,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        IconButton(
+          key: Key('health-care-$collectionKey-up-$index'),
+          onPressed: index == 0 ? null : onMoveUp,
+          tooltip: 'Mover para cima',
+          icon: const Icon(Icons.arrow_upward_rounded),
+        ),
+        IconButton(
+          key: Key('health-care-$collectionKey-down-$index'),
+          onPressed: index >= total - 1 ? null : onMoveDown,
+          tooltip: 'Mover para baixo',
+          icon: const Icon(Icons.arrow_downward_rounded),
+        ),
+        IconButton(
+          key: Key('health-care-$collectionKey-remove-$index'),
+          onPressed: onRemove,
+          tooltip: 'Remover $title',
+          icon: const Icon(Icons.delete_outline),
+        ),
+      ],
+    );
+  }
+}
+
+final class _OrderedRow extends StatelessWidget {
+  const _OrderedRow({
+    required this.index,
+    required this.total,
+    required this.title,
+    required this.collectionKey,
+    required this.onMoveUp,
+    required this.onMoveDown,
     required this.onRemove,
     super.key,
   });
 
   final int index;
+  final int total;
+  final String title;
+  final String collectionKey;
+  final VoidCallback onMoveUp;
+  final VoidCallback onMoveDown;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(
+      horizontal: CoeloSpacing.space3,
+      vertical: CoeloSpacing.space2,
+    ),
+    decoration: BoxDecoration(
+      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      borderRadius: BorderRadius.circular(CoeloRadius.md),
+    ),
+    child: _OrderedRowHeader(
+      index: index,
+      total: total,
+      title: title,
+      collectionKey: collectionKey,
+      onMoveUp: onMoveUp,
+      onMoveDown: onMoveDown,
+      onRemove: onRemove,
+    ),
+  );
+}
+
+final class _AllergyEditorCard extends StatelessWidget {
+  const _AllergyEditorCard({
+    required this.index,
+    required this.total,
+    required this.collectionKey,
+    required this.editor,
+    required this.whatToDoLabel,
+    required this.onChanged,
+    required this.onRemove,
+    required this.onMoveUp,
+    required this.onMoveDown,
+    super.key,
+  });
+
+  final int index;
+  final int total;
+  final String collectionKey;
   final _AllergyEditor editor;
-  final bool canRemove;
+  final String whatToDoLabel;
   final ValueChanged<VoidCallback> onChanged;
   final VoidCallback onRemove;
+  final VoidCallback onMoveUp;
+  final VoidCallback onMoveDown;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -634,30 +994,18 @@ final class _AllergyEditorCard extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text('Registro ${index + 1}', style: Theme.of(context).textTheme.titleMedium),
-            ),
-            IconButton(
-              key: Key('health-care-profile-remove-allergy-$index'),
-              onPressed: canRemove ? onRemove : null,
-              tooltip: 'Remover registro ${index + 1}',
-              icon: const Icon(Icons.delete_outline),
-            ),
-          ],
+        _OrderedRowHeader(
+          index: index,
+          total: total,
+          title: editor.title,
+          collectionKey: collectionKey,
+          onMoveUp: onMoveUp,
+          onMoveDown: onMoveDown,
+          onRemove: onRemove,
         ),
         const SizedBox(height: CoeloSpacing.space3),
         _ResponsiveFields(
           children: [
-            CoeloAdminSingleSelectField<HealthCareAllergyType>(
-              label: 'Tipo',
-              value: editor.allergyType,
-              options: HealthCareAllergyType.values,
-              optionLabel: _allergyTypeLabel,
-              onChanged: (value) => onChanged(() => editor.allergyType = value),
-              prefixIcon: Icons.health_and_safety_outlined,
-            ),
             CoeloAdminSingleSelectField<HealthCareAllergyStatus>(
               label: 'Status',
               value: editor.allergyStatus,
@@ -679,29 +1027,26 @@ final class _AllergyEditorCard extends StatelessWidget {
               onChanged: (value) => onChanged(() => editor.severity = value),
               prefixIcon: Icons.monitor_heart_outlined,
             ),
-          ],
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-        _ResponsiveFields(
-          children: [
             CoeloFormTextField(
-              key: Key('health-care-allergy-reaction-$index'),
+              key: Key('health-care-$collectionKey-reaction-$index'),
               controller: editor.reaction,
               labelText: 'Reação observada',
               prefixIcon: Icons.visibility_outlined,
-              maxLines: 3,
-            ),
-            CoeloFormTextField(
-              key: Key('health-care-allergy-guidance-$index'),
-              controller: editor.guidance,
-              labelText: 'Orientação de cuidado',
-              prefixIcon: Icons.assignment_outlined,
               maxLines: 3,
             ),
           ],
         ),
         const SizedBox(height: CoeloSpacing.space4),
         CoeloFormTextField(
+          key: Key('health-care-$collectionKey-what-to-do-$index'),
+          controller: editor.whatToDo,
+          labelText: whatToDoLabel,
+          prefixIcon: Icons.medical_services_outlined,
+          maxLines: 3,
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+        CoeloFormTextField(
+          key: Key('health-care-$collectionKey-notes-$index'),
           controller: editor.notes,
           labelText: 'Observações',
           prefixIcon: Icons.notes_rounded,
@@ -884,10 +1229,3 @@ String _severityLabel(HealthCareEpisodeSeverity value) => switch (value) {
   HealthCareEpisodeSeverity.moderate => 'Moderada',
   HealthCareEpisodeSeverity.severe => 'Grave',
 };
-
-String _careItemLabel(String id) {
-  for (final item in healthCareProfileCatalog.expand((group) => group.items)) {
-    if (item.id == id) return item.label;
-  }
-  return id;
-}

@@ -200,9 +200,9 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
     final detail = _map(
       await _rpc('superadmin_health_care_profile_detail', {'profile_id': draft.childId}),
     );
-    final activeAllergies = _rows(detail['allergies'])
-        .where((row) => row['active'] as bool? ?? true)
-        .toList(growable: false);
+    final activeAllergies = _rows(
+      detail['allergies'],
+    ).where((row) => row['active'] as bool? ?? true).toList(growable: false);
     final draftAllergyIds = draft.allergies.map((item) => item.id).whereType<String>().toSet();
     final removedAllergyIds = activeAllergies
         .map((row) => row['id'] as String?)
@@ -216,6 +216,37 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
     });
   }
 
+  /// Catálogo categorizado de uma coleção (lote 93). Busca com menos de dois
+  /// caracteres é ignorada pelo servidor.
+  Future<HealthCareCatalog> loadCatalog(
+    HealthCareCatalogCollection collection,
+    String? search,
+  ) async {
+    final payload = _map(
+      await _rpc('superadmin_health_care_catalog_v1', {
+        'p_collection': collection.name,
+        'p_search': search == null || search.trim().isEmpty ? null : search.trim(),
+      }),
+    );
+    return HealthCareCatalog(
+      collection: collection,
+      groups: [
+        for (final group in _rows(payload['categories']))
+          HealthCareProfileCatalogGroup(
+            id: group['code'] as String? ?? '',
+            label: group['label'] as String? ?? '',
+            items: [
+              for (final item in _rows(group['items']))
+                HealthCareProfileCatalogItem(
+                  id: item['id'] as String? ?? '',
+                  label: item['label'] as String? ?? '',
+                ),
+            ],
+          ),
+      ],
+    );
+  }
+
   /// Lê o perfil na forma que o formulário de edição consome; `null` quando o
   /// servidor nega (negativa opaca, sem confirmar existência).
   Future<HealthCareProfileDraft?> loadCareProfileDraft(String profileId) async {
@@ -227,9 +258,9 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
     }
     final detail = _map(payload);
     if (detail.isEmpty) return null;
-    final allergyRows = _rows(detail['allergies'])
-        .where((row) => row['active'] as bool? ?? true)
-        .toList(growable: false);
+    final allergyRows = _rows(
+      detail['allergies'],
+    ).where((row) => row['active'] as bool? ?? true).toList(growable: false);
     final allergy = allergyRows.firstOrNull;
     final lastEpisode = allergy?['last_episode_at'] as String?;
     return HealthCareProfileDraft(
@@ -244,14 +275,26 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
             lastEpisode: row['last_episode_at'] is String
                 ? (row['last_episode_at'] as String).substring(0, 10)
                 : '',
-            severity: _severityFromDatabase(row['episode_severity'] as String?) ??
+            severity:
+                _severityFromDatabase(row['episode_severity'] as String?) ??
                 HealthCareEpisodeSeverity.moderate,
             observedReaction: row['observed_reaction'] as String? ?? '',
             allergyGuidance: row['guidance'] as String? ?? '',
             allergyNotes: row['notes'] as String? ?? '',
+            catalogItemId: row['catalog_item_id'] as String?,
+            otherText: row['other_text'] as String?,
+            label: row['label'] as String?,
+            whatToDo: row['what_to_do'] as String? ?? '',
           ),
       ],
-      careItemIds: {for (final row in _rows(detail['items'])) row['catalog_item_id']! as String},
+      careItems: [
+        for (final row in _rows(detail['items']))
+          HealthCareProfileItemDraft(
+            catalogItemId: row['catalog_item_id']! as String,
+            otherText: row['other_text'] as String?,
+            label: row['label'] as String?,
+          ),
+      ],
       importantSigns: detail['important_signs'] as String? ?? '',
       adaptations: detail['adaptations'] as String? ?? '',
       allergyType: allergy == null
@@ -294,6 +337,9 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
       if (error.code == '40001' || error.code == 'PT409' || error.code == '55P03') {
         throw StateError('O perfil foi alterado. Atualize e tente novamente.');
       }
+      if (error.code == '23505') {
+        throw StateError('Esta criança já tem um perfil de cuidado. Edite o perfil existente.');
+      }
       if (error.code == '23514' || error.code == '23502' || error.code == '22023') {
         throw StateError('Informe a justificativa e os dados obrigatórios do perfil.');
       }
@@ -320,7 +366,8 @@ Map<String, Object?> _draftPayload(
     'important_signs': draft.importantSigns,
     'adaptations': draft.adaptations,
     'items': [
-      for (final id in draft.careItemIds) {'catalog_item_id': id, 'other_text': null},
+      for (final item in draft.careItems)
+        {'catalog_item_id': item.catalogItemId, 'other_text': item.otherText},
     ],
     if (allergyPayload.isNotEmpty) 'allergies': allergyPayload,
   };
@@ -330,7 +377,14 @@ Map<String, Object?> _allergyPayload(HealthCareAllergyDraft allergy) {
   final lastEpisode = DateTime.tryParse(allergy.lastEpisode.trim());
   return {
     'id': ?allergy.id,
-    'label': _allergyTypeLabel(allergy.allergyType),
+    // Com item do catálogo o servidor deriva o rótulo (spec 065); sem item,
+    // registro legado descrito só pelo tipo.
+    'label': allergy.catalogItemId == null
+        ? _allergyTypeLabel(allergy.allergyType)
+        : allergy.displayLabel,
+    'catalog_item_id': allergy.catalogItemId,
+    'other_text': allergy.otherText,
+    'what_to_do': allergy.whatToDo,
     'allergy_type': _allergyTypeToDatabase(allergy.allergyType),
     'status': _allergyStatusToDatabase(allergy.allergyStatus),
     'active': true,
@@ -394,6 +448,7 @@ HealthCareChild _child(Map<String, Object?> payload) {
 HealthCareProfileItem _profileItem(Map<String, Object?> row) => HealthCareProfileItem(
   catalogItemId: row['catalog_item_id']! as String,
   otherText: row['other_text'] as String?,
+  label: row['label'] as String?,
 );
 
 HealthCareAllergy _allergy(String childId, Map<String, Object?> row) => HealthCareAllergy(

@@ -67,6 +67,36 @@ final class DevHealthCareRepository implements HealthCareRepository {
     _careProfileDrafts = Map.of(_seedCareProfileDrafts);
   }
 
+  /// Catálogo local do ambiente de prévia (`/dev/*`); produção lê o lote 93.
+  Future<HealthCareCatalog> loadCatalog(
+    HealthCareCatalogCollection collection,
+    String? search,
+  ) async {
+    final term = (search ?? '').trim().toLowerCase();
+    final groups = switch (collection) {
+      HealthCareCatalogCollection.guidance => healthCareProfileCatalog,
+      HealthCareCatalogCollection.food => developmentFoodCatalog,
+      HealthCareCatalogCollection.restriction => developmentRestrictionCatalog,
+    };
+    return HealthCareCatalog(
+      collection: collection,
+      groups: [
+        for (final group in groups)
+          if (group.id != 'other')
+            HealthCareProfileCatalogGroup(
+              id: group.id,
+              label: group.label,
+              items: [
+                for (final item in group.items)
+                  if (item.id != 'other' &&
+                      (term.length < 2 || item.label.toLowerCase().contains(term)))
+                    item,
+              ],
+            ),
+      ].where((group) => group.items.isNotEmpty).toList(growable: false),
+    );
+  }
+
   Future<HealthCareProfileDraft?> loadCareProfileDraft(String childId) async {
     _requireEdit(_actor, childId);
     return _careProfileDrafts[childId];
@@ -78,7 +108,14 @@ final class DevHealthCareRepository implements HealthCareRepository {
     final child = (await findChild(draft.childId, actor: _actor))!;
     _replace(
       child.copyWith(
-        careProfile: [for (final id in draft.careItemIds) HealthCareProfileItem(catalogItemId: id)],
+        careProfile: [
+          for (final item in draft.careItems)
+            HealthCareProfileItem(
+              catalogItemId: item.catalogItemId,
+              otherText: item.otherText,
+              label: item.label,
+            ),
+        ],
       ),
     );
   }
@@ -252,3 +289,58 @@ HealthCareProfileDraft _fixtureDraft(DevelopmentCareProfileFixture profile, Stri
       adaptations: profile.hasRestrictions ? 'Aplicar a restrição informada pela família.' : '',
       justification: 'Carga demonstrativa vinculada à estrutura institucional.',
     );
+
+const developmentFoodCatalog = <HealthCareProfileCatalogGroup>[
+  HealthCareProfileCatalogGroup(
+    id: 'dairy',
+    label: 'Leite e derivados',
+    items: [
+      HealthCareProfileCatalogItem(id: 'food_milk', label: 'Leite de vaca'),
+      HealthCareProfileCatalogItem(id: 'food_cheese', label: 'Queijo'),
+    ],
+  ),
+  HealthCareProfileCatalogGroup(
+    id: 'legume',
+    label: 'Leguminosas',
+    items: [
+      HealthCareProfileCatalogItem(id: 'food_peanut', label: 'Amendoim'),
+      HealthCareProfileCatalogItem(id: 'food_soy', label: 'Soja'),
+    ],
+  ),
+  HealthCareProfileCatalogGroup(
+    id: 'fruit',
+    label: 'Frutas',
+    items: [
+      HealthCareProfileCatalogItem(id: 'food_banana', label: 'Banana'),
+      HealthCareProfileCatalogItem(id: 'food_apple', label: 'Maçã'),
+      HealthCareProfileCatalogItem(id: 'food_strawberry', label: 'Morango'),
+    ],
+  ),
+];
+
+const developmentRestrictionCatalog = <HealthCareProfileCatalogGroup>[
+  HealthCareProfileCatalogGroup(
+    id: 'contact',
+    label: 'Contato e ambiente',
+    items: [
+      HealthCareProfileCatalogItem(id: 'restriction_latex', label: 'Látex'),
+      HealthCareProfileCatalogItem(id: 'restriction_insect', label: 'Picada de inseto'),
+    ],
+  ),
+  HealthCareProfileCatalogGroup(
+    id: 'medication',
+    label: 'Medicamentos',
+    items: [
+      HealthCareProfileCatalogItem(id: 'restriction_dipyrone', label: 'Dipirona'),
+      HealthCareProfileCatalogItem(id: 'restriction_penicillin', label: 'Penicilina e amoxicilina'),
+    ],
+  ),
+  HealthCareProfileCatalogGroup(
+    id: 'diet',
+    label: 'Dieta por regra',
+    items: [
+      HealthCareProfileCatalogItem(id: 'restriction_no_sugar', label: 'Sem açúcar'),
+      HealthCareProfileCatalogItem(id: 'restriction_vegetarian', label: 'Vegetariana'),
+    ],
+  ),
+];

@@ -5,7 +5,6 @@ Uma linha por item: tela · o que falta · quem pediu · data. Apague a linha qu
 - Assiduidade · r12-18 envio final "pessoa sem conta" pela tela; upload do documento depende do CORS (Etapa 4) · Owner · 18/09
 - Conta · layout A+ "Meu acesso" (r12-46) · Owner · 18/09
 - Segurança da criança · diretório contra a Table canônica (r12-10) · Owner · 18/09
-- Perfis de cuidado · spec 065 (wizard Alimentos × Restrições, reordenar, o que fazer) · Owner · 18/09
 - Instituições · spec 066 ciclo de vida + status; spec 067 Locais com mapa · Owner · 18/09
 - Avisos · spec 069: CTA por tipo tem rota real no Principal só para circular; formulário/convite/aviso ficam na mensagem honesta até existir rota no Principal hospedado (Etapa 4) · Sessão ETAPA-3 · 19/09
 - Principal · spec 068 perfis oficiais · Owner · 18/09

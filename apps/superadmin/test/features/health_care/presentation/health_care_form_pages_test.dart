@@ -47,11 +47,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Alergias e restrições'), findsOneWidget);
+    expect(find.text('Alimentos'), findsOneWidget);
+    expect(find.text('Restrições'), findsOneWidget);
     expect(find.text('Orientações de cuidado'), findsOneWidget);
     await tester.tap(find.text('Orientações de cuidado'));
     await tester.pumpAndSettle();
-    expect(find.byType(CoeloAdminMultiSelectField<String>), findsOneWidget);
+    expect(find.byKey(const Key('health-care-profile-add-guidance')), findsOneWidget);
+    expect(find.byKey(const Key('health-care-guidance-empty')), findsOneWidget);
     expect(find.byType(SuperadminFormFrame), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
     expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
@@ -77,28 +79,32 @@ void main() {
 
     expect(find.text('Criança Demo A'), findsWidgets);
     expect(find.byType(CoeloAdminSingleSelectField<String>), findsNothing);
-    await tester.tap(find.text('Alergias e restrições'));
+    await tester.tap(find.text('Alimentos'));
     await tester.pumpAndSettle();
-    expect(
-      find.byWidgetPredicate(
-        (widget) => widget.runtimeType.toString().startsWith('CoeloAdminSingleSelectField<'),
-      ),
-      findsNWidgets(3),
-    );
+    // Coleção nasce vazia (spec 065 §5.1): nenhuma linha, só o "+ Adicionar".
+    expect(find.byKey(const Key('health-care-food-empty')), findsOneWidget);
+    expect(find.byKey(const Key('health-care-profile-add-food')), findsOneWidget);
   });
 
   testWidgets('profile edit loads every draft field and saves the complete draft', (tester) async {
     HealthCareProfileDraft? saved;
     final initial = HealthCareProfileDraft(
       childId: 'child-demo-a',
-      allergyType: HealthCareAllergyType.medication,
-      allergyStatus: HealthCareAllergyStatus.monitoring,
-      lastEpisode: '15/07/2026',
-      severity: HealthCareEpisodeSeverity.severe,
-      observedReaction: 'Edema',
-      allergyGuidance: 'Acionar protocolo',
-      allergyNotes: 'Nota clínica',
-      careItemIds: const {'autism'},
+      allergies: [
+        HealthCareAllergyDraft(
+          id: 'allergy-1',
+          allergyType: HealthCareAllergyType.food,
+          catalogItemId: 'food_peanut',
+          label: 'Amendoim',
+          allergyStatus: HealthCareAllergyStatus.monitoring,
+          lastEpisode: '15/07/2026',
+          severity: HealthCareEpisodeSeverity.severe,
+          observedReaction: 'Edema',
+          whatToDo: 'Acionar protocolo',
+          allergyNotes: 'Nota clínica',
+        ),
+      ],
+      careItems: const [HealthCareProfileItemDraft(catalogItemId: 'autism', label: 'Autismo')],
       importantSigns: 'Mudança de comportamento',
       adaptations: 'Antecipar rotina',
       justification: 'Revisão anual',
@@ -120,9 +126,11 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Alergias e restrições').last);
+    await tester.tap(find.text('Alimentos').last);
     await tester.pumpAndSettle();
+    expect(find.text('Amendoim'), findsOneWidget);
     expect(find.text('Edema'), findsOneWidget);
+    expect(find.text('O que fazer se consumido?'), findsOneWidget);
     expect(find.text('Acionar protocolo'), findsOneWidget);
     expect(find.text('Nota clínica'), findsOneWidget);
 
@@ -138,29 +146,62 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(saved?.childId, initial.childId);
-    expect(saved?.allergyType, initial.allergyType);
-    expect(saved?.allergyStatus, initial.allergyStatus);
-    expect(saved?.lastEpisode, initial.lastEpisode);
-    expect(saved?.severity, initial.severity);
-    expect(saved?.observedReaction, initial.observedReaction);
-    expect(saved?.allergyGuidance, initial.allergyGuidance);
-    expect(saved?.allergyNotes, initial.allergyNotes);
-    expect(saved?.careItemIds, initial.careItemIds);
+    final savedDraft = saved!;
+    final allergy = savedDraft.allergies.single;
+    expect(allergy.id, 'allergy-1');
+    expect(allergy.catalogItemId, 'food_peanut');
+    expect(allergy.allergyStatus, HealthCareAllergyStatus.monitoring);
+    expect(allergy.lastEpisode, '15/07/2026');
+    expect(allergy.severity, HealthCareEpisodeSeverity.severe);
+    expect(allergy.observedReaction, 'Edema');
+    expect(allergy.whatToDo, 'Acionar protocolo');
+    expect(allergy.allergyNotes, 'Nota clínica');
+    expect(savedDraft.careItems.map((item) => item.catalogItemId), ['autism']);
     expect(saved?.importantSigns, initial.importantSigns);
     expect(saved?.adaptations, initial.adaptations);
     expect(saved?.justification, initial.justification);
   });
 
-  testWidgets('profile form keeps independent allergy records when adding and removing',
-      (tester) async {
+  testWidgets('profile form adds from the catalog, reorders with buttons and removes one line', (
+    tester,
+  ) async {
     HealthCareProfileDraft? saved;
     final initial = HealthCareProfileDraft(
       childId: 'child-demo-a',
       justification: 'Revisão de registros',
       allergies: [
-        HealthCareAllergyDraft(id: 'allergy-a', observedReaction: 'Reação A'),
-        HealthCareAllergyDraft(id: 'allergy-b', observedReaction: 'Reação B'),
-        HealthCareAllergyDraft(id: 'allergy-c', observedReaction: 'Reação C'),
+        HealthCareAllergyDraft(
+          id: 'allergy-a',
+          catalogItemId: 'food_milk',
+          label: 'Leite de vaca',
+          observedReaction: 'Reação A',
+        ),
+        HealthCareAllergyDraft(
+          id: 'allergy-b',
+          catalogItemId: 'food_egg',
+          label: 'Ovo',
+          observedReaction: 'Reação B',
+        ),
+        HealthCareAllergyDraft(
+          id: 'allergy-c',
+          allergyType: HealthCareAllergyType.restriction,
+          catalogItemId: 'restriction_latex',
+          label: 'Látex',
+          observedReaction: 'Reação C',
+        ),
+      ],
+    );
+    Future<HealthCareCatalog> loadCatalog(
+      HealthCareCatalogCollection collection,
+      String? search,
+    ) async => HealthCareCatalog(
+      collection: collection,
+      groups: const [
+        HealthCareProfileCatalogGroup(
+          id: 'legume',
+          label: 'Leguminosas',
+          items: [HealthCareProfileCatalogItem(id: 'food_peanut', label: 'Amendoim')],
+        ),
       ],
     );
     await tester.binding.setSurfaceSize(const Size(1440, 1200));
@@ -173,6 +214,7 @@ void main() {
           childOptions: _profileChildren,
           childId: initial.childId,
           loadDraft: (_) async => initial,
+          loadCatalog: loadCatalog,
           onCancel: () {},
           onSaved: (draft) async => saved = draft,
         ),
@@ -180,26 +222,75 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Alergias e restrições').last);
+    await tester.tap(find.text('Alimentos').last);
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('health-care-allergy-card-0')), findsOneWidget);
-    expect(find.byKey(const Key('health-care-allergy-card-1')), findsOneWidget);
-    expect(find.byKey(const Key('health-care-allergy-card-2')), findsOneWidget);
-    await tester.ensureVisible(find.byKey(const Key('health-care-profile-add-allergy')));
-    await tester.tap(find.byKey(const Key('health-care-profile-add-allergy')));
+    // Só os alimentos aparecem aqui; a restrição fica no passo dela.
+    expect(find.byKey(const Key('health-care-food-card-0')), findsOneWidget);
+    expect(find.byKey(const Key('health-care-food-card-1')), findsOneWidget);
+    expect(find.text('Látex'), findsNothing);
+
+    // "+ Adicionar alimento" abre o catálogo categorizado e cria UMA linha.
+    await tester.ensureVisible(find.byKey(const Key('health-care-profile-add-food')));
+    await tester.tap(find.byKey(const Key('health-care-profile-add-food')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('health-care-allergy-card-3')), findsOneWidget);
-    await tester.tap(find.byKey(const Key('health-care-profile-remove-allergy-1')));
+    expect(find.byKey(const Key('health-care-catalog-picker')), findsOneWidget);
+    expect(find.text('Leguminosas'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('health-care-catalog-item-food_peanut')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('health-care-allergy-card-3')), findsNothing);
+    expect(find.byKey(const Key('health-care-food-card-2')), findsOneWidget);
+    expect(find.text('Amendoim'), findsOneWidget);
+
+    // Reordenar por botão: o novo sobe uma posição.
+    await tester.ensureVisible(find.byKey(const Key('health-care-food-up-2')));
+    await tester.tap(find.byKey(const Key('health-care-food-up-2')));
+    await tester.pumpAndSettle();
+    // Remover uma linha.
+    await tester.ensureVisible(find.byKey(const Key('health-care-food-remove-0')));
+    await tester.tap(find.byKey(const Key('health-care-food-remove-0')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('health-care-food-card-2')), findsNothing);
+
+    // "Outro" exige texto.
+    await tester.tap(find.text('Restrições').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Látex'), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const Key('health-care-profile-add-restriction')));
+    await tester.tap(find.byKey(const Key('health-care-profile-add-restriction')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('health-care-catalog-item-other')));
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<FilledButton>(find.byKey(const Key('health-care-catalog-confirm-other')))
+          .enabled,
+      isFalse,
+    );
+    await tester.enterText(find.byKey(const Key('health-care-catalog-other-text')), 'Giz de cera');
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('health-care-catalog-confirm-other')));
+    await tester.pumpAndSettle();
+    expect(find.text('Giz de cera'), findsOneWidget);
 
     await tester.tap(find.text('Revisão').last);
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Salvar alterações'));
     await tester.pumpAndSettle();
 
-    expect(saved?.allergies.map((item) => item.id), ['allergy-a', 'allergy-c', null]);
-    expect(saved?.allergies.map((item) => item.observedReaction), ['Reação A', 'Reação C', '']);
+    // Ordem persistida: alimentos (amendoim novo subiu, ovo) e depois restrições (látex, outro).
+    expect(saved?.allergies.map((item) => item.id), [null, 'allergy-b', 'allergy-c', null]);
+    expect(saved?.allergies.map((item) => item.catalogItemId), [
+      'food_peanut',
+      'food_egg',
+      'restriction_latex',
+      'other',
+    ]);
+    expect(saved?.allergies.last.otherText, 'Giz de cera');
+    expect(saved?.allergies.map((item) => item.allergyType), [
+      HealthCareAllergyType.food,
+      HealthCareAllergyType.food,
+      HealthCareAllergyType.restriction,
+      HealthCareAllergyType.restriction,
+    ]);
   });
 
   testWidgets('profile edit shows the child name carried by the loaded draft', (tester) async {
@@ -455,7 +546,10 @@ void main() {
           onCancel: () {},
           onSaved: (_) async {
             attempts++;
-            if (attempts == 1) throw StateError('offline');
+            // O repositório real levanta StateError com mensagem segura; a tela a exibe.
+            if (attempts == 1) {
+              throw StateError('Não foi possível salvar. Revise os dados e tente novamente.');
+            }
           },
         ),
       ),
@@ -494,9 +588,9 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Alergias e restrições').last);
+    await tester.tap(find.text('Orientações de cuidado').last);
     await tester.pumpAndSettle();
-    await tester.enterText(find.widgetWithText(TextField, 'Reação observada'), 'Urticária');
+    await tester.enterText(find.widgetWithText(TextField, 'Sinais importantes'), 'Urticária');
     await tester.tap(find.widgetWithText(TextButton, 'Cancelar'));
     await tester.pumpAndSettle();
 

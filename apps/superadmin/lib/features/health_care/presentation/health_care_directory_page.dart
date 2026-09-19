@@ -377,8 +377,7 @@ final class _StatusIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        context.coeloStatusColors;
+    final colors = context.coeloStatusColors;
     final pair = switch (status) {
       HealthCareOperationalStatus.active => (colors.successContainer, colors.onSuccessContainer),
       HealthCareOperationalStatus.implementation => (colors.infoContainer, colors.onInfoContainer),

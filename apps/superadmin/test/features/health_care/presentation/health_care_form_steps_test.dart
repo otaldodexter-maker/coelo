@@ -30,28 +30,44 @@ void main() {
     expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
     for (final label in const [
       'Criança',
-      'Alergias e restrições',
+      'Alimentos',
+      'Restrições',
       'Orientações de cuidado',
       'Revisão',
     ]) {
       expect(find.text(label), findsWidgets);
     }
-    expect(find.text('Reação observada'), findsNothing);
+    expect(find.text('Adicionar alimento'), findsNothing);
     expect(find.text('Continuar'), findsOneWidget);
     expect(find.text('Anterior'), findsNothing);
     expect(find.text('Criar perfil'), findsNothing);
 
     await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
-    expect(find.text('Reação observada'), findsOneWidget);
-    await tester.enterText(find.byType(TextField).at(1), 'Urticária leve');
+    expect(find.text('Adicionar alimento'), findsOneWidget);
+    // Sem catálogo injetado só "Outro" é oferecido, com texto obrigatório.
+    await tester.tap(find.text('Adicionar alimento'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('health-care-catalog-item-other')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('health-care-catalog-other-text')), 'Pitanga');
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('health-care-catalog-confirm-other')));
+    await tester.pumpAndSettle();
+    expect(find.text('Pitanga'), findsOneWidget);
+    expect(find.text('O que fazer se consumido?'), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('health-care-food-reaction-0')), 'Urticária leve');
+
+    await tester.tap(find.text('Restrições').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Adicionar restrição'), findsOneWidget);
 
     await tester.tap(find.text('Orientações de cuidado').last);
     await tester.pumpAndSettle();
-    expect(find.text('Características de cuidado'), findsOneWidget);
+    expect(find.text('Adicionar orientação'), findsOneWidget);
     expect(find.text('Anterior'), findsOneWidget);
 
-    await tester.tap(find.text('Anterior'));
+    await tester.tap(find.text('Alimentos').last);
     await tester.pumpAndSettle();
     expect(find.text('Urticária leve'), findsOneWidget);
 
@@ -59,7 +75,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Criar perfil'), findsOneWidget);
     expect(find.text('Cancelar'), findsOneWidget);
-    expect(find.text('Urticária leve'), findsOneWidget);
+    expect(find.text('1. Pitanga'), findsOneWidget);
   });
 
   testWidgets('medication form navigates five steps and saves only on review', (tester) async {

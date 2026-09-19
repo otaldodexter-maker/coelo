@@ -164,7 +164,8 @@ void main() {
       );
 
       final payload =
-          backend.paramsOf('superadmin_health_care_save_profile')['payload']! as Map<String, Object?>;
+          backend.paramsOf('superadmin_health_care_save_profile')['payload']!
+              as Map<String, Object?>;
       final allergy = (payload['allergies']! as List).single as Map<String, Object?>;
       expect(allergy.containsKey('last_episode_at'), isFalse);
       // O formulario nasce com "Moderada" selecionada; sem episodio o servidor
@@ -234,7 +235,8 @@ void main() {
         ),
       );
       final payload =
-          backend.paramsOf('superadmin_health_care_save_profile')['payload']! as Map<String, Object?>;
+          backend.paramsOf('superadmin_health_care_save_profile')['payload']!
+              as Map<String, Object?>;
       expect((payload['allergies']! as List).length, 3);
       expect(
         (payload['allergies']! as List)
@@ -305,9 +307,9 @@ void main() {
       final client = _clientFor(backend);
       addTearDown(client.dispose);
 
-      final page = await SupabaseMedicationPlanRepository(client).fetchPage(
-        const MedicationPlanQuery(statuses: {MedicationPlanStatus.active}),
-      );
+      final page = await SupabaseMedicationPlanRepository(
+        client,
+      ).fetchPage(const MedicationPlanQuery(statuses: {MedicationPlanStatus.active}));
 
       expect(backend.paramsOf('superadmin_medication_plan_directory')['statuses'], ['active']);
       expect(page.items.single.status, MedicationPlanStatus.active);
