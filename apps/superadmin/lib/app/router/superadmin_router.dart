@@ -243,6 +243,7 @@ import '../dev_menu/dev_menu_overlay.dart';
 import '../shell/superadmin_notice.dart';
 import '../shell/superadmin_shell.dart';
 import 'superadmin_routes.dart';
+import '../tour/superadmin_tour_store.dart';
 
 const _productionMutationUnavailablePath = '/errors/mutation-capability-unavailable';
 
@@ -559,6 +560,7 @@ GoRouter createSuperadminRouter({
   MediaReader? formsMediaReader,
   SuperadminMediaScope? formsMediaScope,
   FormsAnonymousEditSecretStoreProvider? formsAnonymousEditSecrets,
+  SuperadminTourStore? tourStore,
   PrincipalRuntimeContextRepository principalRuntimeContextRepository =
       const UnavailablePrincipalRuntimeContextRepository(),
   ProfileAboutRepository? profileAboutRepository,
@@ -1413,6 +1415,9 @@ GoRouter createSuperadminRouter({
                                   : null,
                             ),
                       key: const Key('superadmin-persistent-shell'),
+                      // Só a rota real conta "visto": o preview /dev não grava
+                      // nem abre o tour sozinho.
+                      tourStore: developmentPreview ? null : tourStore,
                       logout: developmentPreview ? _previewLogout : logout,
                       currentDestination: _destinationForLocation(location),
                       onDestinationSelected: (destination) => developmentPreview

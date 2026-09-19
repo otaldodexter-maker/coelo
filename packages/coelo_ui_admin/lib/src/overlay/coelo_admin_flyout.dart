@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +18,7 @@ final class CoeloAdminFlyoutItem<T> {
     this.enabled = true,
     this.startsGroup = false,
     this.tone = CoeloAdminFlyoutTone.standard,
+    this.tourAnchorId,
   });
 
   final T value;
@@ -28,6 +30,10 @@ final class CoeloAdminFlyoutItem<T> {
   final bool enabled;
   final bool startsGroup;
   final CoeloAdminFlyoutTone tone;
+
+  /// Quando definido, o item vira âncora do tour (`CoeloTourAnchor`) com
+  /// este id, para o balão apontar itens do menu aberto.
+  final String? tourAnchorId;
 }
 
 /// Canonical Coelo flyout used by administrative menus and local actions.
@@ -50,7 +56,8 @@ final class CoeloAdminFlyout<T> extends StatefulWidget {
 
   final List<CoeloAdminFlyoutItem<T>> items;
   final ValueChanged<T> onSelected;
-  final Widget Function(BuildContext context, MenuController controller) builder;
+  final Widget Function(BuildContext context, MenuController controller)
+  builder;
   final double itemWidth;
   final Offset alignmentOffset;
   final double viewportGap;
@@ -87,14 +94,17 @@ final class _CoeloAdminFlyoutState<T> extends State<CoeloAdminFlyout<T>> {
       return;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && returnFocusNode.context != null && returnFocusNode.canRequestFocus) {
+      if (mounted &&
+          returnFocusNode.context != null &&
+          returnFocusNode.canRequestFocus) {
         returnFocusNode.requestFocus();
       }
     });
   }
 
   KeyEventResult _handleKeyEvent(KeyEvent event) {
-    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.escape) {
       _restoreFocusOnClose = true;
       _menuController.close();
       return KeyEventResult.handled;
@@ -114,10 +124,22 @@ final class _CoeloAdminFlyoutState<T> extends State<CoeloAdminFlyout<T>> {
     final mediaQuery = MediaQuery.of(context);
     final radius = BorderRadius.circular(CoeloRadius.lg);
     const panelPadding = CoeloSpacing.space2 * 2;
-    final safeLeft = math.max(mediaQuery.padding.left, mediaQuery.viewPadding.left);
-    final safeTop = math.max(mediaQuery.padding.top, mediaQuery.viewPadding.top);
-    final safeRight = math.max(mediaQuery.padding.right, mediaQuery.viewPadding.right);
-    final safeBottom = math.max(mediaQuery.padding.bottom, mediaQuery.viewPadding.bottom);
+    final safeLeft = math.max(
+      mediaQuery.padding.left,
+      mediaQuery.viewPadding.left,
+    );
+    final safeTop = math.max(
+      mediaQuery.padding.top,
+      mediaQuery.viewPadding.top,
+    );
+    final safeRight = math.max(
+      mediaQuery.padding.right,
+      mediaQuery.viewPadding.right,
+    );
+    final safeBottom = math.max(
+      mediaQuery.padding.bottom,
+      mediaQuery.viewPadding.bottom,
+    );
     final desiredPanelWidth = widget.itemWidth + panelPadding;
     final availablePanelWidth = math.max(
       0.0,
@@ -143,7 +165,10 @@ final class _CoeloAdminFlyoutState<T> extends State<CoeloAdminFlyout<T>> {
     );
     final effectiveAlignmentOffset = widget.alignPanelToViewportEnd
         ? Offset(
-            widget.alignmentOffset.dx - panelWidth - safeRight - widget.viewportGap,
+            widget.alignmentOffset.dx -
+                panelWidth -
+                safeRight -
+                widget.viewportGap,
             widget.alignmentOffset.dy,
           )
         : Offset(
@@ -161,18 +186,26 @@ final class _CoeloAdminFlyoutState<T> extends State<CoeloAdminFlyout<T>> {
         reservedPadding: reservedPadding,
         alignmentOffset: effectiveAlignmentOffset,
         style: MenuStyle(
-          alignment: widget.alignPanelToViewportEnd ? AlignmentDirectional.bottomEnd : null,
+          alignment: widget.alignPanelToViewportEnd
+              ? AlignmentDirectional.bottomEnd
+              : null,
           backgroundColor: WidgetStatePropertyAll(colors.surface),
           surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
           elevation: WidgetStatePropertyAll(widget.elevation),
-          padding: const WidgetStatePropertyAll(EdgeInsets.all(CoeloSpacing.space2)),
+          padding: const WidgetStatePropertyAll(
+            EdgeInsets.all(CoeloSpacing.space2),
+          ),
           minimumSize: WidgetStatePropertyAll(Size(panelWidth, 0)),
-          maximumSize: WidgetStatePropertyAll(Size(panelWidth, availablePanelHeight)),
+          maximumSize: WidgetStatePropertyAll(
+            Size(panelWidth, availablePanelHeight),
+          ),
           shape: WidgetStatePropertyAll(
             RoundedRectangleBorder(
               borderRadius: radius,
               side: BorderSide(
-                color: colors.outlineVariant.withValues(alpha: widget.outlineOpacity),
+                color: colors.outlineVariant.withValues(
+                  alpha: widget.outlineOpacity,
+                ),
               ),
             ),
           ),
@@ -183,16 +216,31 @@ final class _CoeloAdminFlyoutState<T> extends State<CoeloAdminFlyout<T>> {
               const SizedBox(height: CoeloSpacing.space1),
             if (widget.items[index].startsGroup)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
+                padding: const EdgeInsets.symmetric(
+                  vertical: CoeloSpacing.space1,
+                ),
                 child: Divider(height: 1, color: colors.outlineVariant),
               ),
             SizedBox(
               width: effectiveItemWidth,
-              child: _FlyoutMenuItem<T>(item: widget.items[index], onSelected: widget.onSelected),
+              child: switch (widget.items[index].tourAnchorId) {
+                final anchorId? => CoeloTourAnchor(
+                  id: anchorId,
+                  child: _FlyoutMenuItem<T>(
+                    item: widget.items[index],
+                    onSelected: widget.onSelected,
+                  ),
+                ),
+                null => _FlyoutMenuItem<T>(
+                  item: widget.items[index],
+                  onSelected: widget.onSelected,
+                ),
+              },
             ),
           ],
         ],
-        builder: (context, controller, child) => widget.builder(context, controller),
+        builder: (context, controller, child) =>
+            widget.builder(context, controller),
       ),
     );
   }
@@ -209,10 +257,14 @@ final class _FlyoutMenuItem<T> extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final negative = item.tone == CoeloAdminFlyoutTone.negative;
     final foreground = negative ? colors.error : colors.onSurface;
-    final hoverBackground = negative ? colors.errorContainer : colors.primaryContainer;
+    final hoverBackground = negative
+        ? colors.errorContainer
+        : colors.primaryContainer;
     final hoverForeground = negative ? colors.error : colors.primary;
 
-    final customIconColor = item.enabled ? item.iconColor : item.iconColor?.withValues(alpha: 0.38);
+    final customIconColor = item.enabled
+        ? item.iconColor
+        : item.iconColor?.withValues(alpha: 0.38);
 
     return Semantics(
       label: item.semanticLabel,
@@ -223,12 +275,19 @@ final class _FlyoutMenuItem<T> extends StatelessWidget {
             ? null
             : Icon(item.icon, size: CoeloSize.iconSm, color: customIconColor),
         style: ButtonStyle(
-          minimumSize: const WidgetStatePropertyAll(Size.fromHeight(CoeloSize.touchMin)),
+          minimumSize: const WidgetStatePropertyAll(
+            Size.fromHeight(CoeloSize.touchMin),
+          ),
           padding: const WidgetStatePropertyAll(
-            EdgeInsets.symmetric(horizontal: CoeloSpacing.space3, vertical: CoeloSpacing.space2),
+            EdgeInsets.symmetric(
+              horizontal: CoeloSpacing.space3,
+              vertical: CoeloSpacing.space2,
+            ),
           ),
           shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(CoeloRadius.md),
+            ),
           ),
           overlayColor: const WidgetStatePropertyAll(Colors.transparent),
           foregroundColor: WidgetStateProperty.resolveWith((states) {

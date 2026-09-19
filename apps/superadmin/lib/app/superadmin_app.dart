@@ -83,6 +83,7 @@ import 'router/superadmin_router.dart';
 import 'theme/superadmin_theme_mode_scope.dart';
 import '../features/principal_circulars/domain/circular_repository.dart';
 import '../features/profile_about/domain/profile_about_repository.dart';
+import 'tour/superadmin_tour_store.dart';
 
 const _instantPageTransitions = PageTransitionsTheme(
   builders: {
@@ -163,6 +164,7 @@ class SuperadminApp extends StatefulWidget {
     this.formsMediaReader,
     this.formsMediaScope,
     this.formsAnonymousEditSecrets,
+    this.tourStore,
     this.mealPlanRepository = const UnavailableMealPlanRepository(),
     this.mealPlanImageRepository = const UnavailableMealPlanImageRepository(),
     this.authorizedMealPlanTenantId,
@@ -248,6 +250,7 @@ class SuperadminApp extends StatefulWidget {
   final MediaReader? formsMediaReader;
   final SuperadminMediaScope? formsMediaScope;
   final FormsAnonymousEditSecretStoreProvider? formsAnonymousEditSecrets;
+  final SuperadminTourStore? tourStore;
   final MealPlanRepository mealPlanRepository;
   final MealPlanImageRepository mealPlanImageRepository;
   final String? authorizedMealPlanTenantId;
@@ -353,6 +356,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       formsMediaReader: widget.formsMediaReader,
       formsMediaScope: widget.formsMediaScope,
       formsAnonymousEditSecrets: widget.formsAnonymousEditSecrets,
+      tourStore: widget.tourStore,
       mealPlanRepository: widget.mealPlanRepository,
       mealPlanImageRepository: widget.mealPlanImageRepository,
       authorizedMealPlanTenantId: widget.authorizedMealPlanTenantId,
