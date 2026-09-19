@@ -91,7 +91,13 @@ final class _ProfileSection extends StatelessWidget {
               _field(controller, InstitutionFormField.legalName, 'Razão social', wide: true),
               _field(controller, InstitutionFormField.typeName, 'Tipo de instituição'),
               _field(controller, InstitutionFormField.documentType, 'Tipo de documento'),
-              _field(controller, InstitutionFormField.document, 'CNPJ/documento'),
+              _field(
+                controller,
+                InstitutionFormField.document,
+                'CNPJ/documento',
+                inputType: TextInputType.number,
+                inputFormatters: const [CoeloCnpjInputFormatter()],
+              ),
               _field(controller, InstitutionFormField.primaryDomain, 'Domínio principal'),
               _dropdown<InstitutionStatus>(
                 key: const Key('institution-operational-status'),
@@ -209,6 +215,8 @@ final class _LocationSectionState extends State<_LocationSection> {
                 InstitutionFormField.postalCode,
                 'CEP',
                 wide: true,
+                inputType: TextInputType.number,
+                inputFormatters: const [CoeloCepInputFormatter()],
                 errorText: _postalCodeError,
                 onChanged: _updatePostalCode,
                 suffixIcon: IconButton(
@@ -340,7 +348,7 @@ final class _LocationSectionState extends State<_LocationSection> {
     });
     try {
       final address = await widget.locationService.lookupPostalCode(
-        controller.text(InstitutionFormField.postalCode),
+        CoeloCepInputFormatter.digits(controller.text(InstitutionFormField.postalCode)),
       );
       if (!mounted) return;
       controller

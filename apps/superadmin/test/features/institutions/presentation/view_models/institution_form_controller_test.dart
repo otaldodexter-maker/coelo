@@ -487,7 +487,7 @@ void main() {
     final controller = InstitutionFormController();
     addTearDown(controller.dispose);
 
-    for (final invalidValue in ['123', '01310-100', 'CEP 01310100']) {
+    for (final invalidValue in ['123', '01310-10', 'CEP 0131010']) {
       controller.setText(InstitutionFormField.postalCode, invalidValue);
       expect(
         controller.errorForForced(InstitutionFormField.postalCode),
@@ -498,6 +498,17 @@ void main() {
 
     controller.setText(InstitutionFormField.postalCode, '01310100');
     expect(controller.errorForForced(InstitutionFormField.postalCode), isNull);
+    controller.setText(InstitutionFormField.postalCode, '01310-100');
+    expect(controller.errorForForced(InstitutionFormField.postalCode), isNull);
+    expect(controller.toRecord(id: 'x').postalCode, '01310100');
+  });
+
+  test('document shows the CNPJ mask and the record keeps only digits', () {
+    final controller = InstitutionFormController();
+    addTearDown(controller.dispose);
+    controller.setText(InstitutionFormField.document, '12345678000195', userInitiated: true);
+    expect(controller.text(InstitutionFormField.document), '12.345.678/0001-95');
+    expect(controller.toRecord(id: 'x').document, '12345678000195');
   });
 
   test('profile bio accepts 220 characters and clips the 221st', () {

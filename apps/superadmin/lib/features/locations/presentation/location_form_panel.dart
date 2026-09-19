@@ -104,7 +104,7 @@ class _LocationFormPanelState extends State<LocationFormPanel> {
       _kind = entry.kind;
       _visibility = entry.visibility;
       final address = entry.address ?? const <String, String?>{};
-      _postalCode.text = address['postal_code'] ?? '';
+      _postalCode.text = CoeloCepInputFormatter.format(address['postal_code'] ?? '');
       _state.text = address['state'] ?? '';
       _city.text = address['city'] ?? '';
       _district.text = address['district'] ?? '';
@@ -137,7 +137,7 @@ class _LocationFormPanelState extends State<LocationFormPanel> {
     if (_kind == LocationKind.internal) return null;
     return {
       'country': 'Brasil',
-      'postal_code': _postalCode.text,
+      'postal_code': CoeloCepInputFormatter.digits(_postalCode.text),
       'state': _state.text,
       'city': _city.text,
       'district': _district.text,
@@ -319,7 +319,7 @@ class _LocationFormPanelState extends State<LocationFormPanel> {
                             (
                               key: const Key('location-form-postal-code'),
                               controller: _postalCode,
-                              label: 'CEP (somente números)',
+                              label: 'CEP',
                             ),
                             (
                               key: const Key('location-form-state'),
@@ -360,6 +360,12 @@ class _LocationFormPanelState extends State<LocationFormPanel> {
                             labelText: field.label,
                             prefixIcon: Icons.home_outlined,
                             enabled: !_saving,
+                            keyboardType: identical(field.controller, _postalCode)
+                                ? TextInputType.number
+                                : null,
+                            inputFormatters: identical(field.controller, _postalCode)
+                                ? const [CoeloCepInputFormatter()]
+                                : null,
                           ),
                         ),
                     ],

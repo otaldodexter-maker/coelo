@@ -197,10 +197,10 @@ final class InstitutionFormController extends ChangeNotifier {
       value = characters.Characters(value).take(220).toString();
     }
     if (field == InstitutionFormField.postalCode && userInitiated) {
-      value = value.replaceAll(RegExp(r'\D'), '');
-      if (value.length > 8) {
-        value = value.substring(0, 8);
-      }
+      value = CoeloCepInputFormatter.format(value);
+    }
+    if (field == InstitutionFormField.document && userInitiated) {
+      value = CoeloCnpjInputFormatter.format(value);
     }
     if (field == InstitutionFormField.slug && userInitiated) {
       _slugManuallyEdited = true;
@@ -624,7 +624,8 @@ final class InstitutionFormController extends ChangeNotifier {
         return 'Este @ já está em uso.';
       }
     }
-    if (field == InstitutionFormField.postalCode && !RegExp(r'^\d{8}$').hasMatch(value)) {
+    if (field == InstitutionFormField.postalCode &&
+        !RegExp(r'^\d{8}$').hasMatch(CoeloCepInputFormatter.digits(value))) {
       return 'Informe um CEP com exatamente 8 dígitos.';
     }
     if ({InstitutionFormField.contactEmail, InstitutionFormField.ownerEmail}.contains(field) &&
@@ -720,13 +721,13 @@ final class InstitutionFormController extends ChangeNotifier {
           : 'local-type-${_slugify(text(InstitutionFormField.typeName))}',
       typeName: text(InstitutionFormField.typeName),
       documentType: text(InstitutionFormField.documentType),
-      document: text(InstitutionFormField.document),
+      document: CoeloCnpjInputFormatter.digits(text(InstitutionFormField.document)),
       slug: text(InstitutionFormField.slug),
       primaryDomain: text(InstitutionFormField.primaryDomain),
       status: status,
       locale: text(InstitutionFormField.locale),
       timezone: text(InstitutionFormField.timezone),
-      postalCode: text(InstitutionFormField.postalCode),
+      postalCode: CoeloCepInputFormatter.digits(text(InstitutionFormField.postalCode)),
       country: text(InstitutionFormField.country),
       state: text(InstitutionFormField.state),
       city: text(InstitutionFormField.city),
@@ -966,12 +967,12 @@ Map<InstitutionFormField, String> _valuesFrom(InstitutionRecord? record) => {
   InstitutionFormField.legalName: record?.legalName ?? '',
   InstitutionFormField.typeName: record?.typeName ?? '',
   InstitutionFormField.documentType: record?.documentType ?? 'CNPJ',
-  InstitutionFormField.document: record?.document ?? '',
+  InstitutionFormField.document: CoeloCnpjInputFormatter.format(record?.document ?? ''),
   InstitutionFormField.slug: record?.slug ?? '',
   InstitutionFormField.primaryDomain: record?.primaryDomain ?? '',
   InstitutionFormField.locale: record?.locale ?? 'pt-BR',
   InstitutionFormField.timezone: record?.timezone ?? 'America/Sao_Paulo',
-  InstitutionFormField.postalCode: record?.postalCode.replaceAll(RegExp(r'\D'), '') ?? '',
+  InstitutionFormField.postalCode: CoeloCepInputFormatter.format(record?.postalCode ?? ''),
   InstitutionFormField.country: record?.country ?? 'Brasil',
   InstitutionFormField.state: record?.state ?? '',
   InstitutionFormField.city: record?.city ?? '',

@@ -5,6 +5,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
 import '../../../app/widgets/superadmin_advanced_color_picker_dialog.dart';
@@ -292,7 +293,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
       'surfaceColor' => original.surfaceColor,
       'name' => original.name,
       'slug' => original.handle.isNotEmpty ? original.handle : original.slug,
-      'postalCode' => original.postalCode,
+      'postalCode' => CoeloCepInputFormatter.format(original.postalCode),
       'country' => original.country,
       'state' => original.state,
       'city' => original.city,
@@ -385,7 +386,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
         status: _status,
         typeId: type.id,
         typeName: type.label,
-        postalCode: _text('postalCode'),
+        postalCode: CoeloCepInputFormatter.digits(_text('postalCode')),
         country: _text('country'),
         state: _text('state'),
         city: _text('city'),
@@ -985,7 +986,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
   );
 
   Future<void> _lookupPostalCode() async {
-    final postalCode = _text('postalCode').replaceAll(RegExp(r'\D'), '');
+    final postalCode = CoeloCepInputFormatter.digits(_text('postalCode'));
     if (postalCode.length != 8) {
       ScaffoldMessenger.of(
         context,
@@ -1025,6 +1026,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
             'postalCode',
             'CEP',
             Icons.location_searching_outlined,
+            inputFormatters: const [CoeloCepInputFormatter()],
             suffixIcon: IconButton(
               key: const Key('unit-postal-code-lookup'),
               tooltip: 'Buscar CEP',
@@ -1213,6 +1215,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
     Key? key,
     bool required = false,
     Widget? suffixIcon,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return CoeloFormTextField(
       fieldKey: key,
@@ -1220,6 +1223,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
       labelText: label,
       prefixIcon: icon,
       suffixIcon: suffixIcon,
+      inputFormatters: inputFormatters,
       validator: (value) {
         final normalized = value?.trim() ?? '';
         if (required && normalized.isEmpty) return 'Campo obrigatório.';

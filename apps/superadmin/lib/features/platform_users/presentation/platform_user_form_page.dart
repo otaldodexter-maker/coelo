@@ -296,7 +296,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage>
     _department.text = record.identity.department;
     _internalFunction.text = record.identity.internalFunction;
     _notes.text = record.identity.professionalNotes;
-    _postalCode.text = record.identity.postalCode;
+    _postalCode.text = CoeloCepInputFormatter.format(record.identity.postalCode);
     _street.text = record.identity.street;
     _number.text = record.identity.number;
     _complement.text = record.identity.complement;
@@ -410,7 +410,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage>
       department: _department.text,
       internalFunction: _internalFunction.text,
       professionalNotes: _notes.text,
-      postalCode: _postalCode.text,
+      postalCode: CoeloCepInputFormatter.digits(_postalCode.text),
       street: _street.text,
       number: _number.text,
       complement: _complement.text,
@@ -916,6 +916,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage>
           'CEP',
           Icons.location_on_outlined,
           keyboardType: TextInputType.number,
+          inputFormatters: const [CoeloCepInputFormatter()],
           validator: (value) => _validateAddressPart(value, 'o CEP'),
         ),
         _field(

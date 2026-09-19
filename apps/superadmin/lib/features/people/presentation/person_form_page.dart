@@ -285,7 +285,11 @@ final class _PersonFormPageState extends State<PersonFormPage> {
     super.didChangeDependencies();
     final repository = EntityImageScope.maybeOf(context);
     if (_images == null && repository != null) {
-      _images = EntityImagesController(kind: EntityKind.person, repository: repository, entityId: widget.original?.id);
+      _images = EntityImagesController(
+        kind: EntityKind.person,
+        repository: repository,
+        entityId: widget.original?.id,
+      );
     }
   }
 
@@ -631,6 +635,8 @@ final class _PersonFormPageState extends State<PersonFormPage> {
           controller: _controllers['postalCode']!,
           labelText: 'CEP',
           prefixIcon: Icons.local_post_office_outlined,
+          keyboardType: TextInputType.number,
+          inputFormatters: const [CoeloCepInputFormatter()],
         ),
         CoeloFormTextField(
           fieldKey: const Key('person-address-street'),

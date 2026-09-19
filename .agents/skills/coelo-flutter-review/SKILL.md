@@ -39,7 +39,9 @@ Versão anterior em `docs/archive/skills-20260918/`.
   `Theme.of(context).extension<…>()!` nem `Colors.black54` em `barrierColor`.
   Seção de formulário: `SuperadminFormSection`/`SuperadminFormSectionHeader`
   (`shared/presentation/widgets`). CPF: `CoeloCpfInputFormatter`; telefone:
-  `CoeloBrazilianPhoneInputFormatter`; data: `CoeloDateTimeField`
+  `CoeloBrazilianPhoneInputFormatter`; CEP: `CoeloCepInputFormatter`; CNPJ:
+  `CoeloCnpjInputFormatter` (o campo guarda a máscara; payload, validação e
+  lookup usam `.digits()`; ao carregar um registro, `.format()`); data: `CoeloDateTimeField`
   (`pickTime: false` para só data) ou `showCoeloDateRangePicker`, nunca
   `showDatePicker` do Material.
 - Header custom para o servidor (ex.: `x-coelo-surface`) vai só em `Supabase.instance.client.rest.headers`; nunca em `Supabase.initialize(headers:)`, porque as Edge Functions têm `Access-Control-Allow-Headers` fixo e o preflight de todas cai.

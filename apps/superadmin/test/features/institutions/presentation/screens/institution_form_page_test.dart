@@ -844,7 +844,7 @@ void main() {
     );
   });
 
-  testWidgets('CEP field keeps digits only and blocks save when it is incomplete', (tester) async {
+  testWidgets('CEP field applies the mask and blocks save when it is incomplete', (tester) async {
     await _useDesktopSurface(tester);
     final repository = FakeInstitutionDirectoryRepository();
     final service = InstitutionLocationService(
@@ -868,7 +868,7 @@ void main() {
 
     final postalCodeField = find.byKey(const Key('institution-field-postalCode'));
     await tester.enterText(postalCodeField, 'ABC 01310-100 XYZ');
-    expect(tester.widget<TextFormField>(postalCodeField).controller!.text, '01310100');
+    expect(tester.widget<TextFormField>(postalCodeField).controller!.text, '01310-100');
 
     await tester.enterText(postalCodeField, '123');
     await tester.tap(find.byKey(const Key('institution-form-save-current')));
