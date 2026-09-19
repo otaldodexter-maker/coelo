@@ -221,56 +221,58 @@ class _LocationDirectoryPanelState extends State<LocationDirectoryPanel> {
                                           for (final item in data.items.where(
                                             (item) => item.kind == kind,
                                           ))
-                                      SizedBox(
-                                        width: width,
-                                        child: CoeloAdminInteractiveCard(
-                                          key: Key('location-card-${item.id}'),
-                                          minHeight: 216,
-                                          semanticLabel: 'Abrir local ${item.name}',
-                                          onPressed: () => _open(item, generation),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(CoeloSpacing.space4),
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                // A bolinha de status fica na
-                                                // mesma linha do nome, como no
-                                                // card de Instituicoes.
-                                                // Decisao do Owner de 10/09/2026.
-                                                Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                        item.name,
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: Theme.of(
-                                                          context,
-                                                        ).textTheme.titleLarge,
+                                            SizedBox(
+                                              width: width,
+                                              child: CoeloAdminInteractiveCard(
+                                                key: Key('location-card-${item.id}'),
+                                                minHeight: 216,
+                                                semanticLabel: 'Abrir local ${item.name}',
+                                                onPressed: () => _open(item, generation),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(
+                                                    CoeloSpacing.space4,
+                                                  ),
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      // A bolinha de status fica na
+                                                      // mesma linha do nome, como no
+                                                      // card de Instituicoes.
+                                                      // Decisao do Owner de 10/09/2026.
+                                                      Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment.start,
+                                                        children: [
+                                                          Expanded(
+                                                            child: Text(
+                                                              item.name,
+                                                              maxLines: 2,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              style: Theme.of(
+                                                                context,
+                                                              ).textTheme.titleLarge,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                            width: CoeloSpacing.space2,
+                                                          ),
+                                                          locationStatusIndicator(context, item),
+                                                        ],
                                                       ),
-                                                    ),
-                                                    const SizedBox(
-                                                      width: CoeloSpacing.space2,
-                                                    ),
-                                                    locationStatusIndicator(context, item),
-                                                  ],
+                                                      const SizedBox(height: CoeloSpacing.space4),
+                                                      // O tipo saiu do corpo do card:
+                                                      // agora ele e o titulo do grupo.
+                                                      Text(
+                                                        'Andar: ${locationOptionalText(item.floor)}',
+                                                      ),
+                                                      Text(
+                                                        'Visibilidade: ${locationVisibilityLabel(item.visibility)}',
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                                const SizedBox(height: CoeloSpacing.space4),
-                                                // O tipo saiu do corpo do card:
-                                                // agora ele e o titulo do grupo.
-                                                Text(
-                                                  'Andar: ${locationOptionalText(item.floor)}',
-                                                ),
-                                                Text(
-                                                  'Visibilidade: ${locationVisibilityLabel(item.visibility)}',
-                                                ),
-                                              ],
+                                              ),
                                             ),
-                                          ),
-                                        ),
-                                      ),
                                         ],
                                       ),
                                       if (kind != LocationKind.values.last)

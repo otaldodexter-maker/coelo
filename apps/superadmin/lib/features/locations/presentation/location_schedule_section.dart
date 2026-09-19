@@ -10,15 +10,7 @@ import 'package:flutter/material.dart';
 import '../domain/location_catalog_writer.dart';
 import 'location_form_panel.dart' show newLocationRequestId;
 
-const _weekdays = <String>[
-  'Domingo',
-  'Segunda',
-  'Terça',
-  'Quarta',
-  'Quinta',
-  'Sexta',
-  'Sábado',
-];
+const _weekdays = <String>['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
 /// Formats minutes from midnight the way the operator reads a clock.
 ///
@@ -144,11 +136,7 @@ class _LocationScheduleSectionState extends State<LocationScheduleSection> {
       setState(() => _windowError = 'Use HH:MM, com início antes do fim e dentro do dia.');
       return;
     }
-    final window = LocationScheduleWindow(
-      weekday: _weekday,
-      startsMinute: start,
-      endsMinute: end,
-    );
+    final window = LocationScheduleWindow(weekday: _weekday, startsMinute: start, endsMinute: end);
     if (draft.any(window.overlaps)) {
       // The catalog refuses an overlap too. Saying so here means the actor sees
       // which window is in the way while it is still on screen.
@@ -253,9 +241,7 @@ class _LocationScheduleSectionState extends State<LocationScheduleSection> {
               else
                 for (final window in draft)
                   Padding(
-                    key: Key(
-                      'location-schedule-window-${window.weekday}-${window.startsMinute}',
-                    ),
+                    key: Key('location-schedule-window-${window.weekday}-${window.startsMinute}'),
                     padding: const EdgeInsets.only(bottom: CoeloSpacing.space1),
                     child: Row(
                       children: [

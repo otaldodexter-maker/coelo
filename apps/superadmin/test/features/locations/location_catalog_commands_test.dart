@@ -279,12 +279,8 @@ void main() {
 
   group('no command is the one that leaks', () {
     final calls = <String, Future<Object?> Function(SupabaseLocationCatalogWriter)>{
-      'edit': (w) => w.update(
-        locationId: locationA,
-        draft: _draft,
-        expectedVersion: 1,
-        requestId: _requestId,
-      ),
+      'edit': (w) =>
+          w.update(locationId: locationA, draft: _draft, expectedVersion: 1, requestId: _requestId),
       'status': (w) => w.setStatus(
         locationId: locationA,
         status: LocationCatalogStatus.archived,

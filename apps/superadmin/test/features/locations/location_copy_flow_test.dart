@@ -362,12 +362,7 @@ void main() {
       await tester.pump();
 
       await tester.pumpWidget(
-        panel(
-          id: locationB,
-          revision: 1,
-          callbackOwner: 'B',
-          completeCopyDuringBuild: true,
-        ),
+        panel(id: locationB, revision: 1, callbackOwner: 'B', completeCopyDuringBuild: true),
       );
       await tester.pump();
 

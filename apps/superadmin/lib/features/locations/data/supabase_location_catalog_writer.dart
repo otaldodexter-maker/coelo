@@ -4,6 +4,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/location_catalog_reader.dart';
 import '../domain/location_catalog_writer.dart';
+import '../domain/location_map.dart';
+import 'supabase_location_map_gateway.dart';
 
 typedef LocationWriteRpc = Future<Object?> Function(String name, Map<String, Object?> params);
 
@@ -12,13 +14,43 @@ typedef LocationWriteRpc = Future<Object?> Function(String name, Map<String, Obj
 /// The payload is built and validated before transport, and the answer is only
 /// accepted when it belongs to the scope that was asked for. Server messages
 /// and payloads are never retained.
-final class SupabaseLocationCatalogWriter implements LocationCatalogWriter {
+final class SupabaseLocationCatalogWriter implements LocationCatalogWriter, LocationMapWriter {
   SupabaseLocationCatalogWriter(SupabaseClient client)
-    : _rpc = ((name, params) => client.rpc<Object?>(name, params: params));
+    : _rpc = ((name, params) => client.rpc<Object?>(name, params: params)),
+      _mapGateway = SupabaseLocationMapGateway(client);
 
-  const SupabaseLocationCatalogWriter.withRpc(this._rpc);
+  const SupabaseLocationCatalogWriter.withRpc(this._rpc) : _mapGateway = null;
 
   final LocationWriteRpc _rpc;
+
+  /// Mapa por imagem (spec 067); ausente no construtor de teste por RPC.
+  final LocationMapWriter? _mapGateway;
+
+  @override
+  Future<LocationMapMarker> saveMarker(
+    LocationScope scope,
+    LocationMapMarkerDraft draft, {
+    required String requestId,
+    String? markerId,
+    int? expectedVersion,
+  }) => (_mapGateway ?? (throw const LocationMapUnavailableException())).saveMarker(
+    scope,
+    draft,
+    requestId: requestId,
+    markerId: markerId,
+    expectedVersion: expectedVersion,
+  );
+
+  @override
+  Future<void> removeMarker(
+    String markerId, {
+    required String requestId,
+    required int expectedVersion,
+  }) => (_mapGateway ?? (throw const LocationMapUnavailableException())).removeMarker(
+    markerId,
+    requestId: requestId,
+    expectedVersion: expectedVersion,
+  );
 
   @override
   Future<LocationCatalogEntry> create({
@@ -140,9 +172,7 @@ final class SupabaseLocationCatalogWriter implements LocationCatalogWriter {
   Future<LocationSchedule> readSchedule({required String locationId}) async {
     if (!validLocationId(locationId)) throw const LocationWriteRejectedException();
     try {
-      final response = await _rpc('superadmin_location_schedule_v2', {
-        'p_location_id': locationId,
-      });
+      final response = await _rpc('superadmin_location_schedule_v2', {'p_location_id': locationId});
       return decodeLocationScheduleV2(response, requestedId: locationId);
     } on Object catch (error) {
       throw _transportFailure(error);

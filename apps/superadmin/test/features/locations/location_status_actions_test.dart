@@ -27,12 +27,7 @@ final class _RecordingWriter implements LocationCatalogWriter {
     required int expectedVersion,
     required String requestId,
   }) {
-    calls.add((
-      locationId: locationId,
-      status: status,
-      version: expectedVersion,
-      id: requestId,
-    ));
+    calls.add((locationId: locationId, status: status, version: expectedVersion, id: requestId));
     final result = Completer<LocationCatalogEntry>();
     results.add(result);
     return result.future;

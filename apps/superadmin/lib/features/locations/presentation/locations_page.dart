@@ -6,10 +6,12 @@ import '../../auth/domain/logout_action.dart';
 import '../../units/domain/unit_directory.dart';
 import '../domain/location_capabilities.dart';
 import '../domain/location_catalog_reader.dart';
+import '../domain/location_map.dart';
 import '../domain/location_catalog_writer.dart';
 import '../domain/location_selection_source.dart';
 import 'location_detail_panel.dart';
 import 'location_directory_panel.dart';
+import 'location_map_panel.dart';
 import 'location_form_panel.dart';
 import 'location_institution_copy_panel.dart';
 import 'location_institution_units_section.dart';
@@ -108,6 +110,7 @@ final class LocationsPage extends StatefulWidget {
 final class _LocationsPageState extends State<LocationsPage> {
   String? _selected;
   bool _creating = false;
+
   /// Tipo com que a criacao abre. O card Criar do grupo manda o tipo dele.
   LocationKind _creatingKind = LocationKind.internal;
   LocationCatalogEntry? _editing;
@@ -194,6 +197,53 @@ final class _LocationsPageState extends State<LocationsPage> {
       _selected = null;
     });
     widget.onLocationClosed?.call();
+  }
+
+  /// Mapa por imagem (spec 067) acima das unidades; só quando o leitor sabe
+  /// ler o mapa (produção). Escrita só com capacidade de edição.
+  Widget? _trailing(int generation, LocationCapabilities can) {
+    final reader = widget.reader;
+    final children = <Widget?>[
+      if (reader is LocationMapReader)
+        LocationMapPanel(
+          key: const Key('locations-map'),
+          scope: widget.scope,
+          reader: reader as LocationMapReader,
+          writer: can.update && widget.writer is LocationMapWriter
+              ? widget.writer as LocationMapWriter
+              : null,
+          sessionAvailable: widget.sessionAvailable,
+          contextRevision: widget.contextRevision,
+        ),
+      switch ((widget.scope, widget.unitDirectoryRepository)) {
+        (InstitutionLocationScope(:final institutionId), final units?) =>
+          LocationInstitutionUnitsSection(
+            key: const Key('locations-units'),
+            institutionId: institutionId,
+            repository: units,
+            sessionAvailable: widget.sessionAvailable,
+            contextRevision: widget.contextRevision,
+            onOpen: widget.onUnitLocationsOpened == null
+                ? null
+                : (unitId) {
+                    if (!_current(generation) || !_directoryOpen) return;
+                    widget.onUnitLocationsOpened?.call(unitId);
+                  },
+          ),
+        _ => null,
+      },
+    ].whereType<Widget>().toList(growable: false);
+    if (children.isEmpty) return null;
+    if (children.length == 1) return children.single;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final entry in children.indexed) ...[
+          if (entry.$1 > 0) const SizedBox(height: 24),
+          entry.$2,
+        ],
+      ],
+    );
   }
 
   @override
@@ -300,23 +350,7 @@ final class _LocationsPageState extends State<LocationsPage> {
                         });
                       }
                     : null,
-                trailing: switch ((widget.scope, widget.unitDirectoryRepository)) {
-                  (InstitutionLocationScope(:final institutionId), final units?) =>
-                    LocationInstitutionUnitsSection(
-                      key: const Key('locations-units'),
-                      institutionId: institutionId,
-                      repository: units,
-                      sessionAvailable: widget.sessionAvailable,
-                      contextRevision: widget.contextRevision,
-                      onOpen: widget.onUnitLocationsOpened == null
-                          ? null
-                          : (unitId) {
-                              if (!_current(generation) || !_directoryOpen) return;
-                              widget.onUnitLocationsOpened?.call(unitId);
-                            },
-                    ),
-                  _ => null,
-                },
+                trailing: _trailing(generation, can),
               )
             : LocationDetailPanel(
                 key: Key('locations-detail-$selected'),

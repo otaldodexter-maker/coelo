@@ -167,9 +167,7 @@ void main() {
     testWidgets('without a session nothing can be read', (tester) async {
       await tester.pumpWidget(section(enabled: false));
       expect(
-        tester
-            .widget<OutlinedButton>(find.byKey(const Key('location-schedule-load')))
-            .onPressed,
+        tester.widget<OutlinedButton>(find.byKey(const Key('location-schedule-load'))).onPressed,
         isNull,
       );
     });
@@ -311,9 +309,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('location-schedule-publish')));
       await tester.pump();
-      writer.publishResults.single.completeError(
-        const LocationCatalogWriteUnavailableException(),
-      );
+      writer.publishResults.single.completeError(const LocationCatalogWriteUnavailableException());
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('location-schedule-publish')));
       await tester.pump();

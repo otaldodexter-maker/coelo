@@ -41,6 +41,7 @@ class LocationFormPanel extends StatefulWidget {
 
   final LocationScope scope;
   final VoidCallback onCancel;
+
   /// Receives the saved location, whether it was created or edited.
   final ValueChanged<LocationCatalogEntry> onCreated;
 

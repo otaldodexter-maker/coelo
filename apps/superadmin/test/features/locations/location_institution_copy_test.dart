@@ -18,12 +18,8 @@ const _secondRequestId = '40000000-0000-4000-8000-000000000002';
 
 typedef _CopyCall = ({String sourceId, LocationScope target, String name, String requestId});
 
-LocationReferenceSnapshot option(String id, String label) => LocationReferenceSnapshot(
-  id: id,
-  scope: scopeA,
-  kind: LocationKind.internal,
-  label: label,
-);
+LocationReferenceSnapshot option(String id, String label) =>
+    LocationReferenceSnapshot(id: id, scope: scopeA, kind: LocationKind.internal, label: label);
 
 final class _StubSelectionSource implements LocationSelectionSource {
   final requests = <LocationSelectionRequest>[];
@@ -139,9 +135,7 @@ void main() {
     bool truncated = false,
   }) async {
     await pumpPanel(tester);
-    source.results.last.complete(
-      LocationSelectionOptions(options: options, truncated: truncated),
-    );
+    source.results.last.complete(LocationSelectionOptions(options: options, truncated: truncated));
     await tester.pumpAndSettle();
   }
 
@@ -172,10 +166,7 @@ void main() {
 
     testWidgets('a search re-reads with the typed term', (tester) async {
       await openWith(tester, [option(locationB, 'Quadra')]);
-      await tester.enterText(
-        find.byKey(const Key('location-institution-copy-search')),
-        'quadra',
-      );
+      await tester.enterText(find.byKey(const Key('location-institution-copy-search')), 'quadra');
       await tester.pump();
       await tester.tap(find.byKey(const Key('location-institution-copy-search-run')));
       await tester.pump();
@@ -273,9 +264,7 @@ void main() {
       // Scoped to the error node: "nesta unidade" also appears in the field
       // label, and a bare text match would pass on the wrong widget.
       expect(
-        tester
-            .widget<Text>(find.byKey(const Key('location-institution-copy-error')))
-            .data,
+        tester.widget<Text>(find.byKey(const Key('location-institution-copy-error'))).data,
         contains('Já existe um local ativo com esse nome nesta unidade'),
       );
     });
@@ -287,10 +276,7 @@ void main() {
       await tester.pump();
       writer.results.single.completeError(const LocationWriteRejectedException());
       await tester.pumpAndSettle();
-      await tester.enterText(
-        find.byKey(const Key('location-institution-copy-name')),
-        'Quadra 2',
-      );
+      await tester.enterText(find.byKey(const Key('location-institution-copy-name')), 'Quadra 2');
       await tester.pump();
       await tester.tap(find.byKey(const Key('location-institution-copy-confirm')));
       await tester.pump();

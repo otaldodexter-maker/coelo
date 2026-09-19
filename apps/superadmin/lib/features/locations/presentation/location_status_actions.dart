@@ -174,7 +174,9 @@ class _LocationStatusActionsState extends State<LocationStatusActions> {
               for (final status in available)
                 OutlinedButton(
                   key: Key(_key(status)),
-                  onPressed: widget.enabled && _running == null ? () => unawaited(_change(status)) : null,
+                  onPressed: widget.enabled && _running == null
+                      ? () => unawaited(_change(status))
+                      : null,
                   child: Text(_running == status ? 'Aguarde…' : _label(status)),
                 ),
             ],

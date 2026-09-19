@@ -120,10 +120,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(
-        tester
-            .widget<TextFormField>(find.byKey(const Key('location-form-name')))
-            .controller
-            ?.text,
+        tester.widget<TextFormField>(find.byKey(const Key('location-form-name'))).controller?.text,
         'Sala de leitura',
       );
       expect(
@@ -146,10 +143,7 @@ void main() {
       expect(find.text('Novo local'), findsOneWidget);
       expect(find.text('Criar local'), findsOneWidget);
       expect(
-        tester
-            .widget<TextFormField>(find.byKey(const Key('location-form-name')))
-            .controller
-            ?.text,
+        tester.widget<TextFormField>(find.byKey(const Key('location-form-name'))).controller?.text,
         isEmpty,
       );
     });
@@ -241,19 +235,20 @@ void main() {
     late ControlledLocationReader reader;
     setUp(() => reader = ControlledLocationReader());
 
-    Widget page({bool canCreate = true, bool? canManage, String? selectedLocationId}) => MaterialApp(
-      theme: CoeloTheme.light,
-      home: LocationsPage(
-        scope: scopeA,
-        logout: unavailableSuperadminLogout,
-        reader: reader,
-        writer: writer,
-        sessionAvailable: true,
-        canCreate: canCreate,
-        canManage: canManage,
-        selectedLocationId: selectedLocationId ?? locationA,
-      ),
-    );
+    Widget page({bool canCreate = true, bool? canManage, String? selectedLocationId}) =>
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: LocationsPage(
+            scope: scopeA,
+            logout: unavailableSuperadminLogout,
+            reader: reader,
+            writer: writer,
+            sessionAvailable: true,
+            canCreate: canCreate,
+            canManage: canManage,
+            selectedLocationId: selectedLocationId ?? locationA,
+          ),
+        );
 
     Future<void> openDetail(WidgetTester tester, {bool canCreate = true, bool? canManage}) async {
       await tester.binding.setSurfaceSize(const Size(1440, 1200));

@@ -3,6 +3,8 @@ import 'package:coelo_domain/locations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/location_catalog_reader.dart';
+import '../domain/location_map.dart';
+import 'supabase_location_map_gateway.dart';
 
 typedef LocationReadRpc = Future<Object?> Function(String name, Map<String, Object?> params);
 
@@ -14,12 +16,20 @@ final class LocationCatalogUnavailableException implements Exception {
 
 /// Stateless transport adapter. Server authorization remains mandatory.
 /// Controllers own session invalidation and discard obsolete completions.
-final class SupabaseLocationCatalogReader implements LocationCatalogReader {
+final class SupabaseLocationCatalogReader implements LocationCatalogReader, LocationMapReader {
   SupabaseLocationCatalogReader(SupabaseClient client)
-    : _rpc = ((name, params) => client.rpc<Object?>(name, params: params));
+    : _rpc = ((name, params) => client.rpc<Object?>(name, params: params)),
+      _mapGateway = SupabaseLocationMapGateway(client);
 
-  const SupabaseLocationCatalogReader.withRpc(this._rpc);
+  const SupabaseLocationCatalogReader.withRpc(this._rpc) : _mapGateway = null;
   final LocationReadRpc _rpc;
+
+  /// Mapa por imagem (spec 067); ausente no construtor de teste por RPC.
+  final LocationMapReader? _mapGateway;
+
+  @override
+  Future<LocationMap> fetchMap(LocationScope scope) =>
+      (_mapGateway ?? (throw const LocationMapUnavailableException())).fetchMap(scope);
 
   @override
   Future<LocationDirectoryResult> fetchDirectory(LocationDirectoryRequest request) =>
