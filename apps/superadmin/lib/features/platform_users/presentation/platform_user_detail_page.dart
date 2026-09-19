@@ -10,6 +10,8 @@ import '../../auth/domain/logout_action.dart';
 import '../../people/domain/person_handle.dart';
 import '../../people/presentation/person_handle_section.dart';
 import '../domain/platform_user.dart';
+import '../../../shared/data/entity_image_repository.dart';
+import '../../../shared/presentation/widgets/entity_image_view.dart';
 import '../../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 
 enum _InternalUserAction {
@@ -311,11 +313,19 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage>
           runSpacing: CoeloSpacing.space3,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            CircleAvatar(
-              radius: 32,
-              backgroundColor: colors.primaryContainer,
-              foregroundColor: colors.onPrimaryContainer,
-              child: Text(record.initials.toUpperCase()),
+            SizedBox.square(
+              dimension: 64,
+              child: EntityImageView(
+                entity: EntityKind.internalUser,
+                entityId: record.id,
+                semanticLabel: 'Avatar de ${record.fullName}',
+                fallback: CircleAvatar(
+                  radius: 32,
+                  backgroundColor: colors.primaryContainer,
+                  foregroundColor: colors.onPrimaryContainer,
+                  child: Text(record.initials.toUpperCase()),
+                ),
+              ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,

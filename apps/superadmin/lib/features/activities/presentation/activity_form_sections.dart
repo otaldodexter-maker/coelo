@@ -31,6 +31,7 @@ final class ActivityFormSection extends StatefulWidget {
     required this.imagePicker,
     required this.aboutRepository,
     required this.activityId,
+    this.images,
     super.key,
   });
 
@@ -41,6 +42,9 @@ final class ActivityFormSection extends StatefulWidget {
   final InstitutionLogoPicker imagePicker;
   final ActivityProfileAboutRepository aboutRepository;
   final String? activityId;
+
+  /// Fotos reais (R2): dono é a página, que anexa as pendentes após criar.
+  final EntityImagesController? images;
 
   @override
   State<ActivityFormSection> createState() => _ActivityFormSectionState();
@@ -80,6 +84,7 @@ final class _ActivityFormSectionState extends State<ActivityFormSection> {
                 imagePicker: widget.imagePicker,
                 onRetryCatalogOptions: widget.onRetryCatalogOptions,
                 activityId: widget.activityId,
+                images: widget.images,
               ),
               ActivityFormStep.structure => _StructureSection(
                 controller: controller,
@@ -105,12 +110,14 @@ final class _IdentitySection extends StatelessWidget {
     required this.imagePicker,
     required this.onRetryCatalogOptions,
     required this.activityId,
+    this.images,
   });
 
   final ActivityFormController controller;
   final InstitutionLogoPicker imagePicker;
   final Future<void> Function() onRetryCatalogOptions;
   final String? activityId;
+  final EntityImagesController? images;
 
   Future<void> _pickImage(BuildContext context) async {
     final file = await imagePicker();
@@ -168,9 +175,10 @@ final class _IdentitySection extends StatelessWidget {
           ),
       ],
       const SizedBox(height: CoeloSpacing.space5),
-      // Foto, capa e ícone gravam em R2 pela Edge (entity-media) e exigem a
-      // atividade criada; sem repositório (mock) vale o fluxo local de antes.
-      if (EntityImageScope.maybeOf(context) == null)
+      // Foto, capa e ícone gravam em R2 pela Edge (entity-media); na criação
+      // ficam pendentes e sobem com o id novo. Sem repositório (mock) vale o
+      // fluxo local de antes.
+      if (images == null && EntityImageScope.maybeOf(context) == null)
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -205,20 +213,13 @@ final class _IdentitySection extends StatelessWidget {
             ),
           ],
         )
-      else if (activityId case final activityId?)
+      else
         EntityImagesSection(
           key: const Key('activity-form-images'),
           kind: EntityKind.activity,
           entityId: activityId,
+          controller: images,
           showIcon: true,
-        )
-      else
-        CoeloStatePanel(
-          key: const Key('activity-form-images-after-save'),
-          title: 'Foto, capa e ícone',
-          message:
-              'Salve a atividade primeiro; depois, em Editar, adicione a foto de perfil, a capa e o ícone.',
-          icon: Icons.add_a_photo_outlined,
         ),
       const SizedBox(height: CoeloSpacing.space5),
       _ResponsiveGrid(

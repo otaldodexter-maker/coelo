@@ -12,6 +12,8 @@ import '../../../shared/presentation/widgets/superadmin_listing_pagination_foote
 import '../../auth/domain/logout_action.dart';
 import '../domain/platform_user.dart';
 import 'platform_user_file_actions.dart';
+import '../../../shared/data/entity_image_repository.dart';
+import '../../../shared/presentation/widgets/entity_image_view.dart';
 
 final class PlatformUserDirectoryPage extends StatefulWidget {
   const PlatformUserDirectoryPage({
@@ -593,10 +595,18 @@ final class _PlatformUserDirectoryPageState extends State<PlatformUserDirectoryP
   Widget _personCell(BuildContext context, PlatformUserRecord item) {
     return Row(
       children: [
-        CoeloAvatar(
-          semanticLabel: 'Avatar de ${item.fullName}',
-          initials: item.initials,
-          size: CoeloAvatarSize.small,
+        SizedBox.square(
+          dimension: CoeloAvatarSize.small.dimension,
+          child: EntityImageView(
+            entity: EntityKind.internalUser,
+            entityId: item.id,
+            semanticLabel: 'Avatar de ${item.fullName}',
+            fallback: CoeloAvatar(
+              semanticLabel: 'Avatar de ${item.fullName}',
+              initials: item.initials,
+              size: CoeloAvatarSize.small,
+            ),
+          ),
         ),
         const SizedBox(width: CoeloSpacing.space2),
         Expanded(
@@ -691,7 +701,15 @@ final class _PlatformUserCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                CoeloAvatar(semanticLabel: 'Avatar de ${item.fullName}', initials: item.initials),
+                SizedBox.square(
+                  dimension: CoeloAvatarSize.medium.dimension,
+                  child: EntityImageView(
+                    entity: EntityKind.internalUser,
+                    entityId: item.id,
+                    semanticLabel: 'Avatar de ${item.fullName}',
+                    fallback: CoeloAvatar(semanticLabel: 'Avatar de ${item.fullName}', initials: item.initials),
+                  ),
+                ),
                 const SizedBox(width: CoeloSpacing.space3),
                 Expanded(
                   child: Column(

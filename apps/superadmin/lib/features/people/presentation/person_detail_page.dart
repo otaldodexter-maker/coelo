@@ -10,6 +10,8 @@ import '../domain/person_directory.dart';
 import '../domain/person_handle.dart';
 import 'person_detail_controller.dart';
 import 'person_handle_section.dart';
+import '../../../shared/data/entity_image_repository.dart';
+import '../../../shared/presentation/widgets/entity_image_view.dart';
 
 final class PersonDetailPage extends StatefulWidget {
   const PersonDetailPage({
@@ -87,6 +89,13 @@ final class _PersonDetailPageState extends State<PersonDetailPage> {
                     key: const Key('person-detail-content'),
                     children: [
                       if (_controller.detail case final detail?) ...[
+                        EntityIdentityHeader(
+                          entity: EntityKind.person,
+                          entityId: detail.id,
+                          name: detail.displayName,
+                          fallbackIcon: Icons.person_outline_rounded,
+                          showCover: false,
+                        ),
                         _section(context, 'Identidade', {
                           'Nome de exibição': detail.displayName,
                           'Primeiro nome': _text(detail.firstName),

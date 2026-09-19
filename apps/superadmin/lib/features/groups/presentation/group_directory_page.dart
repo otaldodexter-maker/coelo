@@ -10,6 +10,8 @@ import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
 import '../domain/group_directory.dart';
 import 'group_directory_view_model.dart';
+import '../../../shared/data/entity_image_repository.dart';
+import '../../../shared/presentation/widgets/entity_image_view.dart';
 
 enum GroupDirectoryTableView { grouped }
 
@@ -377,13 +379,18 @@ final class _GroupCard extends StatelessWidget {
               children: [
                 SizedBox.square(
                   dimension: 44,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: colors.secondaryContainer,
-                      shape: BoxShape.circle,
+                  child: EntityImageView(
+                    entity: EntityKind.group,
+                    entityId: item.id,
+                    semanticLabel: 'Foto de ${item.name}',
+                    fallback: Container(
+                      decoration: BoxDecoration(
+                        color: colors.secondaryContainer,
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      child: Icon(Icons.groups_rounded, color: colors.onSecondaryContainer),
                     ),
-                    alignment: Alignment.center,
-                    child: Icon(Icons.groups_rounded, color: colors.onSecondaryContainer),
                   ),
                 ),
                 const SizedBox(width: CoeloSpacing.space3),

@@ -38,6 +38,7 @@ Future<void> main() async {
       resetPassword: authScope.resetPassword,
       accountProfileRepository: SupabaseAccountProfileRepository(Supabase.instance.client),
       entityImageRepository: SupabaseEntityImageRepository(Supabase.instance.client),
+      principalEntityImageRepository: SupabaseEntityImageRepository(Supabase.instance.client, principal: true),
       accountSessionsRepository: SupabaseAccountSessionsRepository(Supabase.instance.client),
       supportRepository: SupabaseSupportRepository(Supabase.instance.client),
       auditRepository: authScope.auditRepository,

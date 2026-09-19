@@ -19,7 +19,9 @@ final class ActivitySaveAttemptRunner {
   final int Function() _readAuthorizationRevision;
   final ActivitySaveAttemptCoordinator _coordinator = ActivitySaveAttemptCoordinator();
 
-  Future<void> save(
+  /// Devolve o id da atividade (novo, na criação) para o formulário anexar
+  /// as fotos pendentes no mesmo fluxo.
+  Future<String> save(
     ActivityFormDraft draft, {
     required ActivityCommandIntent intent,
     required String? activityId,
@@ -56,7 +58,7 @@ final class ActivitySaveAttemptRunner {
         jsonEncode(command.reservation?.toJson()) != jsonEncode(draft.reservation?.toJson())) {
       throw const ActivityCommandUnavailableException();
     }
-    await _coordinator.run<ActivitySaveResult>(
+    final result = await _coordinator.run<ActivitySaveResult>(
       requestId: requestId,
       fingerprint: fingerprint,
       intent: intent,
@@ -72,6 +74,7 @@ final class ActivitySaveAttemptRunner {
         );
       },
     );
+    return result.activityId;
   }
 }
 

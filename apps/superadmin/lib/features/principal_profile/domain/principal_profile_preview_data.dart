@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../shared/data/entity_image_repository.dart';
 
 @immutable
 final class PrincipalProfilePreviewData {
@@ -11,6 +12,8 @@ final class PrincipalProfilePreviewData {
     required this.links,
     required this.nextEvent,
     this.handle,
+    this.entityKind,
+    this.entityId,
   });
 
   /// Contextual identity resolved from the server-authorized Principal context.
@@ -22,6 +25,8 @@ final class PrincipalProfilePreviewData {
     required this.typeLabel,
     this.bio = '',
     this.handle,
+    this.entityKind,
+    this.entityId,
   }) : metrics = const [],
        highlights = const [],
        links = const [],
@@ -34,6 +39,11 @@ final class PrincipalProfilePreviewData {
   /// O @ publico do perfil (ADR 0034 Decisao 16); null quando o servidor ainda
   /// nao o projeta.
   final String? handle;
+
+  /// Entidade cuja foto/capa reais (R2, leitor do Principal) o herói mostra:
+  /// turma, unidade ou instituição do contexto. Null nos previews.
+  final EntityKind? entityKind;
+  final String? entityId;
   final List<PrincipalProfileMetric> metrics;
   final List<PrincipalProfileHighlight> highlights;
   final List<String> links;

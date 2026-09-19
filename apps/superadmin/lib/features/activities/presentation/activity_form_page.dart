@@ -20,8 +20,12 @@ import '../domain/activity_profile_about_repository.dart';
 import 'activity_form_controller.dart';
 import 'activity_form_draft.dart';
 import 'activity_form_sections.dart';
+import '../../../shared/data/entity_image_repository.dart';
+import '../../../shared/presentation/widgets/entity_images_section.dart';
 
-typedef ActivityFormSubmit = Future<void> Function(ActivityFormDraft draft);
+/// Devolve o id da atividade gravada (novo na criação) para o formulário anexar
+/// as fotos escolhidas antes de salvar; `null` quando o servidor não informa.
+typedef ActivityFormSubmit = Future<String?> Function(ActivityFormDraft draft);
 typedef ActivityLocationSelectionBuilder =
     Widget Function(BuildContext context, ActivityFormController controller);
 typedef ActivityLocationCreator =
@@ -119,10 +123,29 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
   }
 
+  // Fotos em R2 pela Edge (entity-media): na edição carregam pelo id; na
+  // criação ficam pendentes no controller até o servidor devolver o id.
+  EntityImagesController? _images;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final repository = EntityImageScope.maybeOf(context);
+    if (_images == null && repository != null) {
+      _images = EntityImagesController(
+        kind: EntityKind.activity,
+        repository: repository,
+        entityId: widget.activityId,
+        cache: EntityImageScope.cacheOf(context),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _loadGeneration++;
     _commandGeneration++;
+    _images?.dispose();
     _controller?.dispose();
     _activityController.dispose();
     super.dispose();
@@ -305,7 +328,8 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
     setState(() => _failedCommand = null);
     controller.setSubmitting(true);
     try {
-      await widget.onSaveDraft(attempt.draft);
+      final activityId = await widget.onSaveDraft(attempt.draft);
+      await _attachPendingImages(activityId);
       if (_isCurrentCommand(generation, controller)) {
         _pendingAttempt = null;
         controller.markSubmitted();
@@ -338,7 +362,8 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
     setState(() => _failedCommand = null);
     controller.setSubmitting(true);
     try {
-      await widget.onSubmit(attempt.draft);
+      final activityId = await widget.onSubmit(attempt.draft);
+      await _attachPendingImages(activityId);
       if (_isCurrentCommand(generation, controller)) {
         _pendingAttempt = null;
         controller.markSubmitted();
@@ -349,6 +374,16 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
       }
     } finally {
       if (_isCurrentCommand(generation, controller)) controller.setSubmitting(false);
+    }
+  }
+
+  /// Criação: foto, capa e ícone escolhidos antes de salvar gravam no id novo.
+  Future<void> _attachPendingImages(String? activityId) async {
+    final images = _images;
+    if (activityId == null || images == null || !images.hasPending) return;
+    await images.attach(activityId);
+    if (images.error case final error?) {
+      throw ActivityFormImagesException(error);
     }
   }
 
@@ -439,6 +474,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
       imagePicker: widget.imagePicker ?? pickInstitutionLogo,
       aboutRepository: widget.aboutRepository,
       activityId: widget.activityId,
+      images: _images,
       failedCommand: _failedCommand,
       onRetryCommand: _failedCommand == _ActivityFormCommand.saveDraft ? _saveDraft : _submit,
     ),
@@ -489,6 +525,7 @@ final class _ActivityFormBody extends StatelessWidget {
     required this.imagePicker,
     required this.aboutRepository,
     required this.activityId,
+    required this.images,
     required this.failedCommand,
     required this.onRetryCommand,
   });
@@ -505,6 +542,7 @@ final class _ActivityFormBody extends StatelessWidget {
   final InstitutionLogoPicker imagePicker;
   final ActivityProfileAboutRepository aboutRepository;
   final String? activityId;
+  final EntityImagesController? images;
   final _ActivityFormCommand? failedCommand;
   final VoidCallback onRetryCommand;
 
@@ -592,6 +630,7 @@ final class _ActivityFormBody extends StatelessWidget {
                       imagePicker: imagePicker,
                       aboutRepository: aboutRepository,
                       activityId: activityId,
+                      images: images,
                     ),
                   ),
                 ),
@@ -681,4 +720,13 @@ final class _ActivityFormFooter extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Atividade gravada, mas alguma foto pendente não subiu: o formulário mostra
+/// o comando como falho para o operador tentar de novo em Editar.
+final class ActivityFormImagesException implements Exception {
+  const ActivityFormImagesException(this.message);
+  final String message;
+  @override
+  String toString() => message;
 }

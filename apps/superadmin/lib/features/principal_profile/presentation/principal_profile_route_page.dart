@@ -11,6 +11,7 @@ import '../domain/principal_profile_preview_data.dart';
 import 'principal_profile_happens_tab.dart';
 import 'principal_profile_moments_tab.dart';
 import 'principal_profile_preview_page.dart';
+import '../../../shared/data/entity_image_repository.dart';
 
 /// Production composition root for `principal.profile-view`.
 ///
@@ -202,6 +203,12 @@ final class _PrincipalProfileRoutePageState extends State<PrincipalProfileRouteP
       typeLabel: _contextLabel,
       bio: bio.isEmpty ? '' : bio.first,
       handle: context.handle,
+      entityKind: context.groupId != null
+          ? EntityKind.group
+          : context.unitId != null
+          ? EntityKind.unit
+          : EntityKind.institution,
+      entityId: context.groupId ?? context.unitId ?? context.institutionId,
     );
   }
 

@@ -361,8 +361,8 @@ Widget _formApp({required Brightness brightness, String? activityId}) => _app(
     repository: FakeActivityDirectoryRepository(),
     logout: _logout,
     onCancel: () {},
-    onSaveDraft: (_) async {},
-    onSubmit: (_) async {},
+    onSaveDraft: (_) async => null,
+    onSubmit: (_) async => null,
     onCreateLocation: (draft) async => [
       for (final unitId in draft.unitIds)
         ActivityFormLocationOption(id: 'golden-location-$unitId', unitId: unitId, name: draft.name),

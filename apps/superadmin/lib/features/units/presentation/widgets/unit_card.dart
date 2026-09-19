@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../../domain/unit_directory.dart';
 import 'unit_status_presentation.dart';
+import '../../../../shared/data/entity_image_repository.dart';
+import '../../../../shared/presentation/widgets/entity_image_view.dart';
 
 /// Card de domínio de Unidades; largura, grade e o card Criar vêm do composto.
 final class UnitCard extends StatelessWidget {
@@ -33,17 +35,23 @@ final class UnitCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: colors.secondaryContainer,
-                    shape: BoxShape.circle,
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    item.initials,
-                    style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSecondaryContainer),
+                SizedBox.square(
+                  dimension: 44,
+                  child: EntityImageView(
+                    entity: EntityKind.unit,
+                    entityId: item.id,
+                    semanticLabel: 'Foto de ${item.name}',
+                    fallback: Container(
+                      decoration: BoxDecoration(
+                        color: colors.secondaryContainer,
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        item.initials,
+                        style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSecondaryContainer),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: CoeloSpacing.space3),

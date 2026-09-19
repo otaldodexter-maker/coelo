@@ -7,6 +7,8 @@ import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart'
 import '../../auth/domain/logout_action.dart';
 import '../domain/unit_detail.dart';
 import 'unit_detail_controller.dart';
+import '../../../shared/data/entity_image_repository.dart';
+import '../../../shared/presentation/widgets/entity_image_view.dart';
 
 final class UnitDetailPage extends StatefulWidget {
   const UnitDetailPage({
@@ -76,6 +78,13 @@ final class _UnitDetailPageState extends State<UnitDetailPage> {
                       key: const Key('unit-detail-content'),
                       children: [
                         if (_controller.detail case final detail?) ...[
+                          EntityIdentityHeader(
+                            entity: EntityKind.unit,
+                            entityId: widget.id,
+                            name: detail.name,
+                            subtitle: detail.institutionName,
+                            fallbackIcon: Icons.location_city_rounded,
+                          ),
                           _section(context, 'Dados da unidade', {
                             'Nome': detail.name,
                             'Identificador': detail.slug,

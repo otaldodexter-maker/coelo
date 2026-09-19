@@ -88,7 +88,7 @@ void main() {
           activityId: 'activity-1',
           onSaveDraft: (draft) {
             sent.add(draft);
-            return pending.future;
+            return pending.future.then((_) => null);
           },
         ),
       );
@@ -132,7 +132,7 @@ void main() {
           initialStep: ActivityFormStep.structure,
           onSaveDraft: (draft) {
             sent.add(draft);
-            return pending.future;
+            return pending.future.then((_) => null);
           },
           locationSelectionBuilder: (context, controller) {
             c = controller;
@@ -210,7 +210,10 @@ void main() {
       _app(
         initialInstitutionId: 'institution-1',
         initialStep: ActivityFormStep.structure,
-        onSaveDraft: (draft) async => saved = draft,
+        onSaveDraft: (draft) async {
+          saved = draft;
+          return null;
+        },
         locationSelectionBuilder: (context, controller) => TextButton(
           key: const Key('select-catalog-test'),
           onPressed: () {
@@ -471,8 +474,14 @@ void main() {
     await tester.pumpWidget(
       _app(
         repository: _ProfessionalOptionsRepository(),
-        onSaveDraft: (draft) async => savedDraft = draft,
-        onSubmit: (draft) async => submittedDraft = draft,
+        onSaveDraft: (draft) async {
+          savedDraft = draft;
+          return null;
+        },
+        onSubmit: (draft) async {
+          submittedDraft = draft;
+          return null;
+        },
       ),
     );
     await tester.pumpAndSettle();
@@ -664,7 +673,10 @@ void main() {
       _app(
         activityId: 'activity-1',
         repository: repositoryA,
-        onSaveDraft: (draft) async => saved = draft,
+        onSaveDraft: (draft) async {
+          saved = draft;
+          return null;
+        },
       ),
     );
     await tester.pump();
@@ -672,7 +684,10 @@ void main() {
       _app(
         activityId: 'activity-2',
         repository: repositoryB,
-        onSaveDraft: (draft) async => saved = draft,
+        onSaveDraft: (draft) async {
+          saved = draft;
+          return null;
+        },
       ),
     );
     await tester.pump();
@@ -701,7 +716,7 @@ void main() {
     final saveA = Completer<void>();
 
     await tester.pumpWidget(
-      _app(activityId: 'activity-1', repository: repository, onSaveDraft: (_) => saveA.future),
+      _app(activityId: 'activity-1', repository: repository, onSaveDraft: (_) => saveA.future.then((_) => null)),
     );
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('activity-form-save-draft')));
@@ -734,6 +749,7 @@ void main() {
           attempts++;
           requestIds.add(draft.requestId);
           if (attempts == 1) throw const ActivityDirectoryUnavailableException();
+          return null;
         },
       ),
     );
@@ -824,7 +840,10 @@ void main() {
       _app(
         activityId: 'activity-1',
         initialDraft: initialDraft,
-        onSaveDraft: (draft) async => savedDraft = draft,
+        onSaveDraft: (draft) async {
+          savedDraft = draft;
+          return null;
+        },
       ),
     );
     await tester.pumpAndSettle();
@@ -883,7 +902,10 @@ void main() {
       _app(
         activityId: 'activity-1',
         initialDraft: initialDraft,
-        onSaveDraft: (_) async => saveCalls++,
+        onSaveDraft: (_) async {
+          saveCalls++;
+          return null;
+        },
       ),
     );
     await tester.pumpAndSettle();
@@ -1054,8 +1076,8 @@ Widget _app({
   ActivityFormStep? initialStep,
   ActivityLocationSelectionBuilder? locationSelectionBuilder,
   ActivityProfileAboutRepository? aboutRepository,
-  Future<void> Function(ActivityFormDraft)? onSaveDraft,
-  Future<void> Function(ActivityFormDraft)? onSubmit,
+  ActivityFormSubmit? onSaveDraft,
+  ActivityFormSubmit? onSubmit,
   ValueChanged<String>? onDestinationSelected,
   TextScaler textScaler = TextScaler.noScaling,
 }) => MaterialApp(
@@ -1074,8 +1096,8 @@ Widget _app({
     repository: repository ?? _TaxonomyOptionsRepository(),
     logout: () async => const LogoutResult.success(),
     onCancel: () {},
-    onSaveDraft: onSaveDraft ?? (_) async {},
-    onSubmit: onSubmit ?? (_) async {},
+    onSaveDraft: onSaveDraft ?? (_) async => null,
+    onSubmit: onSubmit ?? (_) async => null,
     onCreateLocation: (draft) async => [
       for (final unitId in draft.unitIds)
         ActivityFormLocationOption(

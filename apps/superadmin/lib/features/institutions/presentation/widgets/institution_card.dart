@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../../domain/institution_directory_item.dart';
 import 'institution_status_presentation.dart';
+import '../../../../shared/data/entity_image_repository.dart';
+import '../../../../shared/presentation/widgets/entity_image_view.dart';
 
 Duration _interactionDuration(BuildContext context, Duration duration) {
   return MediaQuery.disableAnimationsOf(context) ? Duration.zero : duration;
@@ -87,17 +89,22 @@ class _InstitutionCardState extends State<InstitutionCard> {
                             SizedBox.square(
                               key: Key('institution-avatar-${item.id}'),
                               dimension: 44,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: colors.secondaryContainer,
-                                  shape: BoxShape.circle,
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  item.initials,
-                                  style: DefaultTextStyle.of(
-                                    context,
-                                  ).style.copyWith(color: colors.onSecondaryContainer),
+                              child: EntityImageView(
+                                entity: EntityKind.institution,
+                                entityId: item.id,
+                                semanticLabel: 'Foto de ${item.publicName}',
+                                fallback: Container(
+                                  decoration: BoxDecoration(
+                                    color: colors.secondaryContainer,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    item.initials,
+                                    style: DefaultTextStyle.of(
+                                      context,
+                                    ).style.copyWith(color: colors.onSecondaryContainer),
+                                  ),
                                 ),
                               ),
                             ),

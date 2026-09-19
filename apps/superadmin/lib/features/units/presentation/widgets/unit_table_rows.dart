@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import '../../domain/unit_directory.dart';
 import '../unit_directory_table_view.dart';
 import 'unit_status_presentation.dart';
+import '../../../../shared/data/entity_image_repository.dart';
+import '../../../../shared/presentation/widgets/entity_image_view.dart';
 
 /// Linhas e colunas de domínio de Unidades sobre a tabela compartilhada.
 final class UnitTableRows extends StatelessWidget {
@@ -159,14 +161,20 @@ final class UnitTableRows extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return Row(
       children: [
-        Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(color: colors.secondaryContainer, shape: BoxShape.circle),
-          alignment: Alignment.center,
-          child: Text(
-            item.initials,
-            style: DefaultTextStyle.of(context).style.copyWith(color: colors.onSecondaryContainer),
+        SizedBox.square(
+          dimension: 32,
+          child: EntityImageView(
+            entity: EntityKind.unit,
+            entityId: item.id,
+            semanticLabel: 'Foto de ${item.name}',
+            fallback: Container(
+              decoration: BoxDecoration(color: colors.secondaryContainer, shape: BoxShape.circle),
+              alignment: Alignment.center,
+              child: Text(
+                item.initials,
+                style: DefaultTextStyle.of(context).style.copyWith(color: colors.onSecondaryContainer),
+              ),
+            ),
           ),
         ),
         const SizedBox(width: CoeloSpacing.space2),

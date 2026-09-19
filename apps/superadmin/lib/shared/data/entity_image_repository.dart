@@ -5,10 +5,65 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/widgets.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Entidades que têm foto de perfil/capa (e ícone, no caso da atividade).
-enum EntityKind { institution, unit, group, activity, person }
+import 'entity_image_cache.dart';
 
-enum EntityImageKind { profile, cover, icon }
+/// Entidades que têm foto de perfil/capa (e ícone, no caso da atividade).
+/// `internalUser` só existe para leitura em lote: a chave é o id da identidade
+/// interna e a foto é a da pessoa de serviço (o formulário grava em `person`).
+enum EntityKind {
+  institution('institution'),
+  unit('unit'),
+  group('group'),
+  activity('activity'),
+  person('person'),
+  internalUser('internal_user');
+
+  const EntityKind(this.wire);
+
+  /// Nome no contrato do servidor (`entity_kind`).
+  final String wire;
+}
+
+/// `icon` é o PNG rasterizado do ícone da atividade; `iconVector` é o mesmo
+/// desenho em SVG (fundo + path), gravado junto para as superfícies vetoriais.
+enum EntityImageKind {
+  profile('profile'),
+  cover('cover'),
+  icon('icon'),
+  iconVector('icon_vector');
+
+  const EntityImageKind(this.wire);
+
+  /// Nome no contrato do servidor (`image_kind`).
+  final String wire;
+
+  static EntityImageKind? fromWire(String value) {
+    for (final kind in values) {
+      if (kind.wire == value) return kind;
+    }
+    return null;
+  }
+}
+
+/// Referência a uma imagem ativa (sem bytes): o que a RPC em lote devolve.
+final class EntityImageRef {
+  const EntityImageRef({required this.assetId, required this.kind, required this.contentType, this.iconSpec});
+
+  final String assetId;
+  final EntityImageKind kind;
+  final String contentType;
+  final Map<String, Object?>? iconSpec;
+
+  static EntityImageRef? fromJson(EntityImageKind kind, Object? entry) {
+    if (entry is! Map || entry['asset_id'] is! String) return null;
+    return EntityImageRef(
+      assetId: entry['asset_id'] as String,
+      kind: kind,
+      contentType: entry['content_type'] is String ? entry['content_type'] as String : 'image/png',
+      iconSpec: entry['icon_spec'] is Map ? Map<String, Object?>.from(entry['icon_spec'] as Map) : null,
+    );
+  }
+}
 
 final class EntityImage {
   const EntityImage({
@@ -33,6 +88,13 @@ final class EntityImage {
 abstract interface class EntityImageRepository {
   Future<Map<EntityImageKind, EntityImage>> load(EntityKind entity, String entityId);
 
+  /// Referências ativas de várias entidades de uma vez (diretórios, cards,
+  /// cabeçalhos). Só volta o que o ator pode ler; até 200 ids por chamada.
+  Future<Map<String, Map<EntityImageKind, EntityImageRef>>> list(EntityKind entity, List<String> entityIds);
+
+  /// Bytes de uma imagem ativa, pela Edge (o navegador nunca fala com o R2).
+  Future<Uint8List> read(String assetId);
+
   Future<EntityImage> upload(
     EntityKind entity,
     String entityId, {
@@ -48,15 +110,28 @@ abstract interface class EntityImageRepository {
 /// Repositório visível pelos formulários (produção). Sem escopo (mock/testes)
 /// a seção de fotos não aparece.
 final class EntityImageScope extends InheritedWidget {
-  const EntityImageScope({super.key, required this.repository, required super.child});
+  const EntityImageScope({super.key, required this.cache, this.principalCache, required super.child});
 
-  final EntityImageRepository repository;
+  /// Cache das fotos (diretórios/cabeçalhos); o repositório vive dentro dele.
+  final EntityImageCache cache;
+
+  /// Leitor do Principal (RPCs `principal_*`: equipe do tenant ou responsável
+  /// por `guardian_links` + `can_view`); só leitura.
+  final EntityImageCache? principalCache;
+
+  EntityImageRepository get repository => cache.repository;
 
   static EntityImageRepository? maybeOf(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<EntityImageScope>()?.repository;
 
+  static EntityImageCache? cacheOf(BuildContext context, {bool principal = false}) {
+    final scope = context.dependOnInheritedWidgetOfExactType<EntityImageScope>();
+    return principal ? scope?.principalCache : scope?.cache;
+  }
+
   @override
-  bool updateShouldNotify(EntityImageScope oldWidget) => repository != oldWidget.repository;
+  bool updateShouldNotify(EntityImageScope oldWidget) =>
+      cache != oldWidget.cache || principalCache != oldWidget.principalCache;
 }
 
 final class EntityImageRepositoryException implements Exception {
@@ -66,34 +141,56 @@ final class EntityImageRepositoryException implements Exception {
   String toString() => message;
 }
 
+/// [principal] lê pelas RPCs do Principal (equipe do tenant ou responsável por
+/// `guardian_links` + `can_view`, regra no servidor); sem escrita.
 final class SupabaseEntityImageRepository implements EntityImageRepository {
-  const SupabaseEntityImageRepository(this._client);
+  const SupabaseEntityImageRepository(this._client, {bool principal = false}) : _principal = principal;
 
   final SupabaseClient _client;
+  final bool _principal;
 
   @override
   Future<Map<EntityImageKind, EntityImage>> load(EntityKind entity, String entityId) async {
-    final data = await _client.rpc<dynamic>(
-      'superadmin_entity_images_get_v1',
-      params: {'p_entity_kind': entity.name, 'p_entity_id': entityId},
-    );
-    if (data is! Map) return const {};
+    final refs = (await list(entity, [entityId]))[entityId] ?? const {};
     final result = <EntityImageKind, EntityImage>{};
-    for (final kind in EntityImageKind.values) {
-      final entry = data[kind.name];
-      if (entry is! Map || entry['asset_id'] is! String) continue;
-      final assetId = entry['asset_id'] as String;
-      final bytes = await _bytes({'action': 'read', 'asset_id': assetId});
-      result[kind] = EntityImage(
-        assetId: assetId,
-        kind: kind,
-        contentType: entry['content_type'] is String ? entry['content_type'] as String : 'image/png',
+    for (final ref in refs.values) {
+      final bytes = await read(ref.assetId);
+      result[ref.kind] = EntityImage(
+        assetId: ref.assetId,
+        kind: ref.kind,
+        contentType: ref.contentType,
         bytes: bytes,
-        iconSpec: entry['icon_spec'] is Map ? Map<String, Object?>.from(entry['icon_spec'] as Map) : null,
+        iconSpec: ref.iconSpec,
       );
     }
     return result;
   }
+
+  @override
+  Future<Map<String, Map<EntityImageKind, EntityImageRef>>> list(EntityKind entity, List<String> entityIds) async {
+    if (entityIds.isEmpty) return const {};
+    final data = await _client.rpc<dynamic>(
+      _principal ? 'principal_entity_images_list_v1' : 'superadmin_entity_images_list_v1',
+      params: {'p_entity_kind': entity.wire, 'p_entity_ids': entityIds},
+    );
+    if (data is! Map) return const {};
+    final result = <String, Map<EntityImageKind, EntityImageRef>>{};
+    for (final entry in data.entries) {
+      if (entry.key is! String || entry.value is! Map) continue;
+      final images = <EntityImageKind, EntityImageRef>{};
+      for (final image in (entry.value as Map).entries) {
+        final kind = image.key is String ? EntityImageKind.fromWire(image.key as String) : null;
+        final ref = kind == null ? null : EntityImageRef.fromJson(kind, image.value);
+        if (ref != null) images[kind!] = ref;
+      }
+      result[entry.key as String] = images;
+    }
+    return result;
+  }
+
+  @override
+  Future<Uint8List> read(String assetId) =>
+      _bytes({'action': 'read', 'asset_id': assetId, if (_principal) 'reader': 'principal'});
 
   @override
   Future<EntityImage> upload(
@@ -107,10 +204,10 @@ final class SupabaseEntityImageRepository implements EntityImageRepository {
     final prepared = await _json({
       'action': 'prepare',
       'request_id': _uuidV4(),
-      'entity_kind': entity.name,
+      'entity_kind': entity.wire,
       'entity_id': entityId,
-      'image_kind': kind.name,
-      'file_name': '${kind.name}.${contentType == 'image/jpeg' ? 'jpg' : contentType.split('/').last}',
+      'image_kind': kind.wire,
+      'file_name': '${kind.wire}.${_extension(contentType)}',
       'content_type': contentType,
       'byte_size': bytes.length,
       'sha256': sha256.convert(bytes).toString(),
@@ -164,6 +261,12 @@ final class SupabaseEntityImageRepository implements EntityImageRepository {
     }
   }
 }
+
+String _extension(String contentType) => switch (contentType) {
+  'image/jpeg' => 'jpg',
+  'image/svg+xml' => 'svg',
+  _ => contentType.split('/').last,
+};
 
 String _uuidV4() {
   final random = Random.secure();

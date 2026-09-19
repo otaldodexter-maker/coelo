@@ -1094,7 +1094,7 @@ GoRouter createSuperadminRouter({
     readAuthorizationRevision: () => session.authorizationInvalidationRevision,
   );
 
-  Future<void> saveActivity(
+  Future<String> saveActivity(
     ActivityFormDraft draft, {
     required ActivityCommandIntent intent,
     String? activityId,
@@ -2694,7 +2694,7 @@ GoRouter createSuperadminRouter({
                     logout: logout,
                     onCancel: () => _returnToOr(context, state, SuperadminRoutes.activitiesName),
                     onSaveDraft: (draft) async {
-                      await saveActivity(
+                      final activityId = await saveActivity(
                         draft,
                         intent: ActivityCommandIntent.saveDraft,
                         commandRepository: activityCommandRepository,
@@ -2703,9 +2703,10 @@ GoRouter createSuperadminRouter({
                       if (context.mounted) {
                         context.goNamed(SuperadminRoutes.activitiesName);
                       }
+                      return activityId;
                     },
                     onSubmit: (draft) async {
-                      await saveActivity(
+                      final activityId = await saveActivity(
                         draft,
                         intent: ActivityCommandIntent.publish,
                         commandRepository: activityCommandRepository,
@@ -2714,6 +2715,7 @@ GoRouter createSuperadminRouter({
                       if (context.mounted) {
                         _returnToOr(context, state, SuperadminRoutes.activitiesName);
                       }
+                      return activityId;
                     },
                     onCreateLocation: (draft) =>
                         createActivityLocations(draft, activityCommandRepository),
@@ -2869,20 +2871,21 @@ GoRouter createSuperadminRouter({
                       aboutRepository: productionActivityAboutRepository,
                     ),
                     onSubmit: (draft) async {
-                      await saveActivity(
+                      final activityId = await saveActivity(
                         draft,
                         intent: ActivityCommandIntent.publish,
                         activityId: state.pathParameters['activityId']!,
                         commandRepository: activityCommandRepository,
                         aboutRepository: productionActivityAboutRepository,
                       );
-                      if (!context.mounted) return;
+                      if (!context.mounted) return activityId;
                       state.uri.queryParameters.containsKey('returnTo')
                           ? _returnToOr(context, state, SuperadminRoutes.activitiesName)
                           : context.goNamed(
                               SuperadminRoutes.activityDetailName,
                               pathParameters: {'activityId': state.pathParameters['activityId']!},
                             );
+                      return activityId;
                     },
                     onCreateLocation: (draft) =>
                         createActivityLocations(draft, activityCommandRepository),
@@ -4898,7 +4901,7 @@ GoRouter createSuperadminRouter({
               logout: _previewLogout,
               onCancel: () => _returnToOr(context, state, SuperadminRoutes.devActivitiesName),
               onSaveDraft: (draft) async {
-                await saveActivity(
+                final activityId = await saveActivity(
                   draft,
                   intent: ActivityCommandIntent.saveDraft,
                   commandRepository: developmentActivityCommandRepository,
@@ -4907,9 +4910,10 @@ GoRouter createSuperadminRouter({
                 if (context.mounted) {
                   context.goNamed(SuperadminRoutes.devActivitiesName);
                 }
+                return activityId;
               },
               onSubmit: (draft) async {
-                await saveActivity(
+                final activityId = await saveActivity(
                   draft,
                   intent: ActivityCommandIntent.publish,
                   commandRepository: developmentActivityCommandRepository,
@@ -4918,6 +4922,7 @@ GoRouter createSuperadminRouter({
                 if (context.mounted) {
                   _returnToOr(context, state, SuperadminRoutes.devActivitiesName);
                 }
+                return activityId;
               },
               onCreateLocation: (draft) =>
                   createActivityLocations(draft, developmentActivityCommandRepository),
@@ -4971,7 +4976,7 @@ GoRouter createSuperadminRouter({
                 aboutRepository: developmentActivityAboutRepository,
               ),
               onSubmit: (draft) async {
-                await saveActivity(
+                final activityId = await saveActivity(
                   draft,
                   intent: ActivityCommandIntent.publish,
                   activityId: state.pathParameters['activityId']!,
@@ -4984,6 +4989,7 @@ GoRouter createSuperadminRouter({
                     pathParameters: {'activityId': state.pathParameters['activityId']!},
                   );
                 }
+                return activityId;
               },
               onCreateLocation: (draft) =>
                   createActivityLocations(draft, developmentActivityCommandRepository),

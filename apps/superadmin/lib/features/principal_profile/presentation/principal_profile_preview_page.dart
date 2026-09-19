@@ -10,6 +10,8 @@ import '../../principal_circulars/domain/circular_repository.dart';
 import '../../principal_circulars/presentation/principal_circular_surfaces.dart';
 import '../../profile_about/presentation/profile_about_labels.dart';
 import '../domain/principal_profile_preview_data.dart';
+import '../../../shared/data/entity_image_repository.dart';
+import '../../../shared/presentation/widgets/entity_image_view.dart';
 
 enum _ProfileTab { happens, moments, circulars, about }
 
@@ -411,6 +413,23 @@ final class _ProfileHero extends StatelessWidget {
   /// shows a neutral brand placeholder instead of a fabricated campus photo.
   final bool showFixtureMedia;
 
+  /// Capa/brasão reais do contexto (R2 privado, leitor do Principal); sem
+  /// entidade ou sem foto fica o placeholder neutro.
+  Widget _entityImage({required EntityImageKind kind, required BoxShape shape, required Widget fallback}) {
+    final entityKind = data.entityKind;
+    final entityId = data.entityId;
+    if (entityKind == null || entityId == null) return fallback;
+    return EntityImageView(
+      entity: entityKind,
+      entityId: entityId,
+      kind: kind,
+      shape: shape,
+      principal: true,
+      semanticLabel: kind == EntityImageKind.cover ? 'Capa de ${data.name}' : 'Foto de ${data.name}',
+      fallback: fallback,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final coverHeight = compact
@@ -442,11 +461,17 @@ final class _ProfileHero extends StatelessWidget {
                       fit: BoxFit.cover,
                       alignment: compact ? const Alignment(.5, 0) : Alignment.center,
                     )
-                  : Container(
-                      key: const Key('principal-profile-cover-placeholder'),
+                  : SizedBox(
                       width: double.infinity,
                       height: coverHeight,
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      child: _entityImage(
+                        kind: EntityImageKind.cover,
+                        shape: BoxShape.rectangle,
+                        fallback: Container(
+                          key: const Key('principal-profile-cover-placeholder'),
+                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        ),
+                      ),
                     ),
             ),
           ),
@@ -480,14 +505,18 @@ final class _ProfileHero extends StatelessWidget {
                           'assets/principal_profile/institution-crest.png',
                           fit: BoxFit.contain,
                         )
-                      : ColoredBox(
-                          key: const Key('principal-profile-avatar-placeholder'),
-                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                          child: Center(
-                            child: Icon(
-                              Icons.apartment_outlined,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              size: avatarSize * .45,
+                      : _entityImage(
+                          kind: EntityImageKind.profile,
+                          shape: BoxShape.circle,
+                          fallback: ColoredBox(
+                            key: const Key('principal-profile-avatar-placeholder'),
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                            child: Center(
+                              child: Icon(
+                                Icons.apartment_outlined,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                size: avatarSize * .45,
+                              ),
                             ),
                           ),
                         ),

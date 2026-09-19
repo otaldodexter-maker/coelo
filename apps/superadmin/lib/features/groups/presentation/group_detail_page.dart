@@ -7,6 +7,8 @@ import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart'
 import '../../auth/domain/logout_action.dart';
 import '../domain/group_detail.dart';
 import 'group_detail_controller.dart';
+import '../../../shared/data/entity_image_repository.dart';
+import '../../../shared/presentation/widgets/entity_image_view.dart';
 
 final class GroupDetailPage extends StatefulWidget {
   const GroupDetailPage({
@@ -78,6 +80,13 @@ final class _GroupDetailPageState extends State<GroupDetailPage> {
                       key: const Key('group-detail-content'),
                       children: [
                         if (_controller.detail case final detail?) ...[
+                          EntityIdentityHeader(
+                            entity: EntityKind.group,
+                            entityId: widget.id,
+                            name: detail.name,
+                            subtitle: detail.unitName,
+                            fallbackIcon: Icons.groups_rounded,
+                          ),
                           _section(context, 'Dados da turma', {
                             'Nome': detail.name,
                             'Instituição': detail.institutionName,

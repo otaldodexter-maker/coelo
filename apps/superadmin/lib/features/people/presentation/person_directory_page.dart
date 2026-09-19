@@ -13,6 +13,8 @@ import '../../support/domain/support_ticket.dart';
 import '../domain/person_directory.dart';
 import 'person_file_actions.dart';
 import 'person_directory_view_model.dart';
+import '../../../shared/data/entity_image_repository.dart';
+import '../../../shared/presentation/widgets/entity_image_view.dart';
 
 final class PersonDirectoryPage extends StatefulWidget {
   const PersonDirectoryPage({
@@ -491,11 +493,16 @@ final class _PersonCard extends StatelessWidget {
               children: [
                 SizedBox.square(
                   dimension: 44,
-                  child: FittedBox(
-                    child: CoeloAvatar(
-                      initials: item.initials,
-                      semanticLabel: 'Avatar de ${item.displayName}',
-                      size: CoeloAvatarSize.large,
+                  child: EntityImageView(
+                    entity: EntityKind.person,
+                    entityId: item.id,
+                    semanticLabel: 'Avatar de ${item.displayName}',
+                    fallback: FittedBox(
+                      child: CoeloAvatar(
+                        initials: item.initials,
+                        semanticLabel: 'Avatar de ${item.displayName}',
+                        size: CoeloAvatarSize.large,
+                      ),
                     ),
                   ),
                 ),
@@ -763,10 +770,18 @@ final class _PersonTableRows extends StatelessWidget {
           sortable: true,
           cellBuilder: (context, item) => Row(
             children: [
-              CoeloAvatar(
-                initials: item.initials,
-                semanticLabel: 'Avatar de ${item.displayName}',
-                size: CoeloAvatarSize.small,
+              SizedBox.square(
+                dimension: CoeloAvatarSize.small.dimension,
+                child: EntityImageView(
+                  entity: EntityKind.person,
+                  entityId: item.id,
+                  semanticLabel: 'Avatar de ${item.displayName}',
+                  fallback: CoeloAvatar(
+                    initials: item.initials,
+                    semanticLabel: 'Avatar de ${item.displayName}',
+                    size: CoeloAvatarSize.small,
+                  ),
+                ),
               ),
               const SizedBox(width: CoeloSpacing.space2),
               Expanded(child: Text(item.displayName, maxLines: 1, overflow: TextOverflow.ellipsis)),

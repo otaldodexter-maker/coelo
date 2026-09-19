@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -6,6 +7,7 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/widgets/superadmin_advanced_color_picker_dialog.dart';
+import 'activity_icon_paths.dart';
 
 /// Símbolo + cor do símbolo + cor do fundo. Vira PNG 512×512 (guardado no R2)
 /// e a especificação (`{icon, color, background}`) para reeditar.
@@ -64,6 +66,27 @@ final class ActivityIconDesign {
     final data = await image.toByteData(format: ui.ImageByteFormat.png);
     image.dispose();
     return data?.buffer.asUint8List();
+  }
+
+  /// O mesmo desenho em SVG (fundo arredondado + paths do símbolo), sem fonte,
+  /// script nem referência externa — passa pelo contrato estreito da Edge.
+  /// `null` quando o símbolo não tem path no catálogo vetorial.
+  Uint8List? toSvg({int size = 512}) {
+    final paths = activityIconPaths[icon];
+    if (paths == null || paths.isEmpty) return null;
+    final glyph = size * 0.62;
+    final scale = glyph / 24;
+    final offset = (size - glyph) / 2;
+    final buffer = StringBuffer()
+      ..write('<?xml version="1.0" encoding="UTF-8"?>\n')
+      ..write('<svg xmlns="http://www.w3.org/2000/svg" width="$size" height="$size" viewBox="0 0 $size $size">')
+      ..write('<rect width="$size" height="$size" rx="${(size * 0.22).toStringAsFixed(2)}" fill="${_hex(background)}"/>')
+      ..write('<g transform="translate(${offset.toStringAsFixed(2)} ${offset.toStringAsFixed(2)}) scale(${scale.toStringAsFixed(4)})" fill="${_hex(color)}">');
+    for (final path in paths) {
+      buffer.write('<path d="$path"/>');
+    }
+    buffer.write('</g></svg>\n');
+    return Uint8List.fromList(utf8.encode(buffer.toString()));
   }
 
   static String _hex(Color color) =>

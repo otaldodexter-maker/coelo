@@ -4,6 +4,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../../data/entity_image_cache.dart';
 import '../../data/entity_image_repository.dart';
 import 'activity_icon_designer_dialog.dart';
 import 'avatar_crop_dialog.dart';
@@ -13,11 +14,15 @@ import 'cover_crop_dialog.dart';
 /// grava na hora; sem id (formulário de criação) fica pendente e o formulário
 /// chama [attach] com o id novo depois de salvar.
 final class EntityImagesController extends ChangeNotifier {
-  EntityImagesController({required this.kind, required this.repository, String? entityId})
-    : _entityId = entityId;
+  EntityImagesController({required this.kind, required this.repository, String? entityId, EntityImageCache? cache})
+    : _entityId = entityId,
+      _cache = cache;
 
   final EntityKind kind;
   final EntityImageRepository repository;
+
+  /// Cache dos diretórios/cabeçalhos: recebe o que o formulário gravou.
+  final EntityImageCache? _cache;
   String? _entityId;
   final Map<EntityImageKind, EntityImage> _images = {};
   final Map<EntityImageKind, ({Uint8List bytes, Map<String, Object?>? iconSpec})> _pending = {};
@@ -65,9 +70,12 @@ final class EntityImagesController extends ChangeNotifier {
       return;
     }
     await _run(kind, () async {
-      _images[kind] = await repository.upload(kind == EntityImageKind.icon ? EntityKind.activity : this.kind, id,
-          kind: kind, bytes: bytes, iconSpec: iconSpec);
+      final entity = kind == EntityImageKind.icon || kind == EntityImageKind.iconVector ? EntityKind.activity : this.kind;
+      final image = await repository.upload(entity, id, kind: kind, bytes: bytes, iconSpec: iconSpec,
+          contentType: kind == EntityImageKind.iconVector ? 'image/svg+xml' : 'image/png');
+      _images[kind] = image;
       _pending.remove(kind);
+      _cache?.put(entity, id, image);
     });
   }
 
@@ -77,10 +85,12 @@ final class EntityImagesController extends ChangeNotifier {
       return;
     }
     final image = _images[kind];
-    if (image == null) return;
+    final id = _entityId;
+    if (image == null || id == null) return;
     await _run(kind, () async {
       await repository.remove(image.assetId);
       _images.remove(kind);
+      _cache?.invalidate(this.kind, id);
     });
   }
 
@@ -165,7 +175,12 @@ final class _EntityImagesSectionState extends State<EntityImagesSection> {
   EntityImagesController? _create() {
     final repository = EntityImageScope.maybeOf(context);
     if (repository == null) return null;
-    return _own = EntityImagesController(kind: widget.kind, repository: repository, entityId: widget.entityId);
+    return _own = EntityImagesController(
+      kind: widget.kind,
+      repository: repository,
+      entityId: widget.entityId,
+      cache: EntityImageScope.cacheOf(context),
+    );
   }
 
   void _onChanged() {
@@ -235,7 +250,13 @@ final class _EntityImagesSectionState extends State<EntityImagesSection> {
     );
     if (result == null) return;
     final bytes = await result.rasterize();
-    if (bytes != null) await controller.setImage(EntityImageKind.icon, bytes, iconSpec: result.toSpec());
+    if (bytes == null) return;
+    await controller.setImage(EntityImageKind.icon, bytes, iconSpec: result.toSpec());
+    // O mesmo desenho em SVG vai junto (icon_vector), para superfícies vetoriais.
+    final svg = result.toSvg();
+    if (svg != null && controller.error == null) {
+      await controller.setImage(EntityImageKind.iconVector, svg, iconSpec: result.toSpec());
+    }
   }
 
   @override
@@ -284,7 +305,10 @@ final class _EntityImagesSectionState extends State<EntityImagesSection> {
             pickLabel: controller.has(EntityImageKind.icon) ? 'Editar ícone' : 'Criar ícone',
             pickIcon: Icons.palette_outlined,
             onPick: _designIcon,
-            onRemove: () => controller.removeImage(EntityImageKind.icon),
+            onRemove: () async {
+              await controller.removeImage(EntityImageKind.icon);
+              await controller.removeImage(EntityImageKind.iconVector);
+            },
           ),
         ],
         if (controller.error case final error?) ...[
@@ -304,7 +328,7 @@ final class _EntityImagesSectionState extends State<EntityImagesSection> {
     EntityKind.unit => Icons.location_city_rounded,
     EntityKind.group => Icons.groups_rounded,
     EntityKind.activity => Icons.local_activity_outlined,
-    EntityKind.person => Icons.person_outline,
+    EntityKind.person || EntityKind.internalUser => Icons.person_outline,
   };
 }
 

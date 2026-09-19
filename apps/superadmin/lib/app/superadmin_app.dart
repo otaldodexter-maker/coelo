@@ -84,6 +84,7 @@ import 'router/superadmin_router.dart';
 import 'theme/superadmin_theme_mode_scope.dart';
 import '../features/principal_circulars/domain/circular_repository.dart';
 import '../features/profile_about/domain/profile_about_repository.dart';
+import '../shared/data/entity_image_cache.dart';
 import '../shared/data/entity_image_repository.dart';
 import 'tour/superadmin_tour_store.dart';
 
@@ -203,6 +204,7 @@ class SuperadminApp extends StatefulWidget {
     this.userPreferencesRepository,
     this.accountProfileRepository = const UnavailableAccountProfileRepository(),
     this.entityImageRepository,
+    this.principalEntityImageRepository,
     this.accountSessionsRepository,
     this.supportRepository,
     super.key,
@@ -293,6 +295,9 @@ class SuperadminApp extends StatefulWidget {
 
   /// Fotos de perfil/capa/ícone das entidades (produção); sem ele a seção some.
   final EntityImageRepository? entityImageRepository;
+
+  /// Leitor de fotos do Principal (RPCs `principal_*`); só leitura.
+  final EntityImageRepository? principalEntityImageRepository;
   final AccountSessionsRepository? accountSessionsRepository;
   final SupportRepository? supportRepository;
 
@@ -306,10 +311,16 @@ class _SuperadminAppState extends State<SuperadminApp> {
   late final bool _ownsSession;
   late final UserPreferencesController _preferencesController;
   late final ChildSafetyController _childSafetyController;
+  late final EntityImageCache? _entityImageCache;
+  late final EntityImageCache? _principalEntityImageCache;
 
   @override
   void initState() {
     super.initState();
+    final images = widget.entityImageRepository;
+    _entityImageCache = images == null ? null : EntityImageCache(images);
+    final principalImages = widget.principalEntityImageRepository;
+    _principalEntityImageCache = principalImages == null ? null : EntityImageCache(principalImages);
     _ownsSession = widget.session == null;
     _session = widget.session ?? SuperadminSession();
     _preferencesController = UserPreferencesController(
@@ -468,7 +479,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
           : const AnimationStyle(duration: Duration(milliseconds: 420), curve: Curves.easeInOut),
       builder: (context, child) {
         final inherited = MediaQuery.of(context);
-        final images = widget.entityImageRepository;
+        final images = _entityImageCache;
         return SuperadminThemeModeScope(
           mode: _preferencesController.preferences.themeMode,
           onChanged: _setThemeMode,
@@ -479,7 +490,11 @@ class _SuperadminAppState extends State<SuperadminApp> {
             ),
             child: images == null
                 ? child ?? const SizedBox.shrink()
-                : EntityImageScope(repository: images, child: child ?? const SizedBox.shrink()),
+                : EntityImageScope(
+                    cache: images,
+                    principalCache: _principalEntityImageCache,
+                    child: child ?? const SizedBox.shrink(),
+                  ),
           ),
         );
       },
