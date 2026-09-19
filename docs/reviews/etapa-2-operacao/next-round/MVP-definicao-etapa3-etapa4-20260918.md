@@ -74,7 +74,7 @@ com dependência externa (domínio, provedor, loja, decisão de produto).
 | F4 | Specs aprovadas sem implementação: 065 Perfis de cuidado, 066 ciclo de vida + `institutions.status`, 067 Locais com mapa, 069 Avisos | ADR 0044 | G (4 specs, FE+BE+rota real) | nada |
 | F5 | Specs em rascunho: 064 perfil transversal / Principal sem membership (OQ-044/048), 068 perfis oficiais (OQ-032; **PRD Superadmin diz MVP**) | backlog | M cada, após aprovação | D8 |
 | F6 | Deploy público: host `superadmin.coelo.me`, allowlist de Auth, CORS dos buckets R2, SMTP próprio + prova do reset | ADR 0035/0044 | M + externo (DNS, Cloudflare, SMTP) | decisão de host |
-| F7 | Acesso contextual de funcionários (2 telas + servidor + auditoria) | ADR 0035 | G | spec nova; 6 decisões do Owner (backlog) |
+| F7 | Acesso contextual de funcionários — **entregue em 19/09** (Sessão ACESSO-CONTEXTUAL): lote 84 em produção (`staff_access_v1`: regras/afastamentos por vínculo, enforcement em `has_context_permission`, RPCs, auditoria, pgTAP 68/68), telas Acessos › Acesso de funcionários e Afastamentos, popup no Principal, tour; 6 decisões tomadas pelo padrão da sessão (pendentes anotadas) | ADR 0035 | — | Owner revisa olhando a tela |
 | F8 | Tour funcional — **entregue** (menu 18/09; por tela e completo 19/09, Sessão TOUR-TELAS) | ADR 0035 | — | — |
 | F9 | Home com IA sobre o app | ADR 0035 | G + custo de provedor | fonte/limites/custo |
 | F10 | `apps/admin` em admin.coelo.me com adaptação de papel | ADR 0035 / PRD | G | F6; decisão do que sai do Superadmin |
