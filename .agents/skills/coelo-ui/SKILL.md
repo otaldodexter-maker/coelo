@@ -97,3 +97,8 @@ no primeiro. Rótulo pode variar (`label:`), ícone e tom não. Item que não é
 ciclo de vida (ex.: "Ver respostas", "Agendamentos") continua
 `CoeloAdminFlyoutItem` cru.
 
+
+Card com ⋯ (ou qualquer filho interativo) não passa `semanticLabel` ao
+`CoeloAdminInteractiveCard`: o rótulo embrulha o conteúdo em `ExcludeSemantics` e
+o botão some para leitor de tela e para o driver de prova (Pessoas: `semanticLabel`
+só quando `menu == null`).
