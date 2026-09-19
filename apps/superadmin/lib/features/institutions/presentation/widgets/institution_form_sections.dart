@@ -2513,15 +2513,17 @@ final class _DateControl extends StatelessWidget {
     return InkWell(
       key: controlKey,
       onTap: () async {
-        final selected = await showDatePicker(
+        final selected = await showCoeloDateRangePicker(
           context: context,
-          locale: const Locale('pt', 'BR'),
-          initialDate: value ?? DateUtils.dateOnly(DateTime.now()),
+          value: value == null ? null : DateTimeRange(start: value!, end: value!),
           firstDate: DateTime(2020),
           lastDate: DateTime(2035),
+          currentDate: DateUtils.dateOnly(DateTime.now()),
+          showQuickRanges: false,
+          selectionMode: CoeloDateSelectionMode.single,
         );
         if (selected != null) {
-          onChanged(selected);
+          onChanged(DateUtils.dateOnly(selected.start));
         }
       },
       child: InputDecorator(

@@ -137,7 +137,7 @@ Future<DateTimeRange?> showCoeloDateRangePicker({
   final initial = _normalize(value);
   final result = await showDialog<Object?>(
     context: context,
-    barrierColor: Colors.black54,
+    barrierColor: context.coeloScrim,
     builder: (dialogContext) => Dialog(
       backgroundColor: Theme.of(dialogContext).colorScheme.surface,
       surfaceTintColor: Colors.transparent,

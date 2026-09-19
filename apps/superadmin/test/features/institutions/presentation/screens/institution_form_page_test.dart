@@ -11,6 +11,7 @@ import 'package:coelo_superadmin/features/institutions/presentation/widgets/inst
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -1031,11 +1032,8 @@ void main() {
     await tester.tap(find.byKey(const Key('institution-subscription-start-date')));
     await tester.pumpAndSettle();
 
-    final calendarContext = tester.element(find.byType(CalendarDatePicker));
-    final calendarTheme = Theme.of(calendarContext);
-    expect(Localizations.localeOf(calendarContext), const Locale('pt', 'BR'));
-    expect(calendarTheme.datePickerTheme.backgroundColor, calendarTheme.colorScheme.surface);
-    expect(calendarTheme.datePickerTheme.surfaceTintColor, Colors.transparent);
+    // Mesmo seletor de data do restante do app (Coelo), não o do Material.
+    expect(find.byType(CoeloDateRangePicker), findsOneWidget);
   });
 
   testWidgets('color picker uses the neutral advanced color surface', (tester) async {

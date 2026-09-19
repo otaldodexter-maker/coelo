@@ -15,6 +15,7 @@ final class CoeloDateTimeField extends StatefulWidget {
     this.emptyLabel = 'Definir data e hora',
     this.currentDate,
     this.enabled = true,
+    this.pickTime = true,
     super.key,
   });
 
@@ -26,6 +27,9 @@ final class CoeloDateTimeField extends StatefulWidget {
   final String labelText;
   final String emptyLabel;
   final bool enabled;
+
+  /// `false` pede só a data (hora fica 00:00) e mostra o valor sem hora.
+  final bool pickTime;
 
   @override
   State<CoeloDateTimeField> createState() => _CoeloDateTimeFieldState();
@@ -56,6 +60,11 @@ final class _CoeloDateTimeFieldState extends State<CoeloDateTimeField> {
       _focusNode.requestFocus();
       return;
     }
+    if (!widget.pickTime) {
+      _focusNode.requestFocus();
+      widget.onChanged(DateUtils.dateOnly(selected.start));
+      return;
+    }
     final time = await showCoeloTimePicker(
       context: context,
       initialValue: TimeOfDay(hour: widget.value?.hour ?? 8, minute: widget.value?.minute ?? 0),
@@ -81,7 +90,7 @@ final class _CoeloDateTimeFieldState extends State<CoeloDateTimeField> {
       button: true,
       enabled: widget.enabled,
       label: widget.labelText,
-      value: widget.value == null ? widget.emptyLabel : _full(widget.value!),
+      value: widget.value == null ? widget.emptyLabel : _full(widget.value!, widget.pickTime),
       child: FocusableActionDetector(
         focusNode: _focusNode,
         enabled: widget.enabled,
@@ -116,7 +125,11 @@ final class _CoeloDateTimeFieldState extends State<CoeloDateTimeField> {
               const Icon(Icons.calendar_today_outlined),
               const SizedBox(width: CoeloSpacing.space3),
               Expanded(
-                child: Text(widget.value == null ? widget.emptyLabel : _numeric(widget.value!)),
+                child: Text(
+                  widget.value == null
+                      ? widget.emptyLabel
+                      : _numeric(widget.value!, widget.pickTime),
+                ),
               ),
               const Icon(Icons.expand_more_rounded),
             ],
@@ -141,7 +154,10 @@ const _months = [
   'novembro',
   'dezembro',
 ];
-String _numeric(DateTime value) =>
-    '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year} · ${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
-String _full(DateTime value) =>
-    '${value.day} de ${_months[value.month - 1]} de ${value.year}, às ${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
+String _two(int value) => value.toString().padLeft(2, '0');
+String _numeric(DateTime value, bool withTime) =>
+    '${_two(value.day)}/${_two(value.month)}/${value.year}'
+    '${withTime ? ' · ${_two(value.hour)}:${_two(value.minute)}' : ''}';
+String _full(DateTime value, bool withTime) =>
+    '${value.day} de ${_months[value.month - 1]} de ${value.year}'
+    '${withTime ? ', às ${_two(value.hour)}:${_two(value.minute)}' : ''}';

@@ -92,7 +92,7 @@ Future<TimeOfDay?> showCoeloTimePicker({
   String title = 'Defina o horário',
 }) => showDialog<TimeOfDay>(
   context: context,
-  barrierColor: Colors.black54,
+  barrierColor: context.coeloScrim,
   builder: (context) => _CoeloTimePickerDialog(initialValue: initialValue, title: title),
 );
 
