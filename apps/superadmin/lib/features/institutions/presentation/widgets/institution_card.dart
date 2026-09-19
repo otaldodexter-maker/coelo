@@ -1,4 +1,5 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/institution_directory_item.dart';
@@ -6,13 +7,10 @@ import 'institution_status_presentation.dart';
 import '../../../../shared/data/entity_image_repository.dart';
 import '../../../../shared/presentation/widgets/entity_image_view.dart';
 
-Duration _interactionDuration(BuildContext context, Duration duration) {
-  return MediaQuery.disableAnimationsOf(context) ? Duration.zero : duration;
-}
-
 /// Card de domínio de Instituições, baseline dos cards administrativos.
-/// Largura, grade e o card Criar vêm do `CoeloAdminDirectory`.
-class InstitutionCard extends StatefulWidget {
+/// Largura, grade e o card Criar vêm do `CoeloAdminDirectory`; a superfície
+/// (hover, foco, borda, sombra) é a `CoeloAdminInteractiveCard` compartilhada.
+class InstitutionCard extends StatelessWidget {
   const InstitutionCard({required this.item, required this.onPressed, this.menu, super.key});
 
   /// Menu ⋯ de ciclo de vida (spec 066); nulo quando não há comando disponível.
@@ -22,169 +20,105 @@ class InstitutionCard extends StatefulWidget {
   final VoidCallback? onPressed;
 
   @override
-  State<InstitutionCard> createState() => _InstitutionCardState();
-}
-
-class _InstitutionCardState extends State<InstitutionCard> {
-  bool _highlighted = false;
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final item = widget.item;
-    return ConstrainedBox(
+    return CoeloAdminInteractiveCard(
       key: Key('institution-card-${item.id}'),
-      constraints: const BoxConstraints(minHeight: 216),
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _highlighted = true),
-        onExit: (_) => setState(() => _highlighted = false),
-        child: FocusableActionDetector(
-          onShowFocusHighlight: (value) => setState(() => _highlighted = value),
-          child: TweenAnimationBuilder<double>(
-            key: Key('institution-card-surface-${item.id}'),
-            tween: Tween(begin: 0, end: _highlighted ? 1 : 0),
-            duration: _interactionDuration(context, CoeloMotion.standard),
-            curve: Curves.easeOutCubic,
-            builder: (context, progress, child) => Container(
-              decoration: BoxDecoration(
-                color: colors.surface,
-                borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                border: Border.all(
-                  color: Color.lerp(
-                    colors.outlineVariant,
-                    colors.primary.withValues(alpha: 0.5),
-                    progress,
-                  )!,
-                  width: 1 + 0.5 * progress,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.lerp(
-                      colors.shadow.withValues(alpha: 0.03),
-                      colors.primary.withValues(alpha: 0.15),
-                      progress,
-                    )!,
-                    blurRadius: 8 + 4 * progress,
-                    spreadRadius: 2 * progress,
-                    offset: Offset(0, 2 + 2 * progress),
+      surfaceKey: Key('institution-card-surface-${item.id}'),
+      minHeight: 216,
+      onPressed: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CoeloSpacing.space6,
+          vertical: CoeloSpacing.space4,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                SizedBox.square(
+                  key: Key('institution-avatar-${item.id}'),
+                  dimension: 44,
+                  child: EntityImageView(
+                    entity: EntityKind.institution,
+                    entityId: item.id,
+                    semanticLabel: 'Foto de ${item.publicName}',
+                    fallback: Container(
+                      decoration: BoxDecoration(
+                        color: colors.secondaryContainer,
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        item.initials,
+                        style: DefaultTextStyle.of(
+                          context,
+                        ).style.copyWith(color: colors.onSecondaryContainer),
+                      ),
+                    ),
                   ),
-                ],
+                ),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.publicName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        _location(item.district, item.city, item.state),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: CoeloSpacing.space2),
+                ExpandableInstitutionStatusIndicator(itemId: item.id, status: item.status),
+                if (menu case final menu?) ...[const SizedBox(width: CoeloSpacing.space1), menu],
+              ],
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+            const Divider(height: 1),
+            const SizedBox(height: CoeloSpacing.space4),
+            _CardDetailRow(
+              first: _CardDetail(
+                key: Key('institution-card-detail-type-${item.id}'),
+                icon: Icons.category_outlined,
+                label: 'Tipo',
+                value: item.typeName ?? 'Não informado',
               ),
-              child: Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                child: InkWell(
-                  onTap: widget.onPressed,
-                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: CoeloSpacing.space6,
-                      vertical: CoeloSpacing.space4,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            SizedBox.square(
-                              key: Key('institution-avatar-${item.id}'),
-                              dimension: 44,
-                              child: EntityImageView(
-                                entity: EntityKind.institution,
-                                entityId: item.id,
-                                semanticLabel: 'Foto de ${item.publicName}',
-                                fallback: Container(
-                                  decoration: BoxDecoration(
-                                    color: colors.secondaryContainer,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    item.initials,
-                                    style: DefaultTextStyle.of(
-                                      context,
-                                    ).style.copyWith(color: colors.onSecondaryContainer),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: CoeloSpacing.space3),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item.publicName,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Text(
-                                    _location(item.district, item.city, item.state),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: colors.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: CoeloSpacing.space2),
-                            ExpandableInstitutionStatusIndicator(
-                              itemId: item.id,
-                              status: item.status,
-                            ),
-                            if (widget.menu case final menu?) ...[
-                              const SizedBox(width: CoeloSpacing.space1),
-                              menu,
-                            ],
-                          ],
-                        ),
-                        const SizedBox(height: CoeloSpacing.space4),
-                        const Divider(height: 1),
-                        const SizedBox(height: CoeloSpacing.space4),
-                        _CardDetailRow(
-                          first: _CardDetail(
-                            key: Key('institution-card-detail-type-${item.id}'),
-                            icon: Icons.category_outlined,
-                            label: 'Tipo',
-                            value: item.typeName ?? 'Não informado',
-                          ),
-                          second: _CardDetail(
-                            key: Key('institution-card-detail-plan-${item.id}'),
-                            icon: Icons.sell_outlined,
-                            label: 'Plano',
-                            value: item.planName ?? 'Sem plano',
-                          ),
-                        ),
-                        const SizedBox(height: CoeloSpacing.space3),
-                        _CardDetailRow(
-                          first: _CardDetail(
-                            key: Key('institution-card-detail-units-${item.id}'),
-                            icon: Icons.apartment_outlined,
-                            label: 'Unidades',
-                            value: '${item.unitsCount}',
-                          ),
-                          second: _CardDetail(
-                            key: Key('institution-card-detail-groups-${item.id}'),
-                            icon: Icons.groups_outlined,
-                            label: 'Turmas',
-                            value: '${item.groupsCount}',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              second: _CardDetail(
+                key: Key('institution-card-detail-plan-${item.id}'),
+                icon: Icons.sell_outlined,
+                label: 'Plano',
+                value: item.planName ?? 'Sem plano',
               ),
             ),
-          ),
+            const SizedBox(height: CoeloSpacing.space3),
+            _CardDetailRow(
+              first: _CardDetail(
+                key: Key('institution-card-detail-units-${item.id}'),
+                icon: Icons.apartment_outlined,
+                label: 'Unidades',
+                value: '${item.unitsCount}',
+              ),
+              second: _CardDetail(
+                key: Key('institution-card-detail-groups-${item.id}'),
+                icon: Icons.groups_outlined,
+                label: 'Turmas',
+                value: '${item.groupsCount}',
+              ),
+            ),
+          ],
         ),
       ),
     );

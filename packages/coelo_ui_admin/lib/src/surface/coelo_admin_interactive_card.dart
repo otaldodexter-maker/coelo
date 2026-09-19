@@ -43,28 +43,41 @@ final class _CoeloAdminInteractiveCardState extends State<CoeloAdminInteractiveC
     final radius = BorderRadius.circular(CoeloRadius.lg);
     final disableAnimations = MediaQuery.disableAnimationsOf(context);
 
-    final surface = AnimatedContainer(
+    // So o realce (hover/foco) anima localmente; as cores do tema sao lidas a
+    // cada frame, entao a troca claro/escuro segue a transicao global sem
+    // cauda propria (baseline de Instituicoes).
+    final surface = TweenAnimationBuilder<double>(
       key: widget.surfaceKey,
+      tween: Tween(begin: 0, end: emphasized ? 1 : 0),
       duration: disableAnimations ? CoeloMotion.instant : CoeloMotion.standard,
       curve: Curves.easeOutCubic,
-      constraints: BoxConstraints(minHeight: widget.minHeight ?? 0),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: radius,
-        border: Border.all(
-          color: emphasized ? colors.primary.withValues(alpha: 0.5) : colors.outlineVariant,
-          width: emphasized ? 1.5 : 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: emphasized
-                ? colors.primary.withValues(alpha: 0.15)
-                : colors.shadow.withValues(alpha: 0.03),
-            blurRadius: emphasized ? 12 : 8,
-            spreadRadius: emphasized ? 2 : 0,
-            offset: Offset(0, emphasized ? 4 : 2),
+      builder: (context, progress, child) => Container(
+        constraints: BoxConstraints(minHeight: widget.minHeight ?? 0),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: radius,
+          border: Border.all(
+            color: Color.lerp(
+              colors.outlineVariant,
+              colors.primary.withValues(alpha: 0.5),
+              progress,
+            )!,
+            width: 1 + 0.5 * progress,
           ),
-        ],
+          boxShadow: [
+            BoxShadow(
+              color: Color.lerp(
+                colors.shadow.withValues(alpha: 0.03),
+                colors.primary.withValues(alpha: 0.15),
+                progress,
+              )!,
+              blurRadius: 8 + 4 * progress,
+              spreadRadius: 2 * progress,
+              offset: Offset(0, 2 + 2 * progress),
+            ),
+          ],
+        ),
+        child: child,
       ),
       child: Material(
         color: Colors.transparent,

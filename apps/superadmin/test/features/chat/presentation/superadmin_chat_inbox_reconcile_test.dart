@@ -31,7 +31,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('superadmin-chat-manage-message-1')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('superadmin-chat-action-revoke')));
+    await tester.tap(find.text('Revogar').last);
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('superadmin-chat-revoke-confirm')));
     await tester.pumpAndSettle();
@@ -47,7 +47,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('superadmin-chat-manage-message-1')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('superadmin-chat-action-edit')));
+    await tester.tap(find.text('Editar').last);
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).last, 'texto corrigido');
     await tester.pump();

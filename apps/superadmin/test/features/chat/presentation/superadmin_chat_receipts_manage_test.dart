@@ -91,7 +91,7 @@ void main() {
     );
     await _pump(tester, repository);
 
-    await _openManageAction(tester, 'superadmin-chat-action-edit');
+    await _openManageAction(tester, 'Editar');
     await tester.enterText(find.byKey(const Key('superadmin-chat-edit-field')), '  Texto novo  ');
     await tester.tap(find.byKey(const Key('superadmin-chat-edit-confirm')));
     await tester.pumpAndSettle();
@@ -117,7 +117,7 @@ void main() {
     repository.threadAfterCommand = const ChatThreadPage(items: []);
     await _pump(tester, repository);
 
-    await _openManageAction(tester, 'superadmin-chat-action-revoke');
+    await _openManageAction(tester, 'Revogar');
     expect(repository.revocations, isEmpty);
 
     await tester.tap(find.byKey(const Key('superadmin-chat-revoke-confirm')));
@@ -137,7 +137,7 @@ void main() {
     );
     await _pump(tester, repository);
 
-    await _openManageAction(tester, 'superadmin-chat-action-edit');
+    await _openManageAction(tester, 'Editar');
     await tester.enterText(find.byKey(const Key('superadmin-chat-edit-field')), 'Novo');
     await tester.tap(find.byKey(const Key('superadmin-chat-edit-confirm')));
     await tester.pumpAndSettle();
@@ -159,7 +159,7 @@ void main() {
     );
     await _pump(tester, repository);
 
-    await _openManageAction(tester, 'superadmin-chat-action-revoke');
+    await _openManageAction(tester, 'Revogar');
     await tester.tap(find.byKey(const Key('superadmin-chat-revoke-confirm')));
     await tester.pumpAndSettle();
 
@@ -177,10 +177,10 @@ Future<void> _pump(WidgetTester tester, ChatRepository repository) async {
   await tester.pumpAndSettle();
 }
 
-Future<void> _openManageAction(WidgetTester tester, String actionKey) async {
+Future<void> _openManageAction(WidgetTester tester, String actionLabel) async {
   await tester.tap(find.byKey(const Key('superadmin-chat-manage-message-1')));
   await tester.pumpAndSettle();
-  await tester.tap(find.byKey(Key(actionKey)));
+  await tester.tap(find.text(actionLabel).last);
   await tester.pumpAndSettle();
 }
 

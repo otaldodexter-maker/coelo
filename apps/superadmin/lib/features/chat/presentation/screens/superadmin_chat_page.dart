@@ -1203,28 +1203,25 @@ final class _MessageBubble extends StatelessWidget {
                     child: Text(message.authorName, style: Theme.of(context).textTheme.labelSmall),
                   ),
                   if (_canManage)
-                    PopupMenuButton<_MessageAction>(
-                      key: Key('superadmin-chat-manage-${message.id}'),
-                      tooltip: 'Acoes da mensagem',
-                      icon: const Icon(Icons.more_horiz_rounded, size: CoeloSize.iconSm),
+                    CoeloAdminFlyout<_MessageAction>(
+                      items: [
+                        if (onEdit != null) CoeloAdminEntityActions.edit(_MessageAction.edit),
+                        if (onRevoke != null)
+                          CoeloAdminEntityActions.cancel(
+                            _MessageAction.revoke,
+                            label: 'Revogar',
+                            startsGroup: onEdit != null,
+                          ),
+                      ],
                       onSelected: (action) => switch (action) {
                         _MessageAction.edit => onEdit?.call(),
                         _MessageAction.revoke => onRevoke?.call(),
                       },
-                      itemBuilder: (context) => [
-                        if (onEdit != null)
-                          const PopupMenuItem(
-                            key: Key('superadmin-chat-action-edit'),
-                            value: _MessageAction.edit,
-                            child: Text('Editar'),
-                          ),
-                        if (onRevoke != null)
-                          const PopupMenuItem(
-                            key: Key('superadmin-chat-action-revoke'),
-                            value: _MessageAction.revoke,
-                            child: Text('Revogar'),
-                          ),
-                      ],
+                      builder: (context, controller) => CoeloAdminEntityActionsTrigger(
+                        key: Key('superadmin-chat-manage-${message.id}'),
+                        controller: controller,
+                        tooltip: 'Ações da mensagem',
+                      ),
                     ),
                 ],
               ),

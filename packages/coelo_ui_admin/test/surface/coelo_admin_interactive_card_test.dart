@@ -14,10 +14,7 @@ void main() {
     await mouse.moveTo(tester.getCenter(find.byType(CoeloAdminInteractiveCard)));
     await tester.pumpAndSettle();
 
-    final surface = tester.widget<AnimatedContainer>(
-      find.byKey(const Key('interactive-card-surface')),
-    );
-    final decoration = surface.decoration! as BoxDecoration;
+    final decoration = _decoration(tester);
     expect(decoration.color, CoeloTheme.light.colorScheme.surface);
     expect(decoration.borderRadius, BorderRadius.circular(CoeloRadius.lg));
     expect(
@@ -42,11 +39,11 @@ void main() {
   testWidgets('uses the exact Institutions resting surface', (tester) async {
     await _pumpCard(tester);
 
-    final surface = tester.widget<AnimatedContainer>(
+    final animation = tester.widget<TweenAnimationBuilder<double>>(
       find.byKey(const Key('interactive-card-surface')),
     );
-    final decoration = surface.decoration! as BoxDecoration;
-    expect(surface.duration, CoeloMotion.standard);
+    expect(animation.duration, CoeloMotion.standard);
+    final decoration = _decoration(tester);
     expect((decoration.border! as Border).top.width, 1);
     expect((decoration.border! as Border).top.color, CoeloTheme.light.colorScheme.outlineVariant);
     expect(decoration.boxShadow, [
@@ -61,10 +58,10 @@ void main() {
   testWidgets('uses instant motion when animations are disabled', (tester) async {
     await _pumpCard(tester, disableAnimations: true);
 
-    final surface = tester.widget<AnimatedContainer>(
+    final animation = tester.widget<TweenAnimationBuilder<double>>(
       find.byKey(const Key('interactive-card-surface')),
     );
-    expect(surface.duration, Duration.zero);
+    expect(animation.duration, Duration.zero);
   });
 
   testWidgets('exposes the semantic button label and callback', (tester) async {
@@ -89,13 +86,20 @@ void main() {
     await mouse.moveTo(tester.getCenter(find.byType(CoeloAdminInteractiveCard)));
     await tester.pumpAndSettle();
 
-    final surface = tester.widget<AnimatedContainer>(
-      find.byKey(const Key('interactive-card-surface')),
-    );
-    final decoration = surface.decoration! as BoxDecoration;
+    final decoration = _decoration(tester);
     expect((decoration.border! as Border).top.width, 1);
     expect((decoration.border! as Border).top.color, CoeloTheme.light.colorScheme.outlineVariant);
   });
+}
+
+BoxDecoration _decoration(WidgetTester tester) {
+  final container = find
+      .descendant(
+        of: find.byKey(const Key('interactive-card-surface')),
+        matching: find.byType(Container),
+      )
+      .first;
+  return tester.widget<Container>(container).decoration! as BoxDecoration;
 }
 
 Future<void> _pumpCard(

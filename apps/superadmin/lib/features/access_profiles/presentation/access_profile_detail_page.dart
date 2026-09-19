@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 import 'dart:math';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -51,14 +52,14 @@ final class AccessProfileDetailPage extends StatefulWidget {
   State<AccessProfileDetailPage> createState() => _AccessProfileDetailPageState();
 }
 
-final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage> {
+final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
+    with SuperadminOwnedDialogs {
   late final SuperadminActivityController _activityController;
   AccessProfile? _profile;
   String? _error;
   bool _deleting = false;
   String? _pendingDeleteRequestId;
   int _loadRevision = 0;
-  final Set<DialogRoute<bool>> _ownedDialogs = {};
 
   @override
   void initState() {
@@ -73,7 +74,7 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
     if (!identical(oldWidget.repository, widget.repository) ||
         oldWidget.domain != widget.domain ||
         oldWidget.profileId != widget.profileId) {
-      _dismissOwnedDialogs();
+      dismissOwnedRoutes();
       _profile = null;
       _error = null;
       _deleting = false;
@@ -99,7 +100,7 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
   @override
   void dispose() {
     _loadRevision++;
-    _dismissOwnedDialogs();
+    dismissOwnedRoutes();
     _activityController.dispose();
     super.dispose();
   }
@@ -223,29 +224,10 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
     }
   }
 
-  Future<bool?> _showConfirmation({required WidgetBuilder builder}) async {
-    final navigator = Navigator.of(context, rootNavigator: true);
-    final route = DialogRoute<bool>(context: context, builder: builder);
-    _ownedDialogs.add(route);
-    try {
-      unawaited(navigator.push<bool>(route));
-      // The text controller must outlive the closing transition.
-      return await route.completed;
-    } finally {
-      _ownedDialogs.remove(route);
-    }
-  }
-
-  void _dismissOwnedDialogs() {
-    final routes = _ownedDialogs.toList(growable: false);
-    _ownedDialogs.clear();
-    if (routes.isEmpty) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      for (final route in routes) {
-        if (route.isActive) route.navigator?.removeRoute(route);
-      }
-    });
-  }
+  // The text controller must outlive the closing transition (showOwnedDialog
+  // awaits route.completed).
+  Future<bool?> _showConfirmation({required WidgetBuilder builder}) =>
+      showOwnedDialog<bool>(builder: builder);
 
   @override
   Widget build(BuildContext context) => SuperadminShell(

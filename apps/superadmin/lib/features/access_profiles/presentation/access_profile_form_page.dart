@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -89,7 +90,8 @@ final class AccessProfileFormPage extends StatefulWidget {
   State<AccessProfileFormPage> createState() => _AccessProfileFormPageState();
 }
 
-final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
+final class _AccessProfileFormPageState extends State<AccessProfileFormPage>
+    with SuperadminOwnedDialogs {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _codeController = TextEditingController();
@@ -118,7 +120,6 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
   String? _pendingSaveFingerprint;
   VoidCallback? _confirmedCompletion;
   int _contextRevision = 0;
-  final Set<DialogRoute<bool>> _ownedDialogs = {};
   bool _confirmingExit = false;
 
   bool _isCurrent(int revision) => mounted && revision == _contextRevision;
@@ -237,7 +238,7 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
         oldWidget.profileId != widget.profileId) {
       _contextRevision++;
       _confirmedCompletion = null;
-      _dismissOwnedDialogs();
+      dismissOwnedRoutes();
       _confirmingExit = false;
       _original = null;
       _loading = true;
@@ -380,38 +381,13 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
     ),
   );
 
-  Future<bool> _showOwnedDialog({required WidgetBuilder builder}) async {
-    final navigator = Navigator.of(context, rootNavigator: true);
-    final route = DialogRoute<bool>(
-      context: context,
-      barrierColor: context.coeloScrim,
-      builder: builder,
-    );
-    _ownedDialogs.add(route);
-    try {
-      unawaited(navigator.push<bool>(route));
-      return await route.completed ?? false;
-    } finally {
-      _ownedDialogs.remove(route);
-    }
-  }
-
-  void _dismissOwnedDialogs() {
-    final routes = _ownedDialogs.toList(growable: false);
-    _ownedDialogs.clear();
-    if (routes.isEmpty) return;
-    // didUpdateWidget/dispose can run while Navigator is building.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      for (final route in routes) {
-        if (route.isActive) route.navigator?.removeRoute(route);
-      }
-    });
-  }
+  Future<bool> _showOwnedDialog({required WidgetBuilder builder}) async =>
+      await showOwnedDialog<bool>(builder: builder) ?? false;
 
   @override
   void dispose() {
     _contextRevision++;
-    _dismissOwnedDialogs();
+    dismissOwnedRoutes();
     _nameController.dispose();
     _codeController.dispose();
     _descriptionController.dispose();
@@ -1669,7 +1645,8 @@ final class _AppUsageSection extends StatelessWidget {
             const StaffAccessInfoBanner(
               key: Key('access-profile-app-usage-unavailable'),
               icon: Icons.error_outline_rounded,
-              text: 'Não foi possível consultar o horário atual deste perfil. Salvar aqui pode sobrescrever o que existe.',
+              text:
+                  'Não foi possível consultar o horário atual deste perfil. Salvar aqui pode sobrescrever o que existe.',
             ),
             const SizedBox(height: CoeloSpacing.space4),
           ],
