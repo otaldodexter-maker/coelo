@@ -287,9 +287,15 @@ final class _Backend implements FormsBackendGateway {
   Future<Object?> mediaUpload(Map<String, Object?> envelope, Uint8List bytes) =>
       throw UnsupportedError('binary upload is not exercised by this test');
 
+  // Leitura inline (bytes pela Edge): registra o mesmo envelope do `read` e
+  // resolve pela mesma fila; um resultado que não é bytes vira indisponível.
   @override
-  Future<FormsMediaBytes> mediaBytes(Map<String, Object?> envelope) =>
-      throw UnsupportedError('inline read is not exercised by this test');
+  Future<FormsMediaBytes> mediaBytes(Map<String, Object?> envelope) async {
+    final raw = await media(envelope);
+    if (raw is FormsMediaBytes) return raw;
+    throw const FormsBackendFailure(code: 'media_unavailable', message: 'unavailable');
+  }
+
   final envelopes = <Map<String, Object?>>[];
   final pending = <Completer<Object?>>[];
   @override

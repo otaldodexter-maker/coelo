@@ -133,7 +133,7 @@ void main() {
     await tapAddMedia(tester);
 
     expect(controller.state.draft.media, isEmpty);
-    expect(find.text('Formato não aceito. Use JPG, PNG ou WEBP.'), findsOneWidget);
+    expect(find.text('Formato não aceito. Use JPG, PNG, WEBP ou MP4.'), findsOneWidget);
     expect(repository.saveCalls, 0);
     expect(repository.publishCalls, 0);
   });
