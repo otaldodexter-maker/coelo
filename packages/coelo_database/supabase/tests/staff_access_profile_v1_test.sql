@@ -7,7 +7,7 @@
 -- recusado, ator sem escopo, auditoria e enforcement em has_context_permission.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(39);
+select plan(45);
 
 create function pg_temp.f8(n integer) returns uuid language sql immutable as $$
   select ('f8000000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid;
@@ -28,7 +28,7 @@ select ok((select bool_and(has_function_privilege('authenticated',p.oid,'execute
   and p.proname in ('staff_access_profile_rule_get_v1','staff_access_profile_rule_save_v1','staff_access_list_v1')),'RPCs: authenticated only');
 select ok(position('40001' in pg_get_functiondef('public.staff_access_profile_rule_save_v1(uuid,bigint,jsonb)'::regprocedure))=0
   and position('PT409' in pg_get_functiondef('public.staff_access_profile_rule_save_v1(uuid,bigint,jsonb)'::regprocedure))>0,'stale version = PT409, never 40001');
-select ok(position('staff_access_effective_rule' in pg_get_functiondef('app_private.staff_access_evaluate(uuid,text,timestamptz)'::regprocedure))>0,'evaluate reads the effective rule (single resolver)');
+select ok(position('staff_access_effective_rule' in pg_get_functiondef('app_private.staff_access_evaluate(uuid,text,timestamptz,uuid)'::regprocedure))>0,'evaluate reads the effective rule (single resolver)');
 
 -- fixture ---------------------------------------------------------------------------------------
 insert into public.institution_types(id,code,name,status) values (pg_temp.f8(1),'f8-type','F8 type','active');
@@ -139,6 +139,30 @@ select is(app_private.has_context_permission(pg_temp.f8(10),'people.read',pg_tem
 select is((select access_reason from public.list_my_principal_contexts() where membership_id=pg_temp.f8(301)),'schedule','context A marked schedule');
 reset role;
 select ok((select count(*) from audit.audit_logs where object_type='staff_access_profile_rule' and institution_id=pg_temp.f8(10))>=2,'audit trail for profile rules');
+
+
+-- dois perfis com regra no mesmo vinculo: vale a MAIS RESTRITIVA (migration 20260920041000) -------------
+-- F8 Educador volta a liberar quarta 14:00 Manaus (18:00Z); F8 Auxiliar (segundo perfil, mais novo) bloqueia.
+select pg_temp.as_user(102);
+set local role authenticated;
+select lives_ok($$select public.staff_access_profile_rule_save_v1(pg_temp.f8(50),2,jsonb_build_object(
+  'surfaces',jsonb_build_array('web'),'windows',jsonb_build_array(jsonb_build_object('weekday',3,'start','08:00','end','18:00')),'popup_enabled',true))$$,'first profile allows wednesday afternoon');
+reset role;
+insert into public.institution_roles(id,institution_id,code,name,status,max_scope_kind) values
+ (pg_temp.f8(51),pg_temp.f8(10),'f8_auxiliar','F8 Auxiliar','active','unit');
+insert into public.institution_role_assignments(membership_id,role_id,scope_kind,scope_unit_id) values (pg_temp.f8(301),pg_temp.f8(51),'unit',pg_temp.f8(11));
+select is((select allowed from app_private.staff_access_evaluate(pg_temp.f8(301),'web','2026-09-23 18:00:00+00')),true,'second profile without rule: still allowed');
+insert into public.staff_access_profile_rules(role_id,institution_id,surfaces,windows,popup_enabled) values
+ (pg_temp.f8(51),pg_temp.f8(10),array['web'],'[{"weekday":1,"start":"03:00","end":"03:01"}]'::jsonb,true);
+select is((select source from app_private.staff_access_effective_rule(pg_temp.f8(301))),'profile','effective rule still the oldest profile');
+select is((select rule_id from app_private.staff_access_evaluate(pg_temp.f8(301),'web','2026-09-23 18:00:00+00')),
+  (select id from public.staff_access_profile_rules where role_id=pg_temp.f8(51)),'most restrictive: the second profile blocks and its rule (popup) is returned');
+select is(app_private.staff_access_blocked(pg_temp.f8(301)),
+  (select not allowed from app_private.staff_access_evaluate(pg_temp.f8(301),'web',now())),'blocked helper follows the most restrictive profile');
+-- regra propria continua acima de todos os perfis
+insert into public.staff_access_rules(membership_id,institution_id,surfaces,windows,popup_enabled) values
+ (pg_temp.f8(301),pg_temp.f8(10),array['web'],'[{"weekday":3,"start":"08:00","end":"18:00"}]'::jsonb,false);
+select is((select allowed from app_private.staff_access_evaluate(pg_temp.f8(301),'web','2026-09-23 18:00:00+00')),true,'own rule prevails over every profile');
 
 select * from finish();
 rollback;
