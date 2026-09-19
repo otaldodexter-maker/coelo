@@ -14,6 +14,7 @@ final class UnitTableRows extends StatelessWidget {
   const UnitTableRows({
     required this.items,
     this.onEdit,
+    this.menuBuilder,
     required this.sortColumn,
     required this.sortAscending,
     required this.onSort,
@@ -23,6 +24,9 @@ final class UnitTableRows extends StatelessWidget {
 
   final List<UnitDirectoryItem> items;
   final ValueChanged<UnitDirectoryItem>? onEdit;
+
+  /// Menu ⋯ de ciclo de vida por linha (spec 066), só na visão agrupada.
+  final Widget Function(UnitDirectoryItem item)? menuBuilder;
   final UnitDirectorySortColumn sortColumn;
   final bool sortAscending;
   final ValueChanged<UnitDirectorySortColumn> onSort;
@@ -44,7 +48,19 @@ final class UnitTableRows extends StatelessWidget {
                   items: items,
                   rowKey: (item) => 'unit-table-row-${item.id}',
                   pinnedColumn: _column(_UnitColumn.unit),
-                  columns: columns.skip(1).map(_column).toList(growable: false),
+                  columns: [
+                    ...columns.skip(1).map(_column),
+                    if (menuBuilder case final builder?)
+                      CoeloAdminTableColumn<UnitDirectoryItem>(
+                        id: 'actions',
+                        label: 'Ações',
+                        initialWidth: 88,
+                        minWidth: 72,
+                        maxWidth: 120,
+                        cellBuilder: (context, item) =>
+                            Align(alignment: Alignment.centerLeft, child: builder(item)),
+                      ),
+                  ],
                   headerHeight: 56,
                   rowHeight: 64,
                   onRowPressed: onEdit,
@@ -172,7 +188,9 @@ final class UnitTableRows extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 item.initials,
-                style: DefaultTextStyle.of(context).style.copyWith(color: colors.onSecondaryContainer),
+                style: DefaultTextStyle.of(
+                  context,
+                ).style.copyWith(color: colors.onSecondaryContainer),
               ),
             ),
           ),

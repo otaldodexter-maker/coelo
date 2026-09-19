@@ -30,8 +30,15 @@ final class EntityImageCache {
 
   /// Bytes da imagem [kind] da entidade; `null` enquanto não chegou ou quando
   /// a entidade não tem imagem. Chamadas repetidas devolvem o mesmo listenable.
-  ValueListenable<Uint8List?> watch(EntityKind entity, String entityId, {EntityImageKind kind = EntityImageKind.profile}) {
-    final notifier = _listeners.putIfAbsent(_listenerKey(entity, entityId, kind), () => ValueNotifier<Uint8List?>(null));
+  ValueListenable<Uint8List?> watch(
+    EntityKind entity,
+    String entityId, {
+    EntityImageKind kind = EntityImageKind.profile,
+  }) {
+    final notifier = _listeners.putIfAbsent(
+      _listenerKey(entity, entityId, kind),
+      () => ValueNotifier<Uint8List?>(null),
+    );
     final refs = _refs[_refKey(entity, entityId)];
     if (refs == null) {
       _enqueue(entity, entityId);
@@ -86,7 +93,10 @@ final class EntityImageCache {
     for (final entry in batches.entries) {
       final ids = entry.value.toList();
       for (var start = 0; start < ids.length; start += _batchLimit) {
-        final slice = ids.sublist(start, start + _batchLimit > ids.length ? ids.length : start + _batchLimit);
+        final slice = ids.sublist(
+          start,
+          start + _batchLimit > ids.length ? ids.length : start + _batchLimit,
+        );
         _inFlight.putIfAbsent(entry.key, () => {}).addAll(slice);
         unawaited(_load(entry.key, slice));
       }
@@ -117,12 +127,17 @@ final class EntityImageCache {
       notifier.value = null;
       return;
     }
-    final future = _bytes.putIfAbsent(ref.assetId, () => repository.read(ref.assetId).then<Uint8List?>((bytes) => bytes).catchError((_) {
-      _bytes.remove(ref.assetId);
-      return null;
-    }));
-    unawaited(future.then((bytes) {
-      if (bytes != null) notifier.value = bytes;
-    }));
+    final future = _bytes.putIfAbsent(
+      ref.assetId,
+      () => repository.read(ref.assetId).then<Uint8List?>((bytes) => bytes).catchError((_) {
+        _bytes.remove(ref.assetId);
+        return null;
+      }),
+    );
+    unawaited(
+      future.then((bytes) {
+        if (bytes != null) notifier.value = bytes;
+      }),
+    );
   }
 }

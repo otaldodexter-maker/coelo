@@ -5,13 +5,43 @@ import 'dart:typed_data';
 import 'package:http/http.dart' show ClientException;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../shared/data/entity_lifecycle.dart';
 import '../domain/unit_backend_commands.dart';
 
-final class SupabaseUnitBackendCommandsGateway implements UnitBackendCommandsGateway {
+final class SupabaseUnitBackendCommandsGateway
+    implements UnitBackendCommandsGateway, EntityLifecycleCommands {
   const SupabaseUnitBackendCommandsGateway(this._client, {DateTime Function()? now})
     : _now = now ?? _systemUtcNow;
 
   final SupabaseClient _client;
+
+  // spec 066 (lote 97): ciclo de vida da unidade pelo mesmo gateway, sem
+  // encanar um objeto novo por main → app → router.
+  @override
+  Future<EntityLifecycleResult> changeStatus(
+    String entityId, {
+    required int expectedVersion,
+    required bool active,
+    required String requestId,
+    String? reason,
+  }) => SupabaseEntityLifecycleCommands(_client, entity: 'unit').changeStatus(
+    entityId,
+    expectedVersion: expectedVersion,
+    active: active,
+    requestId: requestId,
+    reason: reason,
+  );
+
+  @override
+  Future<EntityLifecycleResult> delete(
+    String entityId, {
+    required int expectedVersion,
+    required String requestId,
+    required String reason,
+  }) => SupabaseEntityLifecycleCommands(
+    _client,
+    entity: 'unit',
+  ).delete(entityId, expectedVersion: expectedVersion, requestId: requestId, reason: reason);
   final DateTime Function() _now;
 
   @override

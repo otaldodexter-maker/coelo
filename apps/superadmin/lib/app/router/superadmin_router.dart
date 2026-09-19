@@ -15,6 +15,7 @@ import 'package:coelo_domain/locations.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import '../../core/qa/superadmin_qa_hooks.dart';
+import '../../shared/data/entity_lifecycle.dart';
 import '../../core/guards/superadmin_session.dart';
 import '../../core/config/superadmin_media_scope.dart';
 import '../../core/config/superadmin_app_config.dart';
@@ -2111,6 +2112,10 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => UnitDirectoryPage(
               repository: unitRepository,
               backendCommands: hasStructureMutationCapability() ? unitBackendCommands : null,
+              lifecycle:
+                  hasStructureMutationCapability() && unitBackendCommands is EntityLifecycleCommands
+                  ? unitBackendCommands as EntityLifecycleCommands
+                  : null,
               logout: logout,
               successMessage: unitSuccessMessage(state.extra),
               onCreate: hasStructureMutationCapability()
@@ -2458,6 +2463,10 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.groupsName,
             builder: (context, state) => GroupDirectoryPage(
               repository: groupRepository,
+              lifecycle:
+                  hasStructureMutationCapability() && groupRepository is EntityLifecycleCommands
+                  ? groupRepository as EntityLifecycleCommands
+                  : null,
               logout: logout,
               successMessage: groupSuccessMessage(state.extra),
               onView: session.authContext?.permissionCodes.contains('groups.read') == true

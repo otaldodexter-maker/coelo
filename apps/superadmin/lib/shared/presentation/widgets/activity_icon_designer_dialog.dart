@@ -27,28 +27,38 @@ final class ActivityIconDesign {
   static ActivityIconDesign fromSpec(Map<String, Object?>? spec) {
     if (spec == null) return defaultDesign;
     return ActivityIconDesign(
-      icon: activityIconCatalog.containsKey(spec['icon']) ? spec['icon'] as String : defaultDesign.icon,
+      icon: activityIconCatalog.containsKey(spec['icon'])
+          ? spec['icon'] as String
+          : defaultDesign.icon,
       color: _parseColor(spec['color']) ?? defaultDesign.color,
       background: _parseColor(spec['background']) ?? defaultDesign.background,
     );
   }
 
-  Map<String, Object?> toSpec() => {'icon': icon, 'color': _hex(color), 'background': _hex(background)};
+  Map<String, Object?> toSpec() => {
+    'icon': icon,
+    'color': _hex(color),
+    'background': _hex(background),
+  };
 
   IconData get iconData => activityIconCatalog[icon] ?? Icons.local_activity_outlined;
 
-  ActivityIconDesign copyWith({String? icon, Color? color, Color? background}) => ActivityIconDesign(
-    icon: icon ?? this.icon,
-    color: color ?? this.color,
-    background: background ?? this.background,
-  );
+  ActivityIconDesign copyWith({String? icon, Color? color, Color? background}) =>
+      ActivityIconDesign(
+        icon: icon ?? this.icon,
+        color: color ?? this.color,
+        background: background ?? this.background,
+      );
 
   /// PNG 512×512 com fundo arredondado e o glifo centralizado (fonte MaterialIcons).
   Future<Uint8List?> rasterize({int size = 512}) async {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
     final rect = Offset.zero & Size.square(size.toDouble());
-    canvas.drawRRect(RRect.fromRectAndRadius(rect, Radius.circular(size * 0.22)), Paint()..color = background);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(rect, Radius.circular(size * 0.22)),
+      Paint()..color = background,
+    );
     final painter = TextPainter(
       text: TextSpan(
         text: String.fromCharCode(iconData.codePoint),
@@ -79,9 +89,15 @@ final class ActivityIconDesign {
     final offset = (size - glyph) / 2;
     final buffer = StringBuffer()
       ..write('<?xml version="1.0" encoding="UTF-8"?>\n')
-      ..write('<svg xmlns="http://www.w3.org/2000/svg" width="$size" height="$size" viewBox="0 0 $size $size">')
-      ..write('<rect width="$size" height="$size" rx="${(size * 0.22).toStringAsFixed(2)}" fill="${_hex(background)}"/>')
-      ..write('<g transform="translate(${offset.toStringAsFixed(2)} ${offset.toStringAsFixed(2)}) scale(${scale.toStringAsFixed(4)})" fill="${_hex(color)}">');
+      ..write(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="$size" height="$size" viewBox="0 0 $size $size">',
+      )
+      ..write(
+        '<rect width="$size" height="$size" rx="${(size * 0.22).toStringAsFixed(2)}" fill="${_hex(background)}"/>',
+      )
+      ..write(
+        '<g transform="translate(${offset.toStringAsFixed(2)} ${offset.toStringAsFixed(2)}) scale(${scale.toStringAsFixed(4)})" fill="${_hex(color)}">',
+      );
     for (final path in paths) {
       buffer.write('<path d="$path"/>');
     }
@@ -170,7 +186,11 @@ final class _ActivityIconDesignerDialogState extends State<ActivityIconDesignerD
       title: background ? 'Cor do fundo' : 'Cor do ícone',
     );
     if (selected != null && mounted) {
-      setState(() => _design = background ? _design.copyWith(background: selected) : _design.copyWith(color: selected));
+      setState(
+        () => _design = background
+            ? _design.copyWith(background: selected)
+            : _design.copyWith(color: selected),
+      );
     }
   }
 
@@ -180,7 +200,10 @@ final class _ActivityIconDesignerDialogState extends State<ActivityIconDesignerD
     return CoeloAdminDialogShell(
       title: 'Ícone da atividade',
       maxWidth: 640,
-      secondaryAction: OutlinedButton(onPressed: Navigator.of(context).pop, child: const Text('Cancelar')),
+      secondaryAction: OutlinedButton(
+        onPressed: Navigator.of(context).pop,
+        child: const Text('Cancelar'),
+      ),
       primaryAction: FilledButton(
         key: const Key('activity-icon-apply'),
         onPressed: () => Navigator.of(context).pop(_design),
@@ -248,7 +271,9 @@ final class _ActivityIconDesignerDialogState extends State<ActivityIconDesignerD
                         color: selected ? theme.colorScheme.primaryContainer : null,
                         borderRadius: BorderRadius.circular(CoeloRadius.md),
                         border: Border.all(
-                          color: selected ? theme.colorScheme.primary : theme.colorScheme.outlineVariant,
+                          color: selected
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.outlineVariant,
                         ),
                       ),
                       child: Icon(entry.value, color: theme.colorScheme.onSurface),
@@ -265,7 +290,12 @@ final class _ActivityIconDesignerDialogState extends State<ActivityIconDesignerD
 }
 
 final class _ColorButton extends StatelessWidget {
-  const _ColorButton({required this.label, required this.color, required this.onPressed, super.key});
+  const _ColorButton({
+    required this.label,
+    required this.color,
+    required this.onPressed,
+    super.key,
+  });
 
   final String label;
   final Color color;

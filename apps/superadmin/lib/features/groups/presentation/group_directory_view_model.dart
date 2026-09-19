@@ -66,7 +66,9 @@ final class GroupDirectoryViewModel extends ChangeNotifier {
         ? _query.unitIds
         : {
             for (final unit in options.units)
-              if (value.isEmpty || unit.institutionId == null || value.contains(unit.institutionId!))
+              if (value.isEmpty ||
+                  unit.institutionId == null ||
+                  value.contains(unit.institutionId!))
                 unit.id,
           };
     return _replace(

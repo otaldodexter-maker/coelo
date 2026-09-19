@@ -47,10 +47,18 @@ final class EntityImageView extends StatelessWidget {
       valueListenable: cache.watch(entity, entityId, kind: kind),
       builder: (context, bytes, _) {
         if (bytes == null) return fallback;
-        final image = Image.memory(bytes, fit: fit, gaplessPlayback: true, semanticLabel: semanticLabel);
+        final image = Image.memory(
+          bytes,
+          fit: fit,
+          gaplessPlayback: true,
+          semanticLabel: semanticLabel,
+        );
         return shape == BoxShape.circle
             ? ClipOval(child: SizedBox.expand(child: image))
-            : ClipRRect(borderRadius: borderRadius ?? BorderRadius.zero, child: SizedBox.expand(child: image));
+            : ClipRRect(
+                borderRadius: borderRadius ?? BorderRadius.zero,
+                child: SizedBox.expand(child: image),
+              );
       },
     );
   }
@@ -90,7 +98,10 @@ final class EntityIdentityHeader extends StatelessWidget {
       alignment: Alignment.center,
       child: initials == null || initials!.isEmpty
           ? Icon(fallbackIcon, color: colors.onSecondaryContainer, size: CoeloSize.iconLg)
-          : Text(initials!, style: theme.textTheme.titleMedium?.copyWith(color: colors.onSecondaryContainer)),
+          : Text(
+              initials!,
+              style: theme.textTheme.titleMedium?.copyWith(color: colors.onSecondaryContainer),
+            ),
     );
     return Card(
       key: Key('entity-identity-header-$entityId'),
@@ -108,7 +119,12 @@ final class EntityIdentityHeader extends StatelessWidget {
                   : SizedBox(
                       height: CoeloSize.touchMin * 2.5,
                       width: double.infinity,
-                      child: Image.memory(bytes, fit: BoxFit.cover, gaplessPlayback: true, semanticLabel: 'Capa de $name'),
+                      child: Image.memory(
+                        bytes,
+                        fit: BoxFit.cover,
+                        gaplessPlayback: true,
+                        semanticLabel: 'Capa de $name',
+                      ),
                     ),
             ),
           Padding(
@@ -131,7 +147,12 @@ final class EntityIdentityHeader extends StatelessWidget {
                     children: [
                       Semantics(header: true, child: Text(name, style: theme.textTheme.titleLarge)),
                       if (subtitle case final subtitle? when subtitle.isNotEmpty)
-                        Text(subtitle, style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant)),
+                        Text(
+                          subtitle,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
                     ],
                   ),
                 ),

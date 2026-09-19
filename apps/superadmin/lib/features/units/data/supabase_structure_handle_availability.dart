@@ -76,7 +76,9 @@ final class SupabaseStructureHandleAvailability {
       }
       final error = response['error'];
       final code = error is Map ? error['code'] : null;
-      final message = error is Map && error['message'] is String ? error['message'] as String : null;
+      final message = error is Map && error['message'] is String
+          ? error['message'] as String
+          : null;
       return StructureHandleChange(
         outcome: switch (code) {
           'SAI_HANDLE_COOLDOWN' => StructureHandleChangeOutcome.cooldown,

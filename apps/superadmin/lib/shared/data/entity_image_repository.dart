@@ -47,7 +47,12 @@ enum EntityImageKind {
 
 /// Referência a uma imagem ativa (sem bytes): o que a RPC em lote devolve.
 final class EntityImageRef {
-  const EntityImageRef({required this.assetId, required this.kind, required this.contentType, this.iconSpec});
+  const EntityImageRef({
+    required this.assetId,
+    required this.kind,
+    required this.contentType,
+    this.iconSpec,
+  });
 
   final String assetId;
   final EntityImageKind kind;
@@ -60,7 +65,9 @@ final class EntityImageRef {
       assetId: entry['asset_id'] as String,
       kind: kind,
       contentType: entry['content_type'] is String ? entry['content_type'] as String : 'image/png',
-      iconSpec: entry['icon_spec'] is Map ? Map<String, Object?>.from(entry['icon_spec'] as Map) : null,
+      iconSpec: entry['icon_spec'] is Map
+          ? Map<String, Object?>.from(entry['icon_spec'] as Map)
+          : null,
     );
   }
 }
@@ -90,7 +97,10 @@ abstract interface class EntityImageRepository {
 
   /// Referências ativas de várias entidades de uma vez (diretórios, cards,
   /// cabeçalhos). Só volta o que o ator pode ler; até 200 ids por chamada.
-  Future<Map<String, Map<EntityImageKind, EntityImageRef>>> list(EntityKind entity, List<String> entityIds);
+  Future<Map<String, Map<EntityImageKind, EntityImageRef>>> list(
+    EntityKind entity,
+    List<String> entityIds,
+  );
 
   /// Bytes de uma imagem ativa, pela Edge (o navegador nunca fala com o R2).
   Future<Uint8List> read(String assetId);
@@ -110,7 +120,12 @@ abstract interface class EntityImageRepository {
 /// Repositório visível pelos formulários (produção). Sem escopo (mock/testes)
 /// a seção de fotos não aparece.
 final class EntityImageScope extends InheritedWidget {
-  const EntityImageScope({super.key, required this.cache, this.principalCache, required super.child});
+  const EntityImageScope({
+    super.key,
+    required this.cache,
+    this.principalCache,
+    required super.child,
+  });
 
   /// Cache das fotos (diretórios/cabeçalhos); o repositório vive dentro dele.
   final EntityImageCache cache;
@@ -144,7 +159,8 @@ final class EntityImageRepositoryException implements Exception {
 /// [principal] lê pelas RPCs do Principal (equipe do tenant ou responsável por
 /// `guardian_links` + `can_view`, regra no servidor); sem escrita.
 final class SupabaseEntityImageRepository implements EntityImageRepository {
-  const SupabaseEntityImageRepository(this._client, {bool principal = false}) : _principal = principal;
+  const SupabaseEntityImageRepository(this._client, {bool principal = false})
+    : _principal = principal;
 
   final SupabaseClient _client;
   final bool _principal;
@@ -167,7 +183,10 @@ final class SupabaseEntityImageRepository implements EntityImageRepository {
   }
 
   @override
-  Future<Map<String, Map<EntityImageKind, EntityImageRef>>> list(EntityKind entity, List<String> entityIds) async {
+  Future<Map<String, Map<EntityImageKind, EntityImageRef>>> list(
+    EntityKind entity,
+    List<String> entityIds,
+  ) async {
     if (entityIds.isEmpty) return const {};
     final data = await _client.rpc<dynamic>(
       _principal ? 'principal_entity_images_list_v1' : 'superadmin_entity_images_list_v1',
@@ -214,7 +233,8 @@ final class SupabaseEntityImageRepository implements EntityImageRepository {
       'icon_spec': ?iconSpec,
     });
     final assetId = prepared['asset_id'];
-    if (assetId is! String) throw const EntityImageRepositoryException('Não foi possível preparar a foto.');
+    if (assetId is! String)
+      throw const EntityImageRepositoryException('Não foi possível preparar a foto.');
     final finalized = await _json(
       bytes,
       headers: {'x-coelo-asset-id': assetId},
@@ -223,12 +243,21 @@ final class SupabaseEntityImageRepository implements EntityImageRepository {
     if (finalized['status'] != 'active') {
       throw const EntityImageRepositoryException('Não foi possível confirmar a foto.');
     }
-    return EntityImage(assetId: assetId, kind: kind, contentType: contentType, bytes: bytes, iconSpec: iconSpec);
+    return EntityImage(
+      assetId: assetId,
+      kind: kind,
+      contentType: contentType,
+      bytes: bytes,
+      iconSpec: iconSpec,
+    );
   }
 
   @override
   Future<void> remove(String assetId) async {
-    await _json({'action': 'remove', 'asset_id': assetId}, failure: 'Não foi possível remover a foto.');
+    await _json({
+      'action': 'remove',
+      'asset_id': assetId,
+    }, failure: 'Não foi possível remover a foto.');
   }
 
   Future<Map<String, dynamic>> _json(
@@ -249,7 +278,11 @@ final class SupabaseEntityImageRepository implements EntityImageRepository {
     return data;
   }
 
-  Future<Object?> _invoke(Object body, {Map<String, String>? headers, required String failure}) async {
+  Future<Object?> _invoke(
+    Object body, {
+    Map<String, String>? headers,
+    required String failure,
+  }) async {
     try {
       final response = await _client.functions.invoke('entity-media', body: body, headers: headers);
       if (response.status != 200) throw EntityImageRepositoryException(failure);

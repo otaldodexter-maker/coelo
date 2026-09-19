@@ -14,9 +14,13 @@ import 'cover_crop_dialog.dart';
 /// grava na hora; sem id (formulário de criação) fica pendente e o formulário
 /// chama [attach] com o id novo depois de salvar.
 final class EntityImagesController extends ChangeNotifier {
-  EntityImagesController({required this.kind, required this.repository, String? entityId, EntityImageCache? cache})
-    : _entityId = entityId,
-      _cache = cache;
+  EntityImagesController({
+    required this.kind,
+    required this.repository,
+    String? entityId,
+    EntityImageCache? cache,
+  }) : _entityId = entityId,
+       _cache = cache;
 
   final EntityKind kind;
   final EntityImageRepository repository;
@@ -62,7 +66,11 @@ final class EntityImagesController extends ChangeNotifier {
     _notify();
   }
 
-  Future<void> setImage(EntityImageKind kind, Uint8List bytes, {Map<String, Object?>? iconSpec}) async {
+  Future<void> setImage(
+    EntityImageKind kind,
+    Uint8List bytes, {
+    Map<String, Object?>? iconSpec,
+  }) async {
     final id = _entityId;
     if (id == null) {
       _pending[kind] = (bytes: bytes, iconSpec: iconSpec);
@@ -70,9 +78,17 @@ final class EntityImagesController extends ChangeNotifier {
       return;
     }
     await _run(kind, () async {
-      final entity = kind == EntityImageKind.icon || kind == EntityImageKind.iconVector ? EntityKind.activity : this.kind;
-      final image = await repository.upload(entity, id, kind: kind, bytes: bytes, iconSpec: iconSpec,
-          contentType: kind == EntityImageKind.iconVector ? 'image/svg+xml' : 'image/png');
+      final entity = kind == EntityImageKind.icon || kind == EntityImageKind.iconVector
+          ? EntityKind.activity
+          : this.kind;
+      final image = await repository.upload(
+        entity,
+        id,
+        kind: kind,
+        bytes: bytes,
+        iconSpec: iconSpec,
+        contentType: kind == EntityImageKind.iconVector ? 'image/svg+xml' : 'image/png',
+      );
       _images[kind] = image;
       _pending.remove(kind);
       _cache?.put(entity, id, image);
@@ -271,8 +287,13 @@ final class _EntityImagesSectionState extends State<EntityImagesSection> {
           _ImageRow(
             key: const Key('entity-image-profile'),
             title: widget.profileTitle,
-            description: 'Imagem quadrada em PNG, JPG ou WebP, até 5 MB. Você ajusta o enquadramento.',
-            preview: _Preview(bytes: controller.bytesOf(EntityImageKind.profile), circular: true, icon: _profileIcon),
+            description:
+                'Imagem quadrada em PNG, JPG ou WebP, até 5 MB. Você ajusta o enquadramento.',
+            preview: _Preview(
+              bytes: controller.bytesOf(EntityImageKind.profile),
+              circular: true,
+              icon: _profileIcon,
+            ),
             has: controller.has(EntityImageKind.profile),
             busy: controller.isBusy(EntityImageKind.profile),
             pickKey: const Key('entity-image-profile-pick'),
@@ -285,7 +306,11 @@ final class _EntityImagesSectionState extends State<EntityImagesSection> {
             key: const Key('entity-image-cover'),
             title: widget.coverTitle,
             description: 'Imagem larga (proporção 2,7:1) em PNG, JPG ou WebP, até 5 MB.',
-            preview: _Preview(bytes: controller.bytesOf(EntityImageKind.cover), circular: false, icon: Icons.panorama_outlined),
+            preview: _Preview(
+              bytes: controller.bytesOf(EntityImageKind.cover),
+              circular: false,
+              icon: Icons.panorama_outlined,
+            ),
             has: controller.has(EntityImageKind.cover),
             busy: controller.isBusy(EntityImageKind.cover),
             pickKey: const Key('entity-image-cover-pick'),
@@ -297,8 +322,14 @@ final class _EntityImagesSectionState extends State<EntityImagesSection> {
           _ImageRow(
             key: const Key('entity-image-icon'),
             title: 'Ícone',
-            description: 'Escolha um símbolo, a cor dele e a cor do fundo. Vale quando não há foto.',
-            preview: _Preview(bytes: controller.bytesOf(EntityImageKind.icon), circular: false, icon: Icons.emoji_symbols_outlined, rounded: true),
+            description:
+                'Escolha um símbolo, a cor dele e a cor do fundo. Vale quando não há foto.',
+            preview: _Preview(
+              bytes: controller.bytesOf(EntityImageKind.icon),
+              circular: false,
+              icon: Icons.emoji_symbols_outlined,
+              rounded: true,
+            ),
             has: controller.has(EntityImageKind.icon),
             busy: controller.isBusy(EntityImageKind.icon),
             pickKey: const Key('entity-image-icon-pick'),
@@ -391,9 +422,16 @@ final class _ImageRow extends StatelessWidget {
                       key: pickKey,
                       onPressed: busy ? null : onPick,
                       icon: busy
-                          ? const SizedBox.square(dimension: CoeloSize.iconSm, child: CircularProgressIndicator(strokeWidth: 2))
+                          ? const SizedBox.square(
+                              dimension: CoeloSize.iconSm,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
                           : Icon(pickIcon),
-                      label: Text(busy ? 'Enviando…' : (pickLabel ?? (has ? 'Trocar foto' : 'Adicionar foto'))),
+                      label: Text(
+                        busy
+                            ? 'Enviando…'
+                            : (pickLabel ?? (has ? 'Trocar foto' : 'Adicionar foto')),
+                      ),
                     ),
                     if (has)
                       TextButton(onPressed: busy ? null : onRemove, child: const Text('Remover')),
@@ -409,7 +447,12 @@ final class _ImageRow extends StatelessWidget {
 }
 
 final class _Preview extends StatelessWidget {
-  const _Preview({required this.bytes, required this.circular, required this.icon, this.rounded = false});
+  const _Preview({
+    required this.bytes,
+    required this.circular,
+    required this.icon,
+    this.rounded = false,
+  });
 
   final Uint8List? bytes;
   final bool circular;

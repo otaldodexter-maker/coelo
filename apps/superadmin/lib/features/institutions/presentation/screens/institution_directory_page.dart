@@ -183,12 +183,12 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
   ) async {
     final lifecycle = widget.lifecycle;
     if (lifecycle == null || _lifecycleRunning) return;
-    if (action == InstitutionLifecycleAction.edit) {
+    if (action == EntityLifecycleAction.edit) {
       widget.onEdit?.call(item.id);
       return;
     }
     String? reason;
-    if (action != InstitutionLifecycleAction.activate) {
+    if (action != EntityLifecycleAction.activate) {
       reason = await showInstitutionLifecycleReasonDialog(context, action: action, item: item);
       if (reason == null || !mounted) return;
     }
@@ -196,36 +196,36 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
     final requestId = _viewModel.newRequestId();
     try {
       final result = switch (action) {
-        InstitutionLifecycleAction.activate => await lifecycle.changeStatus(
+        EntityLifecycleAction.activate => await lifecycle.changeStatus(
           item.id,
           expectedVersion: item.managementVersion,
           status: InstitutionStatus.active,
           requestId: requestId,
         ),
-        InstitutionLifecycleAction.inactivate => await lifecycle.changeStatus(
+        EntityLifecycleAction.inactivate => await lifecycle.changeStatus(
           item.id,
           expectedVersion: item.managementVersion,
           status: InstitutionStatus.inactive,
           requestId: requestId,
           reason: reason,
         ),
-        InstitutionLifecycleAction.delete => await lifecycle.delete(
+        EntityLifecycleAction.delete => await lifecycle.delete(
           item.id,
           expectedVersion: item.managementVersion,
           requestId: requestId,
           reason: reason!,
         ),
-        InstitutionLifecycleAction.edit => throw StateError('unreachable'),
+        EntityLifecycleAction.edit => throw StateError('unreachable'),
       };
       if (!mounted) return;
       _feedback(switch (action) {
-        InstitutionLifecycleAction.activate => '${item.publicName} ativada.',
-        InstitutionLifecycleAction.inactivate => '${item.publicName} inativada.',
-        InstitutionLifecycleAction.delete =>
+        EntityLifecycleAction.activate => '${item.publicName} ativada.',
+        EntityLifecycleAction.inactivate => '${item.publicName} inativada.',
+        EntityLifecycleAction.delete =>
           result.hardDeleted
               ? '${item.publicName} excluída.'
               : '${item.publicName} arquivada: tinha vínculos, então ficou no histórico.',
-        InstitutionLifecycleAction.edit => '',
+        EntityLifecycleAction.edit => '',
       });
       await _viewModel.load();
     } on InstitutionDirectoryConflictException {

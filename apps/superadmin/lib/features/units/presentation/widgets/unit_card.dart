@@ -9,10 +9,13 @@ import '../../../../shared/presentation/widgets/entity_image_view.dart';
 
 /// Card de domínio de Unidades; largura, grade e o card Criar vêm do composto.
 final class UnitCard extends StatelessWidget {
-  const UnitCard({required this.item, required this.onPressed, super.key});
+  const UnitCard({required this.item, required this.onPressed, this.menu, super.key});
 
   final UnitDirectoryItem item;
   final VoidCallback? onPressed;
+
+  /// Menu ⋯ de ciclo de vida (spec 066); nulo sem comandos.
+  final Widget? menu;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +52,9 @@ final class UnitCard extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Text(
                         item.initials,
-                        style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSecondaryContainer),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colors.onSecondaryContainer,
+                        ),
                       ),
                     ),
                   ),
@@ -82,6 +87,7 @@ final class UnitCard extends StatelessWidget {
                   semanticLabel: 'Status: ${item.status.label}',
                   surfaceKey: Key('unit-status-${item.id}'),
                 ),
+                if (menu case final menu?) ...[const SizedBox(width: CoeloSpacing.space1), menu],
               ],
             ),
             const SizedBox(height: CoeloSpacing.space2),

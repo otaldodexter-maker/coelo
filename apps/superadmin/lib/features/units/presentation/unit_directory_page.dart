@@ -2,6 +2,9 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../../shared/data/entity_lifecycle.dart';
+import '../../../shared/presentation/widgets/entity_lifecycle_menu.dart';
+import '../../../shared/presentation/widgets/entity_lifecycle_runner.dart';
 import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
@@ -25,6 +28,7 @@ final class UnitDirectoryPage extends StatefulWidget {
     this.requestIdFactory,
     this.onCreate,
     this.onEdit,
+    this.lifecycle,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     this.onConversationsOpen,
@@ -33,6 +37,9 @@ final class UnitDirectoryPage extends StatefulWidget {
   });
 
   final UnitDirectoryRepository repository;
+
+  /// Comandos de ciclo de vida (spec 066); sem eles o menu ⋯ não aparece.
+  final EntityLifecycleCommands? lifecycle;
   final UnitBackendCommandsGateway? backendCommands;
   final String Function()? requestIdFactory;
   final LogoutAction logout;
@@ -55,6 +62,31 @@ final class _UnitDirectoryPageState extends State<UnitDirectoryPage> {
   UnitDirectoryTableView _tableView = UnitDirectoryTableView.grouped;
   bool _noticeShown = false;
   double _paginationFooterHeight = 0;
+
+  Widget _lifecycleMenu(UnitDirectoryItem item) => EntityLifecycleMenu(
+    keyPrefix: 'unit',
+    entityId: item.id,
+    entityLabel: 'unidade',
+    state: switch (item.status) {
+      UnitStatus.active => EntityLifecycleState.active,
+      UnitStatus.inactive => EntityLifecycleState.inactive,
+      UnitStatus.archived => EntityLifecycleState.archived,
+      _ => EntityLifecycleState.other,
+    },
+    canEdit: widget.onEdit != null,
+    onSelected: (action) => runEntityLifecycle(
+      context,
+      commands: widget.lifecycle!,
+      keyPrefix: 'unit',
+      entityLabel: 'unidade',
+      entityId: item.id,
+      entityName: item.name,
+      managementVersion: item.record.managementVersion,
+      action: action,
+      onEdit: widget.onEdit,
+      reload: _viewModel.load,
+    ),
+  );
 
   void _changeDisplay(CoeloAdminDirectoryDisplay display) {
     if (display == _display) {
@@ -157,6 +189,7 @@ final class _UnitDirectoryPageState extends State<UnitDirectoryPage> {
               onTableViewChanged: _changeTableView,
               onCreate: widget.onCreate,
               onEdit: widget.onEdit,
+              menuBuilder: widget.lifecycle == null ? null : _lifecycleMenu,
               onFooterHeightChanged: _handlePaginationFooterHeightChanged,
               onClearFilters: () {
                 _searchController.clear();
@@ -184,6 +217,7 @@ final class _UnitDirectoryContent extends StatelessWidget {
     required this.onEdit,
     required this.onFooterHeightChanged,
     required this.onClearFilters,
+    this.menuBuilder,
   });
 
   final UnitDirectoryViewModel viewModel;
@@ -196,6 +230,7 @@ final class _UnitDirectoryContent extends StatelessWidget {
   final ValueChanged<String>? onEdit;
   final ValueChanged<double> onFooterHeightChanged;
   final VoidCallback onClearFilters;
+  final Widget Function(UnitDirectoryItem item)? menuBuilder;
 
   void _showDeferredFileNotice(BuildContext context) {
     showSuperadminNotice(context, 'Disponível depois do MVP', icon: Icons.info_outline_rounded);
@@ -316,11 +351,16 @@ final class _UnitDirectoryContent extends StatelessWidget {
               ),
         cards: [
           for (final item in page.items)
-            UnitCard(item: item, onPressed: onEdit == null ? null : () => onEdit(item.id)),
+            UnitCard(
+              item: item,
+              onPressed: onEdit == null ? null : () => onEdit(item.id),
+              menu: menuBuilder?.call(item),
+            ),
         ],
         table: UnitTableRows(
           items: page.items,
           onEdit: onEdit == null ? null : (item) => onEdit(item.id),
+          menuBuilder: menuBuilder,
           sortColumn: viewModel.query.sortColumn,
           sortAscending: viewModel.query.sortAscending,
           onSort: viewModel.setSort,

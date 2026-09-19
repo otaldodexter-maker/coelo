@@ -3,6 +3,9 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../../shared/data/entity_lifecycle.dart';
+import '../../../shared/presentation/widgets/entity_lifecycle_menu.dart';
+import '../../../shared/presentation/widgets/entity_lifecycle_runner.dart';
 import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
@@ -22,6 +25,7 @@ final class GroupDirectoryPage extends StatefulWidget {
     this.onCreate,
     this.onEdit,
     this.onView,
+    this.lifecycle,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     this.successMessage,
@@ -33,6 +37,9 @@ final class GroupDirectoryPage extends StatefulWidget {
   final VoidCallback? onCreate;
   final ValueChanged<String>? onEdit;
   final ValueChanged<String>? onView;
+
+  /// Comandos de ciclo de vida (spec 066); sem eles o menu ⋯ não aparece.
+  final EntityLifecycleCommands? lifecycle;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final String? successMessage;
@@ -42,6 +49,31 @@ final class GroupDirectoryPage extends StatefulWidget {
 }
 
 final class _GroupDirectoryPageState extends State<GroupDirectoryPage> {
+  Widget _lifecycleMenu(GroupDirectoryItem item) => EntityLifecycleMenu(
+    keyPrefix: 'group',
+    entityId: item.id,
+    entityLabel: 'turma',
+    state: switch (item.status) {
+      GroupStatus.active => EntityLifecycleState.active,
+      GroupStatus.inactive => EntityLifecycleState.inactive,
+      GroupStatus.archived => EntityLifecycleState.archived,
+      _ => EntityLifecycleState.other,
+    },
+    canEdit: widget.onEdit != null,
+    onSelected: (action) => runEntityLifecycle(
+      context,
+      commands: widget.lifecycle!,
+      keyPrefix: 'group',
+      entityLabel: 'turma',
+      entityId: item.id,
+      entityName: item.name,
+      managementVersion: item.record.managementVersion,
+      action: action,
+      onEdit: widget.onEdit,
+      reload: _viewModel.load,
+    ),
+  );
+
   late final GroupDirectoryViewModel _viewModel;
   late final SuperadminActivityController _activityController;
   late final TextEditingController _searchController;
@@ -119,6 +151,7 @@ final class _GroupDirectoryPageState extends State<GroupDirectoryPage> {
             onTableViewChanged: _setTableView,
             onCreate: widget.onCreate,
             onEdit: widget.onEdit ?? widget.onView,
+            menuBuilder: widget.lifecycle == null ? null : _lifecycleMenu,
             onFooterHeightChanged: (height) {
               if ((_footerHeight - height).abs() >= .5) {
                 setState(() => _footerHeight = height);
@@ -144,6 +177,7 @@ final class _GroupDirectoryContent extends StatelessWidget {
     required this.onCreate,
     required this.onEdit,
     required this.onFooterHeightChanged,
+    this.menuBuilder,
   });
 
   final GroupDirectoryViewModel viewModel;
@@ -155,6 +189,7 @@ final class _GroupDirectoryContent extends StatelessWidget {
   final VoidCallback? onCreate;
   final ValueChanged<String>? onEdit;
   final ValueChanged<double> onFooterHeightChanged;
+  final Widget Function(GroupDirectoryItem item)? menuBuilder;
 
   void _showUnavailable(BuildContext context) {
     showSuperadminNotice(context, 'Disponível depois do MVP', icon: Icons.info_outline_rounded);
@@ -326,9 +361,18 @@ final class _GroupDirectoryContent extends StatelessWidget {
         refreshing: viewModel.isLoading,
         cards: [
           for (final item in page.items)
-            _GroupCard(item: item, onPressed: onEdit == null ? null : () => onEdit!(item.id)),
+            _GroupCard(
+              item: item,
+              onPressed: onEdit == null ? null : () => onEdit!(item.id),
+              menu: menuBuilder?.call(item),
+            ),
         ],
-        table: _GroupTableRows(items: page.items, viewModel: viewModel, onEdit: onEdit),
+        table: _GroupTableRows(
+          items: page.items,
+          viewModel: viewModel,
+          onEdit: onEdit,
+          menuBuilder: menuBuilder,
+        ),
         pagination: viewModel.state == GroupDirectoryLoadState.success
             ? CoeloAdminDirectoryPagination(
                 footerKey: const Key('group-directory-pagination-footer'),
@@ -349,7 +393,8 @@ final class _GroupDirectoryContent extends StatelessWidget {
 }
 
 final class _GroupCard extends StatelessWidget {
-  const _GroupCard({required this.item, required this.onPressed});
+  const _GroupCard({required this.item, required this.onPressed, this.menu});
+  final Widget? menu;
 
   final GroupDirectoryItem item;
   final VoidCallback? onPressed;
@@ -422,6 +467,7 @@ final class _GroupCard extends StatelessWidget {
                     );
                   },
                 ),
+                if (menu case final menu?) ...[const SizedBox(width: CoeloSpacing.space1), menu],
               ],
             ),
             const SizedBox(height: CoeloSpacing.space4),
@@ -554,7 +600,13 @@ final class _GroupDetail extends StatelessWidget {
 
 /// Linhas e colunas de domínio das turmas sobre a tabela compartilhada.
 final class _GroupTableRows extends StatelessWidget {
-  const _GroupTableRows({required this.items, required this.viewModel, required this.onEdit});
+  const _GroupTableRows({
+    required this.items,
+    required this.viewModel,
+    required this.onEdit,
+    this.menuBuilder,
+  });
+  final Widget Function(GroupDirectoryItem item)? menuBuilder;
 
   final List<GroupDirectoryItem> items;
   final GroupDirectoryViewModel viewModel;
@@ -659,6 +711,16 @@ final class _GroupTableRows extends StatelessWidget {
                 child: _GroupStatusChip(status: item.status),
               ),
             ),
+            if (menuBuilder case final builder?)
+              CoeloAdminTableColumn(
+                id: 'actions',
+                label: 'Ações',
+                initialWidth: 88,
+                minWidth: 72,
+                maxWidth: 120,
+                cellBuilder: (context, item) =>
+                    Align(alignment: Alignment.centerLeft, child: builder(item)),
+              ),
           ],
         ),
       ),
@@ -679,8 +741,7 @@ final class _GroupStatusChip extends StatelessWidget {
 
 (Color, Color) _groupStatusColors(BuildContext context, GroupStatus status) {
   final theme = Theme.of(context);
-  final colors =
-      context.coeloStatusColors;
+  final colors = context.coeloStatusColors;
   return switch (status) {
     GroupStatus.active => (colors.successContainer, colors.onSuccessContainer),
     GroupStatus.suspended => (colors.errorContainer, colors.onErrorContainer),

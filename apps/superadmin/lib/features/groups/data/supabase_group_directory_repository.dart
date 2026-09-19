@@ -5,12 +5,41 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' show ClientException;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../shared/data/entity_lifecycle.dart';
 import '../domain/group_directory.dart';
 
-final class SupabaseGroupDirectoryRepository implements GroupDirectoryRepository {
+final class SupabaseGroupDirectoryRepository
+    implements GroupDirectoryRepository, EntityLifecycleCommands {
   SupabaseGroupDirectoryRepository(this._client);
 
   final SupabaseClient _client;
+
+  // spec 066 (lote 97): ciclo de vida da turma pelo repositório do diretório.
+  @override
+  Future<EntityLifecycleResult> changeStatus(
+    String entityId, {
+    required int expectedVersion,
+    required bool active,
+    required String requestId,
+    String? reason,
+  }) => SupabaseEntityLifecycleCommands(_client, entity: 'group').changeStatus(
+    entityId,
+    expectedVersion: expectedVersion,
+    active: active,
+    requestId: requestId,
+    reason: reason,
+  );
+
+  @override
+  Future<EntityLifecycleResult> delete(
+    String entityId, {
+    required int expectedVersion,
+    required String requestId,
+    required String reason,
+  }) => SupabaseEntityLifecycleCommands(
+    _client,
+    entity: 'group',
+  ).delete(entityId, expectedVersion: expectedVersion, requestId: requestId, reason: reason);
   final Map<String, GroupRecord> _cache = {};
 
   @override
