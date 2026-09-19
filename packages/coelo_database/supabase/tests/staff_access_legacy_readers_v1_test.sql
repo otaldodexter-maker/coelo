@@ -1,4 +1,4 @@
--- Prova pgTAP da migration 20260919230000_staff_access_legacy_readers_v1 (varredura dos leitores).
+-- Prova pgTAP da migration 20260919231500_staff_access_legacy_readers_v1 (varredura dos leitores).
 -- Fixture sintetica com rollback total (prefixo f9): instituicao A com unidade A1 e turma; educadoras
 -- E e F (unidade A1, institution_admin p/ ter people.read), crianca com contexto em A. E afastada hoje.
 -- Negativas por familia: destinatarios de cuidado e medicacao (v1/v2) excluem E e mantem F; classe do

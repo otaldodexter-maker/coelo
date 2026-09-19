@@ -1,4 +1,4 @@
--- Prova pgTAP da migration 20260919233000_staff_access_assert_v1 (erro com motivo, item 5 do F7).
+-- Prova pgTAP da migration 20260919233500_staff_access_assert_v1 (erro com motivo, item 5 do F7).
 -- Fixture sintetica com rollback total (prefixo fa): instituicao A com unidade A1; educadora E (teacher,
 -- institution_admin p/ capacidade) com regra do vinculo que nunca bate agora e popup ligado; E tambem e
 -- responsavel (guardian_links) de crianca em A. Cobre: resolvers levantam PT403/STAFF_ACCESS_DENIED com

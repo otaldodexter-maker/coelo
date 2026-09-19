@@ -483,14 +483,14 @@
 # child_care_notification_recipients_v1, medication_notification_recipients_v1/v2, child_safety_add_unit_review_recipients,
 # materialize_notice_publication_job, now_viewer_role_class, list_my_principal_for_you, redeem_now_media_read_ticket.
 # Contagens administrativas (Pessoas, Unidades, Perfis), audiência de formulários e chat não mudam (49 funções restantes anotadas em pendentes.md).
-# pgTAP staff_access_legacy_readers_v1_test 13/13 no espelho mirror-acesso; ledger 20260919230000 reparado e listado.
-20260919230000_staff_access_legacy_readers_v1.sql
+# pgTAP staff_access_legacy_readers_v1_test 13/13 no espelho mirror-acesso; ledger 20260919231500 reparado e listado.
+20260919231500_staff_access_legacy_readers_v1.sql
 # Lote 91 (19/09 — Sessão ACESSO-PERFIL): erro com motivo (item 5 do F7). app_private.staff_access_assert(inst, unit, group, person)
 # levanta PT403 / STAFF_ACCESS_DENIED com detail JSON {code, membership_id, institution_id, reason, popup} quando todo vínculo de equipe
 # do ator na instituição está bloqueado agora; chamada no começo de happens_actor, now_actor, circular_actor, moments_actor_for_auth_user
 # e, em now_reader_actor, só depois que equipe e família falharam (família continua passando). assert_agenda/plan/people/support são do
 # realm interno (sem membership de instituição): fora. Nunca 40001. pgTAP staff_access_assert_v1_test 18/18 no espelho; ledger reparado.
-20260919233000_staff_access_assert_v1.sql
+20260919233500_staff_access_assert_v1.sql
 # Fixture QA (19/09 — Sessão ACESSO-PERFIL, fora da numeração de lotes): app_private.seed_qa_e3_educadora_fixture_v1 (função privada,
 # executada como postgres): perfil "QA E3 Educador" em QA R04 Cuidado, pessoa "QA E3 Educadora Perfil" com login qa-e3-educadora@coelo.me
 # (conta criada pela Auth Admin API; credencial em Coelo-backups/qa-e3-educadora.env), vínculo teacher na Unidade QA R04 herdando o perfil,
