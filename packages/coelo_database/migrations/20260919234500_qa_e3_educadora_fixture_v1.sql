@@ -14,12 +14,17 @@
 --     no perfil "QA E3 Educador" (herda o horario do perfil);
 --   * membership teacher (scope unit, Unidade Centro R04) em Escola R04 Estrutura, sem perfil com horario;
 --   * guardian_links + guardian_context_permissions(can_view) para "QA R15 Crianca 1" (contexto em QA R04
---     Cuidado): a educadora tambem e responsavel na mesma instituicao (ADR 0035).
+--     Cuidado): a educadora tambem e responsavel na mesma instituicao (ADR 0035);
+--   * institution_role_assignments do mesmo perfil para o vinculo espelho de qa-r06-principal em QA R04
+--     Cuidado (p_mirror_membership_id): a conta de pessoa real nao abre o shell do Superadmin (realms
+--     separados por trigger; o Principal proprio e Etapa 4), entao a prova visual do popup herdado do
+--     perfil usa o espelho interno, como na sessao ACESSO-CONTEXTUAL.
 -- Nao grava audit.audit_logs (padrao das fixtures QA). Reversao manual.
 begin;
 set local lock_timeout = '5s';
 set local statement_timeout = '60s';
 
+drop function if exists app_private.seed_qa_e3_educadora_fixture_v1(text, uuid, uuid, uuid, uuid, uuid, text, text, text);
 create or replace function app_private.seed_qa_e3_educadora_fixture_v1(
   p_email text default 'qa-e3-educadora@coelo.me',
   p_institution_id uuid default 'd0c40000-0000-4000-8000-000000000001',
@@ -29,7 +34,8 @@ create or replace function app_private.seed_qa_e3_educadora_fixture_v1(
   p_child_context_id uuid default '1a6158fe-6cab-427c-9496-96e4273ab184',
   p_person_name text default 'QA E3 Educadora Perfil',
   p_role_name text default 'QA E3 Educador',
-  p_role_code text default 'qa-e3-educador'
+  p_role_code text default 'qa-e3-educador',
+  p_mirror_membership_id uuid default '571fb282-420c-40ff-a7bf-efd6d20124a8'
 )
 returns jsonb
 language plpgsql
@@ -147,11 +153,20 @@ begin
     values (v_link_id, v_context.id, true, true, true, 'active');
   end if;
 
+  -- 6. espelho interno de qa-r06-principal herda o mesmo perfil (prova visual no shell hospedeiro)
+  if p_mirror_membership_id is not null and exists (
+    select 1 from public.institution_memberships m join public.people p on p.id = m.person_id
+    where m.id = p_mirror_membership_id and m.institution_id = p_institution_id and m.status = 'active' and p.person_type = 'service'
+  ) and not exists (select 1 from public.institution_role_assignments a where a.membership_id = p_mirror_membership_id and a.role_id = v_role_id and a.status = 'active') then
+    insert into public.institution_role_assignments(membership_id, role_id, scope_kind, scope_unit_id, status)
+    values (p_mirror_membership_id, v_role_id, 'unit', p_unit_id, 'active');
+  end if;
+
   return jsonb_build_object(
     'person_id', v_person_id, 'role_id', v_role_id,
     'membership_id', v_membership_id, 'other_membership_id', v_other_membership_id, 'guardian_link_id', v_link_id);
 end
 $$;
-revoke all on function app_private.seed_qa_e3_educadora_fixture_v1(text, uuid, uuid, uuid, uuid, uuid, text, text, text) from public, anon, authenticated, service_role;
+revoke all on function app_private.seed_qa_e3_educadora_fixture_v1(text, uuid, uuid, uuid, uuid, uuid, text, text, text, uuid) from public, anon, authenticated, service_role;
 
 commit;
