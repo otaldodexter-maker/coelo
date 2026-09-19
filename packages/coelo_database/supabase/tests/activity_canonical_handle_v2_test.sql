@@ -5,7 +5,7 @@
 -- backfill das atividades legadas sem perder o alias.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(24);
+select plan(26);
 
 insert into public.institution_types(id,code,name,status) values ('9c800000-0000-4000-8000-000000000001','ch-test','CH test','active');
 insert into public.unit_types(id,code,name,status) values ('9c800000-0000-4000-8000-000000000002','ch-unit','CH unit','active');
@@ -55,16 +55,14 @@ insert into r values('a2', public.superadmin_activity_create_v2('9c800000-0000-4
 select is((select canonical_handle from public.activity_definitions where id=(select (body#>>'{data,activity_id}')::uuid from r where label='a2')),
   'xadrezavancado.ch-inst','@ explicito vira stem sem acento/espaco + @ da instituicao');
 
--- 5. @ explicito repetido -> SAI_HANDLE_TAKEN; nome repetido -> sufixo curto
+-- 5. @ explicito repetido -> SAI_HANDLE_TAKEN; nome diferente com o mesmo segmento -> sufixo curto
 insert into r values('a3', public.superadmin_activity_create_v2('9c800000-0000-4000-8000-000000000913',
   jsonb_build_object('institution_id','9c800000-0000-4000-8000-000000000010','name','Xadrez 2','initials','X2','handle','xadrezavancado',
     'taxonomy_id','9c800000-0000-4000-8000-000000000003','unit_ids',jsonb_build_array((select id from public.units where slug='ch-unidade')))));
 select is((select body#>>'{error,code}' from r where label='a3'),'SAI_HANDLE_TAKEN','@ explicito repetido e recusado');
 insert into r values('a4', public.superadmin_activity_create_v2('9c800000-0000-4000-8000-000000000914',
-  jsonb_build_object('institution_id','9c800000-0000-4000-8000-000000000010','name','Educação Física','initials','EF',
+  jsonb_build_object('institution_id','9c800000-0000-4000-8000-000000000010','name','Educacao Fisica','initials','EF',
     'taxonomy_id','9c800000-0000-4000-8000-000000000003','unit_ids',jsonb_build_array((select id from public.units where slug='ch-unidade')))));
-select diag((select body::text from r where label='a3'));
-select diag((select body::text from r where label='a4'));
 select ok((select canonical_handle ~ '^educacaofisica_[0-9a-f]{8}\.ch-inst$' from public.activity_definitions where id=(select (body#>>'{data,activity_id}')::uuid from r where label='a4')),
   'colisao do @ padrao ganha sufixo curto');
 
@@ -72,6 +70,8 @@ select ok((select canonical_handle ~ '^educacaofisica_[0-9a-f]{8}\.ch-inst$' fro
 insert into public.activity_definitions(id,institution_id,name,origin_scope_kind,origin_unit_id,status,taxonomy_id,handle_stem,identity_mode,identity_initials,identity_color)
 values('9c800000-0000-4000-8000-000000000040','9c800000-0000-4000-8000-000000000010','Yoga','unit',(select id from public.units where slug='ch-unidade'),'draft',
   '9c800000-0000-4000-8000-000000000003','Yoga','initials','YO','#D63C00');
+insert into public.activity_unit_links(activity_id,institution_id,unit_id) values
+ ('9c800000-0000-4000-8000-000000000040','9c800000-0000-4000-8000-000000000010',(select id from public.units where slug='ch-unidade'));
 select is((select canonical_handle from public.activity_definitions where id='9c800000-0000-4000-8000-000000000040'),'yoga.chunidade.chinst','@ da atividade da unidade: stem.@daunidade');
 
 -- 7. disponibilidade enquanto digita (@ completo) e unicidade cruzada
@@ -116,11 +116,14 @@ select ok(exists(select 1 from public.activity_handle_aliases where activity_id=
 set constraints all immediate;
 alter table public.activity_definitions drop constraint activity_definitions_handle_check;
 alter table public.activity_definitions disable trigger activity_canonical_handle_before;
+set constraints all deferred;
 insert into public.activity_definitions(id,institution_id,name,origin_scope_kind,origin_unit_id,status,taxonomy_id,handle_stem,canonical_handle,identity_mode,identity_initials,identity_color)
 values('9c800000-0000-4000-8000-000000000041','9c800000-0000-4000-8000-000000000010','Ballet Clássico','unit',(select id from public.units where slug='ch-unidade'),'draft',
   '9c800000-0000-4000-8000-000000000003','ballet-classico','ballet-classico.ch-unidade.ch-inst','initials','BC','#D63C00');
-alter table public.activity_definitions enable trigger activity_canonical_handle_before;
+insert into public.activity_unit_links(activity_id,institution_id,unit_id) values
+ ('9c800000-0000-4000-8000-000000000041','9c800000-0000-4000-8000-000000000010',(select id from public.units where slug='ch-unidade'));
 set constraints all immediate;
+alter table public.activity_definitions enable trigger activity_canonical_handle_before;
 select is(app_private.activity_canonical_handle_backfill_v2(),1,'backfill toca so a atividade legada');
 select is((select canonical_handle from public.activity_definitions where id='9c800000-0000-4000-8000-000000000041'),'balletclassico.novaunidade.chinst','backfill: @ novo sem hifen com @ real da unidade');
 select ok(exists(select 1 from public.activity_handle_aliases where activity_id='9c800000-0000-4000-8000-000000000041' and alias='ballet-classico.ch-unidade.ch-inst'),'backfill: @ antigo vira alias');
