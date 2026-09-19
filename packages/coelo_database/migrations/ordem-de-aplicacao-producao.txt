@@ -496,3 +496,10 @@
 # (conta criada pela Auth Admin API; credencial em Coelo-backups/qa-e3-educadora.env), vínculo teacher na Unidade QA R04 herdando o perfil,
 # vínculo teacher na Escola R04 Estrutura, responsável da QA R15 Crianca 1. Idempotente; ledger 20260919234500 reparado.
 20260919234500_qa_e3_educadora_fixture_v1.sql
+# Lote 94 (Sessão ETAPA-3, 20/09/2026): Instituições spec 066 (ciclo de vida, OQ-033 opção B). app_private.lifecycle_can_hard_delete_v1
+# (predicado único por FK + trilha + mídia; vínculos de serviço dos operadores internos não contam); recibos
+# superadmin_internal_lifecycle_receipts; superadmin_institution_change_status_v1 (active|inactive, motivo obrigatório ao inativar,
+# PT409/SAI_CONCURRENT_CHANGE) e superadmin_institution_delete_v1 (real só sem dependentes, senão archived + deleted_at);
+# institutions.lifecycle_reason/lifecycle_changed_at; institution_directory expõe management_version (payload_v2 delega à _base).
+# pgTAP institution_lifecycle_v1_test 27/27 no espelho mirror-acesso; ledger 20260920001000 reparado.
+20260920001000_institution_lifecycle_v1.sql
