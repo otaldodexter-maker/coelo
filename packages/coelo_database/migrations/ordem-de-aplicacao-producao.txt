@@ -526,3 +526,9 @@
 # superadmin_unit_change_status_v1 / _delete_v1 e superadmin_group_change_status_v1 / _delete_v1; exclusão real só quando
 # lifecycle_can_hard_delete_v1 (turma/unidade vazia), senão archived; units/groups.lifecycle_reason. pgTAP structure_lifecycle_v1_test 15/15.
 20260920013000_structure_lifecycle_v1.sql
+# Lote 98 (Sessão ETAPA-3, 20/09/2026): spec 066 — sobras. superadmin_structure_lifecycle_v1 ganha 'activity' (marcador v2,
+# activities.manage; fachadas superadmin_activity_change_status_v1/_delete_v1); pessoas: people.suspended_from/until/suspension_reason,
+# superadmin_person_suspend_v1/_reactivate_v1 (people.update, motivo, recibo, auditoria) e app_private.current_person_id ignora a conta
+# suspensa no período (Principal/Admin negam); instituições arquivadas ficam na view institution_directory e o diretório só as mostra
+# com statuses=['archived'] (aba Arquivadas). pgTAP lifecycle_activities_people_v1_test 17/17; ledger 20260920020000 reparado.
+20260920020000_lifecycle_activities_people_v1.sql
