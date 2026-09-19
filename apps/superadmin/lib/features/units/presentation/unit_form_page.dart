@@ -22,6 +22,8 @@ import '../domain/unit_handle_availability.dart';
 import 'unit_form_controller.dart';
 import 'unit_form_navigation.dart';
 import 'widgets/unit_local_management_section.dart';
+import '../../../shared/data/entity_image_repository.dart';
+import '../../../shared/presentation/widgets/entity_images_section.dart';
 
 enum UnitFormSaveResult { created, updated }
 
@@ -99,6 +101,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
   bool _inheritTextColors = true;
   bool _hasLogo = false;
   bool _hasCover = false;
+  EntityImagesController? _images;
   bool _lookingUpPostalCode = false;
   double _footerHeight = 0;
 
@@ -300,7 +303,17 @@ final class _UnitFormPageState extends State<UnitFormPage> {
   String _text(String field) => _controllers[field]!.text.trim();
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final repository = EntityImageScope.maybeOf(context);
+    if (_images == null && repository != null) {
+      _images = EntityImagesController(kind: EntityKind.unit, repository: repository, entityId: widget.unitId);
+    }
+  }
+
+  @override
   void dispose() {
+    _images?.dispose();
     _handleCheckTimer?.cancel();
     for (final controller in _controllers.values) {
       controller.dispose();
@@ -400,6 +413,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
           handle: _original == null ? _text('slug') : _original!.handle,
         ),
       );
+      if (_original == null) await _images?.attach(id);
       if (!mounted) return;
       _formController.setSaving(false);
       if (_creationInvalidated) {
@@ -422,6 +436,22 @@ final class _UnitFormPageState extends State<UnitFormPage> {
             ? 'Não foi possível confirmar a criação da unidade. Tente novamente.'
             : 'Não foi possível salvar a unidade. Revise os dados e tente novamente.',
       );
+    }
+  }
+
+  // Espelha a foto real nas flags que alimentam a prévia e o `has_logo/has_cover` do servidor.
+  void _syncImageFlags() {
+    final images = _images;
+    if (images == null || !mounted) return;
+    final logo = images.has(EntityImageKind.profile);
+    final cover = images.has(EntityImageKind.cover);
+    if (logo != _hasLogo || cover != _hasCover) {
+      setState(() {
+        _hasLogo = logo;
+        _hasCover = cover;
+      });
+      // Na criação a foto fica pendente até salvar: o formulário precisa saber.
+      if (images.entityId == null) _formController.markDirty();
     }
   }
 
@@ -726,21 +756,32 @@ final class _UnitFormPageState extends State<UnitFormPage> {
           }),
         ),
         const SizedBox(height: CoeloSpacing.space3),
-        _UnitBrandMediaCard(
-          key: const Key('unit-logo-card'),
-          title: 'Foto de perfil',
-          description: _inheritLogo
-              ? 'Herdada de ${_institution.publicName}.'
-              : 'Imagem quadrada em PNG, JPG ou WebP, com até 2 MB.',
-          accent: accent,
-          isCover: false,
-          selected: hasLogo,
-          inherited: _inheritLogo,
-          onToggle: () => setState(() {
-            _hasLogo = !_hasLogo;
-            _formController.markDirty();
-          }),
-        ),
+        // Sem repositório de fotos (mock/testes) vale o cartão simulado de antes.
+        if (_inheritLogo || _images == null)
+          _UnitBrandMediaCard(
+            key: const Key('unit-logo-card'),
+            title: 'Foto de perfil',
+            description: _inheritLogo
+                ? 'Herdada de ${_institution.publicName}.'
+                : 'Imagem quadrada em PNG, JPG ou WebP, com até 2 MB.',
+            accent: accent,
+            isCover: false,
+            selected: hasLogo,
+            inherited: _inheritLogo,
+            onToggle: () => setState(() {
+              _hasLogo = !_hasLogo;
+              _formController.markDirty();
+            }),
+          )
+        else
+          EntityImagesSection(
+            key: const Key('unit-logo-card'),
+            kind: EntityKind.unit,
+            entityId: widget.unitId,
+            controller: _images,
+            showCover: false,
+            onChanged: _syncImageFlags,
+          ),
         const SizedBox(height: CoeloSpacing.space4),
         _InheritanceControl(
           controlKey: const Key('unit-inherit-cover'),
@@ -753,21 +794,31 @@ final class _UnitFormPageState extends State<UnitFormPage> {
           }),
         ),
         const SizedBox(height: CoeloSpacing.space3),
-        _UnitBrandMediaCard(
-          key: const Key('unit-cover-card'),
-          title: 'Foto de capa',
-          description: _inheritCover
-              ? 'Herdada de ${_institution.publicName}.'
-              : 'Imagem em PNG, JPG ou WebP, com até 2 MB.',
-          accent: accent,
-          isCover: true,
-          selected: hasCover,
-          inherited: _inheritCover,
-          onToggle: () => setState(() {
-            _hasCover = !_hasCover;
-            _formController.markDirty();
-          }),
-        ),
+        if (_inheritCover || _images == null)
+          _UnitBrandMediaCard(
+            key: const Key('unit-cover-card'),
+            title: 'Foto de capa',
+            description: _inheritCover
+                ? 'Herdada de ${_institution.publicName}.'
+                : 'Imagem em PNG, JPG ou WebP, com até 2 MB.',
+            accent: accent,
+            isCover: true,
+            selected: hasCover,
+            inherited: _inheritCover,
+            onToggle: () => setState(() {
+              _hasCover = !_hasCover;
+              _formController.markDirty();
+            }),
+          )
+        else
+          EntityImagesSection(
+            key: const Key('unit-cover-card'),
+            kind: EntityKind.unit,
+            entityId: widget.unitId,
+            controller: _images,
+            showProfile: false,
+            onChanged: _syncImageFlags,
+          ),
         const SizedBox(height: CoeloSpacing.space5),
         _InheritanceControl(
           controlKey: const Key('unit-inherit-surface'),

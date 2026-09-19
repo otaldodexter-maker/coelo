@@ -13,6 +13,8 @@ import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dar
 import '../../auth/domain/logout_action.dart';
 import '../domain/person_directory.dart';
 import 'person_form_view_model.dart';
+import '../../../shared/data/entity_image_repository.dart';
+import '../../../shared/presentation/widgets/entity_images_section.dart';
 
 const _emptyOption = PersonFilterOption('', 'Selecione');
 
@@ -276,8 +278,20 @@ final class _PersonFormPageState extends State<PersonFormPage> {
     _loadOptions();
   }
 
+  EntityImagesController? _images;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final repository = EntityImageScope.maybeOf(context);
+    if (_images == null && repository != null) {
+      _images = EntityImagesController(kind: EntityKind.person, repository: repository, entityId: widget.original?.id);
+    }
+  }
+
   @override
   void dispose() {
+    _images?.dispose();
     _saveGeneration++;
     _confirmedCompletion = null;
     for (final controller in _controllers.values) {
@@ -394,6 +408,7 @@ final class _PersonFormPageState extends State<PersonFormPage> {
         listEquals(contexts, viewModel.childContextChanges);
     try {
       final saved = await viewModel.save();
+      if (widget.original == null) await _images?.attach(saved.id);
       if (!canDeliver()) return;
       setState(() {
         _confirmedCompletion = () {
@@ -577,6 +592,14 @@ final class _PersonFormPageState extends State<PersonFormPage> {
           _field('displayName', 'Nome de exibição', const Key('person-display-name-field')),
           _field('legalName', 'Nome legal', const Key('person-legal-name-field')),
         ]),
+        if (_images != null) ...[
+          const SizedBox(height: CoeloSpacing.space5),
+          EntityImagesSection(
+            kind: EntityKind.person,
+            entityId: widget.original?.id,
+            controller: _images,
+          ),
+        ],
         const SizedBox(height: CoeloSpacing.space5),
         _localAddress(),
         if (widget.original case final original?) ...[

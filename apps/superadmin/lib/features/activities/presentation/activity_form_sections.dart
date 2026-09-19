@@ -8,7 +8,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../../app/widgets/superadmin_advanced_color_picker_dialog.dart';
+import '../../../shared/data/entity_image_repository.dart';
 import '../../../shared/presentation/widgets/avatar_crop_dialog.dart';
+import '../../../shared/presentation/widgets/entity_images_section.dart';
 import '../../institutions/presentation/widgets/institution_logo_picker_stub.dart'
     if (dart.library.html) '../../institutions/presentation/widgets/institution_logo_picker_web.dart';
 import '../domain/activity_directory.dart';
@@ -76,6 +78,7 @@ final class _ActivityFormSectionState extends State<ActivityFormSection> {
                 controller: controller,
                 imagePicker: widget.imagePicker,
                 onRetryCatalogOptions: widget.onRetryCatalogOptions,
+                activityId: widget.activityId,
               ),
               ActivityFormStep.structure => _StructureSection(
                 controller: controller,
@@ -100,11 +103,13 @@ final class _IdentitySection extends StatelessWidget {
     required this.controller,
     required this.imagePicker,
     required this.onRetryCatalogOptions,
+    required this.activityId,
   });
 
   final ActivityFormController controller;
   final InstitutionLogoPicker imagePicker;
   final Future<void> Function() onRetryCatalogOptions;
+  final String? activityId;
 
   Future<void> _pickImage(BuildContext context) async {
     final file = await imagePicker();
@@ -162,40 +167,57 @@ final class _IdentitySection extends StatelessWidget {
           ),
       ],
       const SizedBox(height: CoeloSpacing.space5),
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _ActivityAvatar(
-            bytes: controller.imageBytes,
-            initials: controller.initials.text,
-            color: controller.identityColor,
-            icon: controller.identityIcon,
-          ),
-          const SizedBox(width: CoeloSpacing.space4),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Foto de perfil', style: Theme.of(context).textTheme.titleSmall),
-                const SizedBox(height: CoeloSpacing.space1),
-                Text(
-                  'PNG, JPG ou WebP.',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: CoeloSpacing.space2),
-                OutlinedButton.icon(
-                  key: const Key('activity-form-image'),
-                  onPressed: () => _pickImage(context),
-                  icon: const Icon(Icons.add_a_photo_outlined),
-                  label: Text(controller.hasIdentityImage ? 'Trocar foto' : 'Adicionar foto'),
-                ),
-              ],
+      // Foto, capa e ícone gravam em R2 pela Edge (entity-media) e exigem a
+      // atividade criada; sem repositório (mock) vale o fluxo local de antes.
+      if (EntityImageScope.maybeOf(context) == null)
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _ActivityAvatar(
+              bytes: controller.imageBytes,
+              initials: controller.initials.text,
+              color: controller.identityColor,
+              icon: controller.identityIcon,
             ),
-          ),
-        ],
-      ),
+            const SizedBox(width: CoeloSpacing.space4),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Foto de perfil', style: Theme.of(context).textTheme.titleSmall),
+                  const SizedBox(height: CoeloSpacing.space1),
+                  Text(
+                    'PNG, JPG ou WebP.',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: CoeloSpacing.space2),
+                  OutlinedButton.icon(
+                    key: const Key('activity-form-image'),
+                    onPressed: () => _pickImage(context),
+                    icon: const Icon(Icons.add_a_photo_outlined),
+                    label: Text(controller.hasIdentityImage ? 'Trocar foto' : 'Adicionar foto'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        )
+      else if (activityId case final activityId?)
+        EntityImagesSection(
+          key: const Key('activity-form-images'),
+          kind: EntityKind.activity,
+          entityId: activityId,
+          showIcon: true,
+        )
+      else
+        CoeloStatePanel(
+          key: const Key('activity-form-images-after-save'),
+          title: 'Foto, capa e ícone',
+          message: 'Salve a atividade primeiro; depois, em Editar, adicione a foto de perfil, a capa e o ícone.',
+          icon: Icons.add_a_photo_outlined,
+        ),
       const SizedBox(height: CoeloSpacing.space5),
       _ResponsiveGrid(
         children: [

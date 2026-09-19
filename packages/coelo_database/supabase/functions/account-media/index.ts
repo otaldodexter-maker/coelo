@@ -15,7 +15,7 @@ function allowedOrigins() {
 function corsHeaders(origin: string | null) {
   const headers: Record<string, string> = {
     "Cache-Control": "no-store", Vary: "Origin",
-    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info, x-worker-secret, x-coelo-asset-id",
+    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info, x-worker-secret, x-coelo-asset-id, x-coelo-surface",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
   if (origin !== null && allowedOrigins().has(origin)) headers["Access-Control-Allow-Origin"] = origin;

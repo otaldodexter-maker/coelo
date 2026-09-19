@@ -15,6 +15,8 @@ import '../../auth/domain/logout_action.dart';
 import '../../institutions/presentation/widgets/institution_logo_picker.dart';
 import '../../../shared/presentation/widgets/avatar_crop_dialog.dart';
 import '../domain/platform_user.dart';
+import '../../../shared/data/entity_image_repository.dart';
+import '../../../shared/presentation/widgets/entity_images_section.dart';
 
 final class PlatformUserFormPage extends StatefulWidget {
   const PlatformUserFormPage({
@@ -305,8 +307,36 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     _scopeIds = record.membership.scopeIds.toSet();
   }
 
+  // Foto real (R2) pela pessoa de serviço do usuário interno (P46): em edição o
+  // person_id vem do resolvedor; na criação a foto fica pendente até o servidor criar a pessoa.
+  EntityImagesController? _images;
+  String? _servicePersonId;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final repository = EntityImageScope.maybeOf(context);
+    if (_images == null && repository != null) {
+      _images = EntityImagesController(kind: EntityKind.person, repository: repository);
+      if (_editing) _resolveServicePerson(widget.internalUserId!);
+    }
+  }
+
+  Future<void> _resolveServicePerson(String internalUserId) async {
+    final PlatformUserRepository repository = widget.repository;
+    if (repository is! PlatformUserServicePersonResolver) return;
+    final resolver = repository as PlatformUserServicePersonResolver;
+    final revision = _contextRevision;
+    final personId = await resolver.servicePersonId(internalUserId);
+    if (!_isCurrent(revision) || personId == null) return;
+    setState(() => _servicePersonId = personId);
+    await _images?.attach(personId);
+    _images?.load();
+  }
+
   @override
   void dispose() {
+    _images?.dispose();
     _contextRevision++;
     _confirmedCompletion = null;
     _dismissOwnedDialogs();
@@ -419,6 +449,14 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
       } else {
         final result = await widget.repository.create(_draft());
         if (!_isCurrent(revision)) return;
+        if (_images case final images? when images.hasPending) {
+          final PlatformUserRepository repository = widget.repository;
+          final personId = repository is PlatformUserServicePersonResolver
+              ? await (repository as PlatformUserServicePersonResolver).servicePersonId(result.record.id)
+              : null;
+          if (personId != null) await images.attach(personId);
+          if (!_isCurrent(revision)) return;
+        }
         if (result.passwordSetupLink case final link?) {
           await _presentPasswordSetupLink(link);
           if (!_isCurrent(revision)) return;
@@ -683,27 +721,39 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
           ),
         ),
         const SizedBox(height: CoeloSpacing.space4),
-        Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          spacing: CoeloSpacing.space4,
-          runSpacing: CoeloSpacing.space3,
-          children: [
-            CircleAvatar(
-              radius: 36,
-              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-              backgroundImage: _avatarBytes == null
-                  ? null
-                  : MemoryImage(Uint8List.fromList(_avatarBytes!)),
-              child: _avatarBytes == null ? const Icon(Icons.person_outline, size: 32) : null,
-            ),
-            OutlinedButton.icon(
-              key: const Key('platform-user-avatar-action'),
-              onPressed: _pickAvatar,
-              icon: const Icon(Icons.add_a_photo_outlined),
-              label: Text(_avatarBytes == null ? 'Adicionar foto' : 'Trocar foto'),
-            ),
-          ],
-        ),
+        if (_images case final images? when !_editing || _servicePersonId != null)
+          EntityImagesSection(
+            key: const Key('platform-user-images'),
+            kind: EntityKind.person,
+            entityId: _servicePersonId,
+            controller: images,
+            showCover: false,
+            onChanged: () {
+              if (images.entityId == null) _changed();
+            },
+          )
+        else if (_images == null)
+          Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: CoeloSpacing.space4,
+            runSpacing: CoeloSpacing.space3,
+            children: [
+              CircleAvatar(
+                radius: 36,
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                backgroundImage: _avatarBytes == null
+                    ? null
+                    : MemoryImage(Uint8List.fromList(_avatarBytes!)),
+                child: _avatarBytes == null ? const Icon(Icons.person_outline, size: 32) : null,
+              ),
+              OutlinedButton.icon(
+                key: const Key('platform-user-avatar-action'),
+                onPressed: _pickAvatar,
+                icon: const Icon(Icons.add_a_photo_outlined),
+                label: Text(_avatarBytes == null ? 'Adicionar foto' : 'Trocar foto'),
+              ),
+            ],
+          ),
         const SizedBox(height: CoeloSpacing.space4),
         _responsiveFields([
           CoeloFormTextField(

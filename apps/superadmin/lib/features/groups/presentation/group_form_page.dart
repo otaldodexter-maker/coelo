@@ -20,6 +20,8 @@ import '../../locations/presentation/location_selection_field.dart';
 import '../../people/domain/person_identity.dart';
 import '../domain/group_directory.dart';
 import '../domain/group_location_create.dart';
+import '../../../shared/data/entity_image_repository.dart';
+import '../../../shared/presentation/widgets/entity_images_section.dart';
 
 enum GroupFormSaveResult { created, updated }
 
@@ -176,6 +178,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   GroupDirectoryFilterOption? _selectedUnit;
   late GroupStatus _status;
   bool _inheritAppearance = true;
+  EntityImagesController? _images;
   bool _inheritAccess = true;
   bool _inheritActivities = true;
   GroupRecord? _original;
@@ -441,7 +444,17 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final repository = EntityImageScope.maybeOf(context);
+    if (_images == null && repository != null) {
+      _images = EntityImagesController(kind: EntityKind.group, repository: repository, entityId: widget.groupId);
+    }
+  }
+
+  @override
   void dispose() {
+    _images?.dispose();
     _handleCheckTimer?.cancel();
     _nameController.dispose();
     _handleController.dispose();
@@ -764,6 +777,8 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         });
         return;
       }
+      if (original == null) await _images?.attach(record.id);
+      if (!mounted) return;
       setState(() {
         _errorSteps.clear();
         _pendingSave = null;
@@ -896,6 +911,15 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            EntityImagesSection(
+              kind: EntityKind.group,
+              entityId: widget.groupId,
+              controller: _images,
+              onChanged: () {
+                if (_images?.entityId == null) _markDirty();
+              },
+            ),
+            if (_images != null) const SizedBox(height: CoeloSpacing.space5),
             _fieldGrid(_prototypeFields()),
             const SizedBox(height: CoeloSpacing.space5),
             _locationSection(),

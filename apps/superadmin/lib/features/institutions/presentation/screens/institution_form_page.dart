@@ -17,6 +17,8 @@ import '../widgets/institution_form_dialogs.dart';
 import '../widgets/institution_form_navigation.dart';
 import '../widgets/institution_form_sections.dart';
 import '../widgets/institution_logo_picker.dart';
+import '../../../../shared/data/entity_image_repository.dart';
+import '../../../../shared/presentation/widgets/entity_images_section.dart';
 
 enum InstitutionFormSaveResult { created, updated }
 
@@ -122,8 +124,24 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
     setState(() => _loadState = state);
   }
 
+  EntityImagesController? _images;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final repository = EntityImageScope.maybeOf(context);
+    if (_images == null && repository != null) {
+      _images = EntityImagesController(
+        kind: EntityKind.institution,
+        repository: repository,
+        entityId: widget.institutionId,
+      );
+    }
+  }
+
   @override
   void dispose() {
+    _images?.dispose();
     _loadSequence++;
     _controller?.dispose();
     if (widget.locationService == null) {
@@ -182,6 +200,7 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
       final saved = creating
           ? await repository.create(draft)
           : await repository.update(draft, expectedVersion: draft.version);
+      if (creating) await _images?.attach(saved.id);
       if (!mounted || !isCurrent()) return;
       if (!creating) {
         final replacement = InstitutionFormController(record: saved)
@@ -291,6 +310,7 @@ final class _InstitutionFormPageState extends State<InstitutionFormPage> {
           onSave: _save,
           locationService: _locationService,
           imagePicker: widget.imagePicker ?? pickInstitutionLogo,
+          images: _images,
           locationScope: widget.institutionId == null
               ? null
               : LocationScope.institution(institutionId: widget.institutionId!),
@@ -319,6 +339,7 @@ final class _FormBody extends StatelessWidget {
     required this.onSave,
     required this.locationService,
     required this.imagePicker,
+    required this.images,
     required this.locationScope,
     required this.locationCatalogReader,
     required this.locationSessionAvailable,
@@ -333,6 +354,7 @@ final class _FormBody extends StatelessWidget {
   final VoidCallback onSave;
   final InstitutionLocationService locationService;
   final InstitutionLogoPicker imagePicker;
+  final EntityImagesController? images;
   final LocationScope? locationScope;
   final LocationCatalogReader locationCatalogReader;
   final bool locationSessionAvailable;
@@ -367,6 +389,7 @@ final class _FormBody extends StatelessWidget {
                   controller: controller,
                   locationService: locationService,
                   imagePicker: imagePicker,
+                  images: images,
                   locationScope: locationScope,
                   locationCatalogReader: locationCatalogReader,
                   locationSessionAvailable: locationSessionAvailable,
