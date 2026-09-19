@@ -1,4 +1,4 @@
--- Avisos — spec 069 (H08 duplicar, H13 destino do CTA por tipo). Lote 91.
+-- Avisos — spec 069 (H08 duplicar, H13 destino do CTA por tipo). Lote 92.
 --   * platform_notices.cta_target_kind / cta_target_id: destino interno do CTA
 --     (none | circular | form | invite | notice); nunca URL livre. O servidor
 --     valida que o alvo existe e, quando a audiência é por instituição, que o

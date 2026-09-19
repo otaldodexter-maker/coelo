@@ -457,9 +457,16 @@
 # Lote 89 (MÍDIA-E2E 19/09): superadmin_entity_images_list_v1 aceita 'internal_user' (chave = internal_identity_id,
 # foto da pessoa de serviço via superadmin_internal_actor_people; exige platform.member.read). pgTAP 37/37 no espelho.
 20260919212000_media_entity_images_internal_user_v1.sql
-# Lote 91 (Sessão ETAPA-3, 19/09/2026): Avisos spec 069. platform_notices.cta_target_kind/cta_target_id (destino interno do
+# Lote 92 (Sessão ETAPA-3, 19/09/2026): Avisos spec 069. platform_notices.cta_target_kind/cta_target_id (destino interno do
 # CTA: circular | form | invite | notice; validado contra o catálogo e a audiência por instituição); superadmin_notice_json expõe
 # cta_target (Superadmin e leitor do Principal); save_draft_v2 aceita cta_target; superadmin_notice_duplicate_v2 (notices.publish,
 # rascunho "Cópia de …" em qualquer status, sem datas/recibos, auditoria notice.duplicate com after_json.id = origem).
 # pgTAP notices_duplicate_cta_target_v1_test 34/34 no espelho mirror-acesso; ledger 20260919230000 reparado.
 20260919230000_notices_duplicate_cta_target_v1.sql
+# Lote 93 (Sessão ETAPA-3, 19/09/2026): Perfis de cuidado spec 065. public.health_care_catalog_items (food 57 / restriction 31 /
+# guidance 26, RLS deny, leitura só por superadmin_health_care_catalog_v1 com busca ≥ 2 caracteres); health_care_allergies ganha
+# catalog_item_id, other_text (obrigatório com 'other'), position e what_to_do; health_care_profile_items ganha position e
+# aceita vários "Outro"; save_profile grava listas ordenadas (índice = position), deriva o rótulo do catálogo, valida coleção e
+# inativa (com a justificativa) alergias ativas retiradas da lista; detail devolve as coleções na ordem persistida.
+# pgTAP health_care_collections_v2_test 26/26 no espelho mirror-acesso; ledger 20260919233000 reparado.
+20260919233000_health_care_collections_v2.sql
