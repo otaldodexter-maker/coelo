@@ -1410,16 +1410,20 @@ final class _PlanSection extends StatelessWidget {
                 labelOf: (value) => value.label,
                 onChanged: (value) => _changeSubscription(context, value),
               ),
-              _DateControl(
-                controlKey: const Key('institution-subscription-start-date'),
-                label: 'Data de início',
+              CoeloDateField(
+                key: const Key('institution-subscription-start-date'),
+                labelText: 'Data de início',
+                firstDate: DateTime(2020),
+                lastDate: DateTime(2035),
                 value: controller.subscriptionStart,
                 onChanged: controller.setSubscriptionStart,
               ),
               if (controller.subscriptionStatus == InstitutionSubscriptionStatus.trial)
-                _DateControl(
-                  controlKey: const Key('institution-trial-end-date'),
-                  label: 'Término do período de teste',
+                CoeloDateField(
+                  key: const Key('institution-trial-end-date'),
+                  labelText: 'Término do período de teste',
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2035),
                   value: controller.trialEnd,
                   onChanged: controller.setTrialEnd,
                   errorText: controller.trialEndError,
@@ -2497,50 +2501,6 @@ final class _PlanCard extends StatelessWidget {
   }
 }
 
-final class _DateControl extends StatelessWidget {
-  const _DateControl({
-    required this.controlKey,
-    required this.label,
-    required this.value,
-    required this.onChanged,
-    this.errorText,
-  });
-  final Key controlKey;
-  final String label;
-  final DateTime? value;
-  final ValueChanged<DateTime> onChanged;
-  final String? errorText;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      key: controlKey,
-      onTap: () async {
-        final selected = await showCoeloDateRangePicker(
-          context: context,
-          value: value == null ? null : DateTimeRange(start: value!, end: value!),
-          firstDate: DateTime(2020),
-          lastDate: DateTime(2035),
-          currentDate: DateUtils.dateOnly(DateTime.now()),
-          showQuickRanges: false,
-          selectionMode: CoeloDateSelectionMode.single,
-        );
-        if (selected != null) {
-          onChanged(DateUtils.dateOnly(selected.start));
-        }
-      },
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: label,
-          errorText: errorText,
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-        ),
-        child: Text(value == null ? 'Selecionar data' : _date(value!)),
-      ),
-    );
-  }
-}
-
 final class _ReviewCard extends StatelessWidget {
   const _ReviewCard({
     required this.editKey,
@@ -2716,9 +2676,6 @@ const _brazilianStates = [
   'SE',
   'TO',
 ];
-
-String _date(DateTime value) =>
-    '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
 
 String _initials(String value) {
   final words = value.trim().split(RegExp(r'\s+')).where((word) => word.isNotEmpty).toList();

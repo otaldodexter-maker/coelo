@@ -593,13 +593,17 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
   ]);
 
   Widget _validity() => _grid([
-    CoeloMedicationDateField(
-      label: 'Data de início',
+    CoeloDateField(
+      labelText: 'Data de início',
+      firstDate: DateTime(DateTime.now().year - 1),
+      lastDate: DateTime(DateTime.now().year + 10, 12, 31),
       value: _startsAt,
       onChanged: (value) => _updateDraft(() => _startsAt = value),
     ),
-    CoeloMedicationDateField(
-      label: 'Data de término',
+    CoeloDateField(
+      labelText: 'Data de término',
+      firstDate: DateTime(DateTime.now().year - 1),
+      lastDate: DateTime(DateTime.now().year + 10, 12, 31),
       value: _endsAt,
       onChanged: (value) => _updateDraft(() => _endsAt = value),
     ),

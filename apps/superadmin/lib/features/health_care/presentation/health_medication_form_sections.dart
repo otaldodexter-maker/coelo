@@ -37,47 +37,6 @@ final class CoeloMedicationChildSelector extends StatelessWidget {
   }
 }
 
-final class CoeloMedicationDateField extends StatelessWidget {
-  const CoeloMedicationDateField({
-    required this.label,
-    required this.value,
-    required this.onChanged,
-    super.key,
-  });
-  final String label;
-  final DateTime? value;
-  final ValueChanged<DateTime> onChanged;
-
-  @override
-  Widget build(BuildContext context) => CoeloAdminInteractiveCard(
-    semanticLabel: '$label: ${value == null ? 'Não informada' : _dateLabel(value!)}',
-    minHeight: CoeloSize.touchMin,
-    onPressed: () async {
-      final now = DateUtils.dateOnly(DateTime.now());
-      final selected = await showCoeloDateRangePicker(
-        context: context,
-        value: value == null ? null : DateTimeRange(start: value!, end: value!),
-        firstDate: DateTime(now.year - 1),
-        lastDate: DateTime(now.year + 10, 12, 31),
-        currentDate: now,
-        showQuickRanges: false,
-        selectionMode: CoeloDateSelectionMode.single,
-      );
-      if (!context.mounted || selected == null) return;
-      final date = DateUtils.dateOnly(selected.start);
-      if (value == null || !DateUtils.isSameDay(value, date)) onChanged(date);
-    },
-    child: InputDecorator(
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: const Icon(Icons.calendar_today_outlined),
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-      ),
-      child: Text(value == null ? 'Selecionar data' : _dateLabel(value!)),
-    ),
-  );
-}
-
 final class CoeloMedicationTimeField extends StatelessWidget {
   const CoeloMedicationTimeField({required this.value, required this.onChanged, super.key});
   final TimeOfDay? value;
@@ -220,7 +179,5 @@ final class _UnavailableField extends StatelessWidget {
   );
 }
 
-String _dateLabel(DateTime value) =>
-    '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
 String _weekdayLabel(int value) =>
     const ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'][value - 1];

@@ -594,7 +594,7 @@ void main() {
 
     await tester.tap(find.text('Vigência'));
     await tester.pumpAndSettle();
-    expect(find.byType(CoeloMedicationDateField), findsNWidgets(2));
+    expect(find.byType(CoeloDateField), findsNWidgets(2));
 
     await tester.tap(find.text('Horários e responsáveis'));
     await tester.pumpAndSettle();
