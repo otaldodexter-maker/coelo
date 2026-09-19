@@ -182,11 +182,13 @@ import '../../features/notices/domain/notice_repository.dart'
     show
         NoticeCtaTargetOptionsReader,
         NoticeRepository,
+        OfficialPostsCommands,
         PrincipalForYouReader,
         UnavailableNoticeRepository;
 import '../../features/notices/domain/platform_notice.dart' show NoticeCtaTargetKind;
 import '../../features/notices/data/development_notice_repository.dart';
 import '../../features/notices/presentation/notice_directory_page.dart';
+import '../../features/notices/presentation/official_profiles_page.dart';
 import '../../features/notices/presentation/notice_form_page.dart';
 import '../../features/principal_chat/presentation/principal_chat_page.dart';
 import '../../features/principal_circulars/domain/principal_happens_mixed_feed.dart';
@@ -6526,7 +6528,31 @@ GoRouter createSuperadminRouter({
                         pathParameters: {'noticeId': id},
                       ),
                 canManageLifecycle: noticeRepository is! UnavailableNoticeRepository,
+                onOpenOfficialProfiles:
+                    noticeRepository is OfficialPostsCommands &&
+                        noticeRepository is NoticeCtaTargetOptionsReader
+                    ? () => context.goNamed(SuperadminRoutes.noticesOfficialProfilesName)
+                    : null,
               ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.noticesOfficialProfiles,
+            name: SuperadminRoutes.noticesOfficialProfilesName,
+            builder: (context, state) => productionOperationalPage(
+              context,
+              title: 'Perfis oficiais',
+              subtitle: 'Publique como Coelo no Acontece e acompanhe os perfis.',
+              destination: 'notices',
+              child:
+                  noticeRepository is OfficialPostsCommands &&
+                      noticeRepository is NoticeCtaTargetOptionsReader
+                  ? OfficialProfilesPage(
+                      profiles: noticeRepository as NoticeCtaTargetOptionsReader,
+                      posts: noticeRepository as OfficialPostsCommands,
+                      onReturn: () => context.goNamed(SuperadminRoutes.noticesName),
+                    )
+                  : _unavailableCompositionRootRoute(context),
             ),
           ),
           GoRoute(
@@ -7880,12 +7906,8 @@ ActivitySaveCommand _activitySaveCommand(
       )
       .toList(growable: false),
   identity: ActivityCommandIdentity(
-    kind: draft.imageBytes != null
-        ? ActivityIdentityKind.image
-        : draft.identityInitials.trim().isNotEmpty
-        ? ActivityIdentityKind.initials
-        : ActivityIdentityKind.icon,
-    initials: draft.identityInitials,
+    kind: draft.imageBytes != null ? ActivityIdentityKind.image : ActivityIdentityKind.initials,
+    initials: activityInitialsFor(typed: draft.identityInitials, name: draft.name),
     color: draft.identityColor,
     icon: draft.identityIcon.databaseKey,
     preserveExisting:

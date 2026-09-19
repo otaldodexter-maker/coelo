@@ -60,17 +60,44 @@ final class PrincipalOfficialProfile {
   );
 }
 
+/// Post de texto do perfil no Acontece (spec 068 §4, lote 107).
+final class PrincipalOfficialPost {
+  const PrincipalOfficialPost({required this.id, required this.caption, required this.publishedAt});
+
+  static PrincipalOfficialPost? fromJson(Object? value) {
+    if (value is! Map) return null;
+    final id = value['id']?.toString();
+    final publishedAt = DateTime.tryParse(value['published_at']?.toString() ?? '');
+    if (id == null || id.isEmpty || publishedAt == null) return null;
+    return PrincipalOfficialPost(
+      id: id,
+      caption: value['caption']?.toString() ?? '',
+      publishedAt: publishedAt.toUtc(),
+    );
+  }
+
+  final String id;
+  final String caption;
+  final DateTime publishedAt;
+}
+
 /// Perfil aberto + catálogo ativo + publicações que o ator pode ver.
 final class PrincipalOfficialProfileDetail {
   const PrincipalOfficialProfileDetail({
     required this.profile,
     required this.profiles,
     required this.items,
+    this.posts = const [],
   });
 
   final PrincipalOfficialProfile profile;
   final List<PrincipalOfficialProfile> profiles;
+
+  /// Publicações do Para você assinadas pelo perfil.
   final List<PlatformNotice> items;
+
+  /// Posts do perfil no Acontece.
+  final List<PrincipalOfficialPost> posts;
 }
 
 /// Leitor do Principal para perfis oficiais. Erros são os do repositório de

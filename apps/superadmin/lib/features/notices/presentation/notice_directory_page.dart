@@ -67,6 +67,7 @@ final class NoticeDirectoryPage extends StatefulWidget {
     required this.repository,
     this.onCreate,
     this.onEdit,
+    this.onOpenOfficialProfiles,
     this.canManageLifecycle = false,
     this.enableInlinePreview = false,
     this.viewState = NoticeDirectoryViewState.content,
@@ -75,6 +76,9 @@ final class NoticeDirectoryPage extends StatefulWidget {
 
   final NoticeRepository repository;
   final VoidCallback? onCreate;
+
+  /// Abre Perfis oficiais (spec 068): posts no Acontece e catálogo.
+  final VoidCallback? onOpenOfficialProfiles;
   final ValueChanged<String>? onEdit;
   final bool canManageLifecycle;
   final bool enableInlinePreview;
@@ -282,6 +286,15 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage>
               _load(reset: true);
             },
           ),
+          trailing: [
+            if (widget.onOpenOfficialProfiles case final open?)
+              OutlinedButton.icon(
+                key: const Key('notices-official-profiles'),
+                onPressed: open,
+                icon: const Icon(Icons.verified_outlined),
+                label: const Text('Perfis oficiais'),
+              ),
+          ],
           create: widget.onCreate == null
               ? null
               : CoeloAdminDirectoryCreate(

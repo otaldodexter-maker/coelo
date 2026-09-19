@@ -11,7 +11,8 @@ final class SupabaseNoticeRepository
         NoticeRepository,
         PrincipalForYouReader,
         NoticeCtaTargetOptionsReader,
-        PrincipalOfficialProfilesReader {
+        PrincipalOfficialProfilesReader,
+        OfficialPostsCommands {
   SupabaseNoticeRepository(this._client, {String? targetDevice})
     : _targetDevice = targetDevice ?? (kIsWeb ? 'web' : 'mobile');
 
@@ -307,6 +308,67 @@ final class SupabaseNoticeRepository
     }
   }
 
+  // spec 068 §4 (lote 107): posts do perfil oficial no Acontece.
+  @override
+  Future<List<OfficialPost>> fetchOfficialPosts({String? profileId}) async {
+    try {
+      final data = _map(
+        _unwrap(
+          await _client.rpc(
+            'superadmin_official_posts_list_v1',
+            params: {'p_profile_id': profileId, 'p_limit': 100},
+          ),
+        ),
+      );
+      return _list(data['items']).map(OfficialPost.fromJson).whereType<OfficialPost>().toList();
+    } on PostgrestException catch (error) {
+      throw _error(error);
+    } on ClientException {
+      throw const NoticeUnavailableException();
+    }
+  }
+
+  @override
+  Future<OfficialPost> publishOfficialPost({
+    required String requestId,
+    required String profileId,
+    required String caption,
+  }) => _officialPostCommand('superadmin_official_post_publish_v1', {
+    'p_request_id': requestId,
+    'p_profile_id': profileId,
+    'p_caption': caption,
+  });
+
+  @override
+  Future<OfficialPost> withdrawOfficialPost({
+    required String requestId,
+    required String postId,
+    required int expectedVersion,
+    required String reason,
+  }) => _officialPostCommand('superadmin_official_post_withdraw_v1', {
+    'p_request_id': requestId,
+    'p_post_id': postId,
+    'p_expected_version': expectedVersion,
+    'p_reason': reason,
+  });
+
+  Future<OfficialPost> _officialPostCommand(String rpc, Map<String, Object?> params) async {
+    try {
+      final data = _map(_unwrap(await _client.rpc(rpc, params: params)));
+      final post = OfficialPost.fromJson({
+        ...data,
+        'official_profile_id': data['official_profile_id'],
+        'display_name': data['display_name'] ?? '',
+      });
+      if (post == null) throw const NoticeUnexpectedException();
+      return post;
+    } on PostgrestException catch (error) {
+      throw _error(error);
+    } on ClientException {
+      throw const NoticeUnavailableException();
+    }
+  }
+
   // spec 068 (lote 104): perfis oficiais no Principal, pelo mesmo parser de aviso.
   @override
   Future<List<PrincipalOfficialProfile>> loadOfficialProfiles() async {
@@ -332,6 +394,10 @@ final class SupabaseNoticeRepository
         profile: profile,
         profiles: _profiles(data['profiles']),
         items: _list(data['items']).map((item) => _notice(_map(item))).toList(growable: false),
+        posts: _list(data['posts'])
+            .map(PrincipalOfficialPost.fromJson)
+            .whereType<PrincipalOfficialPost>()
+            .toList(growable: false),
       );
     } on PostgrestException catch (error) {
       throw _error(error);
@@ -551,7 +617,8 @@ Exception _domainError(String code) => switch (code) {
   'SAI_PERMISSION_DENIED' ||
   'SAI_MFA_REQUIRED' => const NoticeUnauthorizedException(),
   'NOTICE_NOT_FOUND' => const NoticeNotFoundException(),
-  'NOTICE_CONFLICT' => const NoticeConflictException(),
+  'NOTICE_CONFLICT' || 'SAI_CONCURRENT_CHANGE' => const NoticeConflictException(),
+  'SAI_INVALID_ARGUMENT' => const NoticeValidationException(),
   'NOTICE_INVALID_INPUT' ||
   'NOTICE_INVALID_TRANSITION' ||
   'NOTICE_TERMINAL' => const NoticeValidationException(),

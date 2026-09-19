@@ -75,6 +75,73 @@ abstract interface class NoticeCtaTargetOptionsReader {
   Future<List<NoticeOfficialProfile>> fetchOfficialProfiles();
 }
 
+/// Post de texto de um perfil oficial no feed Acontece (spec 068 §4, lote 107).
+final class OfficialPost {
+  const OfficialPost({
+    required this.id,
+    required this.profileId,
+    required this.handle,
+    required this.profileName,
+    required this.caption,
+    required this.status,
+    required this.publishedAt,
+    required this.managementVersion,
+    this.withdrawnAt,
+    this.withdrawReason,
+  });
+
+  static OfficialPost? fromJson(Object? value) {
+    if (value is! Map) return null;
+    final id = value['id']?.toString();
+    final publishedAt = DateTime.tryParse(value['published_at']?.toString() ?? '');
+    if (id == null || id.isEmpty || publishedAt == null) return null;
+    return OfficialPost(
+      id: id,
+      profileId: value['official_profile_id']?.toString() ?? '',
+      handle: value['handle']?.toString() ?? '',
+      profileName: value['display_name']?.toString() ?? 'Coelo',
+      caption: value['caption']?.toString() ?? '',
+      status: value['status']?.toString() ?? 'published',
+      publishedAt: publishedAt.toUtc(),
+      managementVersion: (value['management_version'] as num?)?.toInt() ?? 1,
+      withdrawnAt: DateTime.tryParse(value['withdrawn_at']?.toString() ?? '')?.toUtc(),
+      withdrawReason: value['withdraw_reason']?.toString(),
+    );
+  }
+
+  final String id;
+  final String profileId;
+  final String handle;
+  final String profileName;
+  final String caption;
+  final String status;
+  final DateTime publishedAt;
+  final int managementVersion;
+  final DateTime? withdrawnAt;
+  final String? withdrawReason;
+
+  bool get isPublished => status == 'published';
+}
+
+/// Publicação do perfil oficial no Acontece (spec 068 §4). Interface pequena,
+/// detectada com `is` no router; erros são os `NoticeRepositoryException`.
+abstract interface class OfficialPostsCommands {
+  Future<List<OfficialPost>> fetchOfficialPosts({String? profileId});
+
+  Future<OfficialPost> publishOfficialPost({
+    required String requestId,
+    required String profileId,
+    required String caption,
+  });
+
+  Future<OfficialPost> withdrawOfficialPost({
+    required String requestId,
+    required String postId,
+    required int expectedVersion,
+    required String reason,
+  });
+}
+
 abstract interface class NoticeRepository {
   Future<NoticePage> fetchPage(NoticeDirectoryQuery query);
 

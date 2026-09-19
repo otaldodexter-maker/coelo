@@ -106,6 +106,7 @@ final class _PrincipalOfficialProfilePageState extends State<PrincipalOfficialPr
           ),
           profiles: detail.profiles,
           items: detail.items,
+          posts: detail.posts,
         );
       });
       messenger
@@ -283,7 +284,7 @@ final class _PrincipalOfficialProfilePageState extends State<PrincipalOfficialPr
           const SizedBox(height: CoeloSpacing.space5),
           Text('Publicações', style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: CoeloSpacing.space2),
-          if (detail.items.isEmpty)
+          if (detail.items.isEmpty && detail.posts.isEmpty)
             Padding(
               key: const Key('principal-official-profile-empty'),
               padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space6),
@@ -295,11 +296,16 @@ final class _PrincipalOfficialProfilePageState extends State<PrincipalOfficialPr
                 ),
               ),
             )
-          else
+          else ...[
             for (final item in detail.items) ...[
               _PublicationCard(item: item, onOpenCtaTarget: widget.onOpenCtaTarget),
               const SizedBox(height: CoeloSpacing.space3),
             ],
+            for (final post in detail.posts) ...[
+              _PostCard(post: post),
+              const SizedBox(height: CoeloSpacing.space3),
+            ],
+          ],
         ],
       ),
     );
@@ -474,6 +480,48 @@ final class _PublicationCard extends StatelessWidget {
                 ),
               ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+final class _PostCard extends StatelessWidget {
+  const _PostCard({required this.post});
+
+  final PrincipalOfficialPost post;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Card(
+      key: Key('principal-official-profile-post-${post.id}'),
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(CoeloSpacing.space4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'ACONTECE',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: colors.primary,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  CoeloDateField.format(post.publishedAt.toLocal()),
+                  style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
+                ),
+              ],
+            ),
+            const SizedBox(height: CoeloSpacing.space2),
+            Text(post.caption, style: theme.textTheme.bodyMedium),
           ],
         ),
       ),

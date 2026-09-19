@@ -156,6 +156,8 @@ abstract final class SuperadminRoutes {
   static const notices = '/notices';
   static const noticesName = 'notices';
   static const noticeCreate = '/notices/new';
+  static const noticesOfficialProfiles = '/notices/official';
+  static const noticesOfficialProfilesName = 'notices-official-profiles';
   static const noticeCreateName = 'notice-create';
   static const noticeEdit = '/notices/:noticeId/edit';
   static const noticeEditName = 'notice-edit';
