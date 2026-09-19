@@ -671,6 +671,7 @@ class _ContextCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(CoeloSpacing.space3),
       decoration: BoxDecoration(
@@ -695,7 +696,7 @@ class _ContextCard extends StatelessWidget {
                 ),
                 Text(
                   contextData.scopeLabel,
-                  style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
+                  style: textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
                 ),
               ],
             ),
@@ -728,13 +729,11 @@ class _FeedPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Prévia do post no Acontece',
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
-        ),
+        Text('Prévia do post no Acontece', style: textTheme.labelMedium),
         const SizedBox(height: CoeloSpacing.space2),
         Container(
           decoration: BoxDecoration(
@@ -758,13 +757,10 @@ class _FeedPreview extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            publicationContext.institutionName,
-                            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
-                          ),
+                          Text(publicationContext.institutionName, style: textTheme.labelMedium),
                           Text(
                             'Agora',
-                            style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant),
+                            style: textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
                           ),
                         ],
                       ),
@@ -814,9 +810,9 @@ class _FeedPreview extends StatelessWidget {
             color: colors.primaryContainer,
             borderRadius: BorderRadius.circular(CoeloRadius.sm),
           ),
-          child: const Text(
+          child: Text(
             'A prévia é uma simulação de como seu post aparecerá no feed do Acontece.',
-            style: TextStyle(fontSize: 12),
+            style: textTheme.bodySmall,
           ),
         ),
       ],
@@ -831,12 +827,18 @@ class _Pill extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+      padding: const EdgeInsets.symmetric(
+        horizontal: CoeloSpacing.space2,
+        vertical: CoeloSpacing.space1,
+      ),
       decoration: BoxDecoration(
         color: colors.scrim.withValues(alpha: 0.68),
         borderRadius: BorderRadius.circular(CoeloRadius.full),
       ),
-      child: Text(text, style: TextStyle(color: colors.onInverseSurface, fontSize: 11)),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.onInverseSurface),
+      ),
     );
   }
 }
