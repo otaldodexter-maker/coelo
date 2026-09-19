@@ -29,6 +29,14 @@ const staffAccessFiltersTourStep = CoeloTourStep(
   text: 'Instituição, unidade e estado: livre, com horário, com vigência, afastado ou bloqueado agora.',
 );
 
+/// Passo 3b — staff-access.source-filter (origem do horário, lote 86).
+const staffAccessSourceTourStep = CoeloTourStep(
+  anchorId: 'staff-access.source-filter',
+  title: 'Origem do horário',
+  text:
+      'O vínculo herda o horário do perfil de funcionário. Regra própria diferente fica "fora do padrão do perfil" e pode voltar ao padrão.',
+);
+
 /// Passo 4 — directory.view.
 const staffAccessViewTourStep = CoeloTourStep(
   anchorId: 'directory.view',
@@ -57,6 +65,7 @@ const staffAccessScreenTour = SuperadminScreenTour(
     staffAccessHeaderTourStep,
     staffAccessSearchTourStep,
     staffAccessFiltersTourStep,
+    staffAccessSourceTourStep,
     staffAccessViewTourStep,
     staffAccessBodyTourStep,
     staffAccessPaginationTourStep,

@@ -63,6 +63,14 @@ const profilesBodyTourStep = CoeloTourStep(
   text: 'Perfil, descrição, escopo máximo, vínculos e tipo. Abra para editar as permissões.',
 );
 
+/// Passo 8 — directory.body (Utilização do app, lote 86).
+const profilesAppUsageTourStep = CoeloTourStep(
+  anchorId: 'directory.body',
+  title: 'Utilização do app',
+  text:
+      'Ao criar ou editar um perfil de funcionário, o passo "Utilização do app" define superfícies, dias e horários que os vínculos herdam.',
+);
+
 const profilesScreenTour = SuperadminScreenTour(
   destinationId: 'profiles',
   steps: [
@@ -74,5 +82,6 @@ const profilesScreenTour = SuperadminScreenTour(
     profilesTabsTourStep,
     profilesCreateTourStep,
     profilesBodyTourStep,
+    profilesAppUsageTourStep,
   ],
 );
