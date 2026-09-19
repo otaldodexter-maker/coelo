@@ -1775,9 +1775,23 @@ GoRouter createSuperadminRouter({
                           pathParameters: {'circularId': target.id!},
                         );
                         return true;
-                      case NoticeCtaTargetKind.none:
+                      // No Principal hospedado, formulário e convite abrem a
+                      // tela do Superadmin (mesma identidade); a tela nega
+                      // sozinha quando o ator não tem acesso. O Principal
+                      // próprio (Etapa 4) terá rotas de resposta/convite.
                       case NoticeCtaTargetKind.form:
+                        context.pushNamed(
+                          SuperadminRoutes.formOverviewName,
+                          pathParameters: {'formId': target.id!},
+                        );
+                        return true;
                       case NoticeCtaTargetKind.invite:
+                        context.pushNamed(
+                          SuperadminRoutes.inviteDetailName,
+                          pathParameters: {'inviteId': target.id!},
+                        );
+                        return true;
+                      case NoticeCtaTargetKind.none:
                       case NoticeCtaTargetKind.notice:
                         return false;
                     }
