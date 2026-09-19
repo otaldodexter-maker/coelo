@@ -1,7 +1,9 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../shared/data/edge_media_bytes.dart';
 import '../domain/principal_moments_feed_repository.dart';
 import '../domain/principal_moments_preview_data.dart';
 
@@ -124,33 +126,27 @@ final class SupabasePrincipalMomentsFeedRepository
   }
 
   Future<PrincipalMomentMedia> _resolveMedia(_MediaDescriptor descriptor) async {
-    final FunctionResponse response;
+    // Bytes pela Edge (autorização no servidor); URL local `blob:` para a tela.
+    final Uint8List bytes;
     try {
-      response = await _client.functions.invoke(
-        'moments-media',
-        body: {'action': 'read', 'asset_id': descriptor.assetId},
-      );
+      bytes = await readBytesThroughEdge(_client, 'moments-media', {
+        'action': 'read',
+        'asset_id': descriptor.assetId,
+      });
     } on FunctionException catch (error) {
       throw error.status == 401 || error.status == 403
+          ? const PrincipalMomentsFeedUnauthorized()
+          : const PrincipalMomentsFeedUnavailable();
+    } on EdgeMediaException catch (error) {
+      throw error.isDenied
           ? const PrincipalMomentsFeedUnauthorized()
           : const PrincipalMomentsFeedUnavailable();
     } on Object {
       throw const PrincipalMomentsFeedUnavailable();
     }
-    if (response.status == 401 || response.status == 403) {
-      throw const PrincipalMomentsFeedUnauthorized();
-    }
-    if (response.status < 200 || response.status >= 300 || response.data is! Map) {
-      throw const PrincipalMomentsFeedUnavailable();
-    }
-    final json = Map<String, dynamic>.from(response.data as Map);
-    final signedUrl = (json['signed_url'] as String?)?.trim();
-    final mimeType = (json['mime_type'] as String?)?.trim();
-    if (signedUrl == null || signedUrl.isEmpty || mimeType == null || mimeType.isEmpty) {
-      throw const PrincipalMomentsFeedUnavailable();
-    }
+    final mimeType = sniffMediaMimeType(bytes, fallback: descriptor.mimeType ?? 'image/jpeg');
     return PrincipalMomentMedia(
-      signedUrl: signedUrl,
+      signedUrl: mediaObjectUrl(bytes, mimeType),
       mimeType: mimeType,
       displayOrder: descriptor.displayOrder,
     );
@@ -158,7 +154,7 @@ final class SupabasePrincipalMomentsFeedRepository
 }
 
 final class _MediaDescriptor {
-  const _MediaDescriptor({required this.assetId, required this.displayOrder});
+  const _MediaDescriptor({required this.assetId, required this.displayOrder, this.mimeType});
 
   factory _MediaDescriptor.fromJson(Map<String, dynamic> json) {
     final assetId = (json['asset_id'] as String?)?.trim();
@@ -166,10 +162,16 @@ final class _MediaDescriptor {
     if (assetId == null || assetId.isEmpty || displayOrder == null) {
       throw const PrincipalMomentsFeedUnavailable();
     }
-    return _MediaDescriptor(assetId: assetId, displayOrder: displayOrder.toInt());
+    final mimeType = (json['mime_type'] as String?)?.trim();
+    return _MediaDescriptor(
+      assetId: assetId,
+      displayOrder: displayOrder.toInt(),
+      mimeType: mimeType == null || mimeType.isEmpty ? null : mimeType,
+    );
   }
 
   final String assetId;
+  final String? mimeType;
   final int displayOrder;
 }
 

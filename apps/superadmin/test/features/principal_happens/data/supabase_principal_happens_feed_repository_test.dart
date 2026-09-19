@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:coelo_superadmin/features/principal_happens/data/supabase_principal_happens_feed_repository.dart';
 import 'package:coelo_superadmin/features/principal_happens/domain/principal_happens_feed_repository.dart';
@@ -90,14 +91,11 @@ void main() {
     late Map<String, dynamic> requestBody;
     final client = _client((request) async {
       requestBody = jsonDecode(request.body) as Map<String, dynamic>;
-      return http.Response(
-        jsonEncode({
-          'signed_url': 'https://signed.example/media',
-          'mime_type': 'image/jpeg',
-          'expires_in': 60,
-        }),
+      // Bytes pela Edge: um jpeg mínimo, sem URL assinada nem caminho do storage.
+      return http.Response.bytes(
+        Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xE0, 0, 16, 74, 70, 73, 70, 0, 1]),
         200,
-        headers: {'content-type': 'application/json'},
+        headers: {'content-type': 'application/octet-stream'},
         request: request,
       );
     });
@@ -112,9 +110,9 @@ void main() {
       ),
     );
 
-    expect(requestBody, {'action': 'read', 'read_ticket': 'opaque-ticket'});
-    expect(read.signedUrl, 'https://signed.example/media');
-    expect(read.expiresIn, const Duration(seconds: 60));
+    expect(requestBody, {'action': 'read', 'read_ticket': 'opaque-ticket', 'inline': true});
+    expect(read.signedUrl, startsWith('data:image/jpeg;base64,'), reason: 'URL local a partir dos bytes');
+    expect(read.mimeType, 'image/jpeg');
   });
 }
 

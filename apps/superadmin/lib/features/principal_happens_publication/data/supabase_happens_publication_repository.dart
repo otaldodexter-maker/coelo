@@ -6,21 +6,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../application/happens_publication_controller.dart';
 import '../domain/happens_publication.dart';
+import '../../../shared/data/edge_media_bytes.dart';
 
 final class SupabaseHappensPublicationRepository implements HappensPublicationRepository {
-  SupabaseHappensPublicationRepository(this._client, {http.Client? httpClient})
-    : _httpClient = httpClient ?? http.Client();
+  /// [httpClient] fica só por compatibilidade: os bytes vão pela Edge
+  /// (`uploadBytesThroughEdge`), sem PUT direto ao R2 nem ao Storage.
+  // ignore: avoid_unused_constructor_parameters
+  SupabaseHappensPublicationRepository(this._client, {http.Client? httpClient});
   final SupabaseClient _client;
-  final http.Client _httpClient;
-
-  Future<int> _put(Uri target, Uint8List bytes, Map<String, String> headers) async {
-    final request = http.Request('PUT', target)
-      ..followRedirects = false
-      ..headers.addAll(headers)
-      ..bodyBytes = bytes;
-    final response = await http.Response.fromStream(await _httpClient.send(request));
-    return response.statusCode;
-  }
 
   @override
   Future<HappensPostDraft?> loadDraft(HappensPublicationContext context) async {
@@ -42,18 +35,10 @@ final class SupabaseHappensPublicationRepository implements HappensPublicationRe
           (value) => _audience(value.toString()),
         ),
         publishAt: DateTime.tryParse(json['publish_at']?.toString() ?? ''),
-        media: (json['media'] as List? ?? const []).map((value) {
-          final media = Map<String, dynamic>.from(value as Map);
-          return HappensMediaDraft(
-            localId: media['asset_id'] as String,
-            name: media['name'] as String,
-            mimeType: media['mime_type'] as String,
-            bytes: Uint8List(0),
-            assetId: media['asset_id'] as String,
-            objectKey: media['object_key'] as String,
-            remoteUrl: media['signed_url'] as String?,
-          );
-        }),
+        media: [
+          for (final value in json['media'] as List? ?? const [])
+            await _draftMedia(context, Map<String, dynamic>.from(value as Map)),
+        ],
         version: (json['version'] as num?)?.toInt() ?? 0,
       );
     } on PostgrestException catch (error) {
@@ -95,34 +80,35 @@ final class SupabaseHappensPublicationRepository implements HappensPublicationRe
   /// No provedor legado o caminho e o mesmo de sempre. No R2 o servidor emite
   /// uma janela PUT curta e os cabecalhos exigidos, e nem bucket nem chave
   /// chegam ao cliente.
-  Future<void> _transfer(HappensUploadIntent intent, HappensMediaDraft media) async {
-    if (intent.usesR2) {
-      final target = intent.uploadUrl;
-      if (target == null) throw Exception('media_prepare_failed');
-      if (intent.expiredAt(DateTime.now())) throw Exception('media_upload_expired');
-      final headers = {
-        for (final entry in intent.requiredHeaders.entries) entry.key.toLowerCase(): entry.value,
-      };
-      if (headers['content-type'] != media.mimeType) {
-        throw Exception('media_upload_invalid_headers');
-      }
-      final sent = await _put(target, media.bytes, headers);
-      if (sent < 200 || sent >= 300) throw Exception('media_upload_failed');
-      return;
+  /// Mídia já gravada do rascunho: bytes pela Edge (`read-draft`, regra do
+  /// autor no servidor) viram URL local para a prévia; sem leitura, fica sem
+  /// prévia mas o rascunho continua íntegro.
+  Future<HappensMediaDraft> _draftMedia(
+    HappensPublicationContext context,
+    Map<String, dynamic> media,
+  ) async {
+    final assetId = media['asset_id'] as String;
+    final mimeType = media['mime_type'] as String;
+    String? remoteUrl;
+    try {
+      final bytes = await readBytesThroughEdge(_client, 'happens-media', {
+        'action': 'read-draft',
+        'institution_id': context.institutionId,
+        'asset_id': assetId,
+      });
+      remoteUrl = mediaObjectUrl(bytes, sniffMediaMimeType(bytes, fallback: mimeType));
+    } on EdgeMediaException {
+      remoteUrl = null;
     }
-    final objectKey = intent.objectKey;
-    final token = intent.token;
-    if (objectKey == null || token == null) throw Exception('media_prepare_failed');
-    await _client.storage
-        // O bucket vem do servidor quando ele o anuncia; o literal de
-        // transicao vive no dominio e e coberto por teste.
-        .from(intent.legacyBucket)
-        .uploadBinaryToSignedUrl(
-          objectKey,
-          token,
-          media.bytes,
-          FileOptions(contentType: media.mimeType, upsert: true),
-        );
+    return HappensMediaDraft(
+      localId: assetId,
+      name: media['name'] as String,
+      mimeType: mimeType,
+      bytes: Uint8List(0),
+      assetId: assetId,
+      objectKey: media['object_key'] as String,
+      remoteUrl: remoteUrl,
+    );
   }
 
   @override
@@ -132,41 +118,16 @@ final class SupabaseHappensPublicationRepository implements HappensPublicationRe
     HappensMediaDraft media,
     int displayOrder,
   ) async {
-    final response = await _client.functions.invoke(
-      'happens-media',
-      body: {
-        'action': 'prepare',
-        'request_id': media.localId,
-        'institution_id': context.institutionId,
-        'post_id': postId,
-        'name': media.name,
-        'mime_type': media.mimeType,
-        'size_bytes': media.bytes.length,
-      },
-    );
-    if (response.status != 200) throw Exception('media_prepare_failed');
-    final json = Map<String, dynamic>.from(response.data as Map);
-    // O destino e do SERVIDOR. O cliente le o provedor anunciado e obedece; se
-    // o envelope nao trouxer provedor, e a funcao ainda nao atualizada, e o
-    // caminho legado continua valendo exatamente como antes.
-    final provider = json['storage_provider'] as String? ?? 'supabase_mvp';
-    final uploadUrl = json['upload_url'] as String?;
+    // Bytes pela Edge: não há janela assinada a pedir. A intenção só carrega
+    // o envelope; a Edge prepara (idempotente pelo request_id), grava e
+    // finaliza no `finalizeMedia`.
     return HappensUploadIntent(
-      assetId: json['asset_id'] as String,
+      assetId: '',
       institutionId: context.institutionId,
       postId: postId,
       requestId: media.localId,
       displayOrder: displayOrder,
-      storageProvider: provider,
-      objectKey: json['object_key'] as String?,
-      token: json['upload_token'] as String?,
-      bucketId: json['bucket_id'] as String?,
-      uploadUrl: uploadUrl == null ? null : Uri.parse(uploadUrl),
-      requiredHeaders: {
-        for (final entry in (json['required_headers'] as Map? ?? const {}).entries)
-          entry.key.toString(): entry.value.toString(),
-      },
-      expiresAt: DateTime.tryParse(json['expires_at'] as String? ?? ''),
+      storageProvider: 'edge',
     );
   }
 
@@ -175,12 +136,12 @@ final class SupabaseHappensPublicationRepository implements HappensPublicationRe
     HappensUploadIntent intent,
     HappensMediaDraft media,
   ) async {
-    await _transfer(intent, media);
-    final response = await _client.functions.invoke(
+    // Upload binário pela Edge (ADR 0032): ela prepara, grava (R2 ou bucket
+    // legado, decisão do servidor) e finaliza; o navegador nunca fala com o R2.
+    final json = await uploadBytesThroughEdge(
+      _client,
       'happens-media',
-      body: {
-        'action': 'finalize',
-        'asset_id': intent.assetId,
+      envelope: {
         'institution_id': intent.institutionId,
         'post_id': intent.postId,
         'request_id': intent.requestId,
@@ -189,9 +150,9 @@ final class SupabaseHappensPublicationRepository implements HappensPublicationRe
         'size_bytes': media.bytes.length,
         'display_order': intent.displayOrder,
       },
+      bytes: media.bytes,
+      failure: 'media_upload_failed',
     );
-    if (response.status != 200) throw Exception('media_upload_failed');
-    final json = Map<String, dynamic>.from(response.data as Map);
     return HappensMediaDraft(
       localId: media.localId,
       name: media.name,

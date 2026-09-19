@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/principal_happens_feed_repository.dart';
 import '../domain/principal_happens_preview_data.dart';
+import '../../../shared/data/edge_media_bytes.dart';
 
 final class SupabasePrincipalHappensFeedRepository
     implements PrincipalHappensFeedRepository, PrincipalHappensPostWithdrawal {
@@ -73,28 +74,17 @@ final class SupabasePrincipalHappensFeedRepository
   @override
   Future<PrincipalHappensMediaRead> resolveMedia(PrincipalHappensMediaDescriptor media) async {
     try {
-      final response = await _client.functions.invoke(
-        'happens-media',
-        body: {'action': 'read', 'read_ticket': media.readTicket},
-      );
-      if (response.status != 200 || response.data is! Map) {
-        throw const PrincipalHappensFeedUnavailable();
-      }
-      final json = Map<String, dynamic>.from(response.data as Map);
-      final signedUrl = json['signed_url'] as String?;
-      final mimeType = json['mime_type'] as String?;
-      final expiresIn = json['expires_in'] as num?;
-      if (signedUrl == null ||
-          mimeType == null ||
-          expiresIn == null ||
-          !expiresIn.isFinite ||
-          expiresIn.toInt() <= 0) {
-        throw const PrincipalHappensFeedUnavailable();
-      }
+      // Bytes pela Edge (bilhete resgatado no servidor); URL local `blob:`
+      // para a tela, sem URL assinada no navegador.
+      final bytes = await readBytesThroughEdge(_client, 'happens-media', {
+        'action': 'read',
+        'read_ticket': media.readTicket,
+      });
+      final mimeType = sniffMediaMimeType(bytes, fallback: media.mimeType);
       return PrincipalHappensMediaRead(
-        signedUrl: signedUrl,
+        signedUrl: mediaObjectUrl(bytes, mimeType),
         mimeType: mimeType,
-        expiresIn: Duration(seconds: expiresIn.toInt()),
+        expiresIn: const Duration(days: 1),
       );
     } on PrincipalHappensFeedUnavailable {
       rethrow;

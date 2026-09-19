@@ -5,13 +5,15 @@ import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/now_publication.dart';
+import '../../../shared/data/edge_media_bytes.dart';
 
 final class SupabaseNowPublicationRepository implements NowPublicationRepository {
-  SupabaseNowPublicationRepository(this._client, {http.Client? httpClient})
-    : _httpClient = httpClient ?? http.Client();
+  /// [httpClient] fica só por compatibilidade: os bytes vão pela Edge
+  /// (`uploadBytesThroughEdge`), sem PUT direto ao R2.
+  // ignore: avoid_unused_constructor_parameters
+  SupabaseNowPublicationRepository(this._client, {http.Client? httpClient});
 
   final SupabaseClient _client;
-  final http.Client _httpClient;
 
   @override
   Future<NowPublicationDraft?> loadDraft(NowPublicationContext context) async {
@@ -55,7 +57,7 @@ final class SupabaseNowPublicationRepository implements NowPublicationRepository
                         milliseconds: ((mediaJson['duration_seconds'] as num) * 1000).round(),
                       ),
                 remoteAssetId: mediaAssetId,
-                remoteUrl: await _assetUrl(context, mediaAssetId),
+                remoteUrl: await _assetUrl(context, mediaAssetId, mediaJson['mime_type'] as String),
                 cropScale: (mediaJson['crop_scale'] as num?)?.toDouble() ?? 1,
                 cropX: (mediaJson['crop_x'] as num?)?.toDouble() ?? 0,
                 cropY: (mediaJson['crop_y'] as num?)?.toDouble() ?? 0,
@@ -77,15 +79,14 @@ final class SupabaseNowPublicationRepository implements NowPublicationRepository
     }
   }
 
-  Future<String> _assetUrl(NowPublicationContext context, String assetId) async {
-    final response = await _client.functions.invoke(
-      'now-media',
-      body: {'action': 'read-draft', 'institution_id': context.institutionId, 'asset_id': assetId},
-    );
-    if (response.status < 200 || response.status >= 300) {
-      throw Exception('now_media_read_failed');
-    }
-    return (response.data as Map)['signed_url'] as String;
+  /// Bytes pela Edge (sem URL assinada no navegador); URL local para a prévia.
+  Future<String> _assetUrl(NowPublicationContext context, String assetId, String mimeType) async {
+    final bytes = await readBytesThroughEdge(_client, 'now-media', {
+      'action': 'read-draft',
+      'institution_id': context.institutionId,
+      'asset_id': assetId,
+    }, failure: 'now_media_read_failed');
+    return mediaObjectUrl(bytes, sniffMediaMimeType(bytes, fallback: mimeType));
   }
 
   @override
@@ -173,10 +174,12 @@ final class SupabaseNowPublicationRepository implements NowPublicationRepository
     double? durationSeconds,
   }) async {
     final requestId = _uuid();
-    final prepareResponse = await _client.functions.invoke(
+    // Upload binário pela Edge (ADR 0032): ela prepara, grava (R2 ou bucket
+    // legado, decisão do servidor) e finaliza; o navegador nunca fala com o R2.
+    return uploadBytesThroughEdge(
+      _client,
       'now-media',
-      body: {
-        'action': 'prepare',
+      envelope: {
         'request_id': requestId,
         'publication_id': publicationId,
         'institution_id': context.institutionId,
@@ -189,65 +192,9 @@ final class SupabaseNowPublicationRepository implements NowPublicationRepository
         'duration_seconds': durationSeconds,
         'rights_confirmed': rightsConfirmed,
       },
+      bytes: Uint8List.fromList(bytes),
+      failure: 'now_media_upload_failed',
     );
-    if (prepareResponse.status < 200 || prepareResponse.status >= 300) {
-      throw Exception('now_media_prepare_failed');
-    }
-    final prepared = Map<String, dynamic>.from(prepareResponse.data as Map);
-    final assetId = prepared['asset_id'] as String;
-    // O destino e do SERVIDOR (ADR 0032): no R2 chega uma janela PUT curta com
-    // os cabecalhos exigidos e nem bucket nem chave; sem provedor anunciado, o
-    // caminho legado continua valendo exatamente como antes.
-    if (prepared['storage_provider'] == 'r2') {
-      final uploadUrl = prepared['upload_url'] as String?;
-      if (uploadUrl == null) throw Exception('now_media_prepare_failed');
-      final headers = {
-        for (final entry in (prepared['required_headers'] as Map? ?? const {}).entries)
-          entry.key.toString().toLowerCase(): entry.value.toString(),
-      };
-      if (headers['content-type'] != mimeType) throw Exception('now_media_upload_invalid_headers');
-      final request = http.Request('PUT', Uri.parse(uploadUrl))
-        ..followRedirects = false
-        ..headers.addAll(headers)
-        ..bodyBytes = Uint8List.fromList(bytes);
-      final sent = await http.Response.fromStream(await _httpClient.send(request));
-      if (sent.statusCode < 200 || sent.statusCode >= 300) {
-        throw Exception('now_media_upload_failed');
-      }
-    } else {
-      final objectKey = prepared['object_key'] as String;
-      final uploadToken = prepared['upload_token'] as String;
-      await _client.storage
-          .from('coelo-now-mvp')
-          .uploadBinaryToSignedUrl(
-            objectKey,
-            uploadToken,
-            Uint8List.fromList(bytes),
-            FileOptions(contentType: mimeType, upsert: true),
-          );
-    }
-    final finalizeResponse = await _client.functions.invoke(
-      'now-media',
-      body: {
-        'action': 'finalize',
-        'request_id': requestId,
-        'asset_id': assetId,
-        'publication_id': publicationId,
-        'institution_id': context.institutionId,
-        'unit_id': context.unitId,
-        'group_id': context.groupId,
-        'kind': kind,
-        'name': name,
-        'mime_type': mimeType,
-        'size_bytes': bytes.length,
-        'duration_seconds': durationSeconds,
-        'rights_confirmed': rightsConfirmed,
-      },
-    );
-    if (finalizeResponse.status < 200 || finalizeResponse.status >= 300) {
-      throw Exception('now_media_upload_failed');
-    }
-    return Map<String, dynamic>.from(finalizeResponse.data as Map);
   }
 
   @override

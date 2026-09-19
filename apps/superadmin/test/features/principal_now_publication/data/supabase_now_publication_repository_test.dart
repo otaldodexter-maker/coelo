@@ -3,91 +3,63 @@ import 'dart:typed_data';
 
 import 'package:coelo_superadmin/features/principal_now_publication/data/supabase_now_publication_repository.dart';
 import 'package:coelo_superadmin/features/principal_now_publication/domain/now_publication.dart';
+import 'package:coelo_superadmin/shared/data/edge_media_bytes.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+// Bytes pela Edge (ADR 0032): o navegador nunca faz PUT ao R2 nem ao Supabase
+// Storage; a Edge decide o provedor. Upload = POST binário com o envelope no
+// cabeçalho `x-coelo-media-envelope`; leitura do rascunho = bytes inline.
 void main() {
-  for (final scenario in ['redirect', 'wrong-mime']) {
-    test('R2 upload refuses $scenario without finalize', () async {
-      final actions = <String>[];
-      var puts = 0;
-      final client = SupabaseClient(
-        'https://coelo.test',
-        'publishable-key',
-        httpClient: MockClient((request) async {
-          final body = jsonDecode(request.body) as Map<String, dynamic>;
-          actions.add(body['action'] as String);
-          return http.Response(
-            jsonEncode({
-              'asset_id': 'asset-1',
-              'storage_provider': 'r2',
-              'upload_url': 'https://private.test/signed',
-              'required_headers': {
-                'content-type': scenario == 'wrong-mime' ? 'image/jpeg' : 'image/png',
-              },
-            }),
-            200,
-            headers: {'content-type': 'application/json'},
-          );
-        }),
-      );
-      addTearDown(client.dispose);
-      final repository = SupabaseNowPublicationRepository(
-        client,
-        httpClient: MockClient((request) async {
-          puts++;
-          expect(request.followRedirects, isFalse);
-          expect(request.headers, {'content-type': 'image/png'});
-          return http.Response('', 307, headers: {'location': 'https://other.invalid/file'});
-        }),
-      );
-      await expectLater(
-        repository.uploadMedia(
-          NowPublicationContext.demo,
-          'publication-1',
-          NowMediaDraft.image(
-            localId: 'local-1',
-            name: 'image.png',
-            mimeType: 'image/png',
-            bytes: Uint8List(8),
-          ),
-        ),
-        throwsException,
-      );
-      expect(actions, ['prepare']);
-      expect(puts, scenario == 'wrong-mime' ? 0 : 1);
-    });
-  }
-
-  test('envia mídia por upload assinado sem base64 na Edge Function', () async {
-    final functionBodies = <Map<String, dynamic>>[];
-    http.Request? storageRequest;
+  test('upload recusado pela Edge não finaliza', () async {
+    final calls = <String>[];
     final client = SupabaseClient(
       'https://coelo.test',
       'publishable-key',
       httpClient: MockClient((request) async {
-        if (request.url.path.contains('/functions/v1/now-media')) {
-          final body = jsonDecode(request.body) as Map<String, dynamic>;
-          functionBodies.add(body);
-          final response = body['action'] == 'prepare'
-              ? {
-                  'asset_id': 'asset-1',
-                  'object_key': 'institution/publication/media',
-                  'upload_token': 'short-lived-token',
-                }
-              : {'asset_id': 'asset-1', 'object_key': 'institution/publication/media'};
-          return http.Response(
-            jsonEncode(response),
-            200,
-            headers: {'content-type': 'application/json'},
-            request: request,
-          );
-        }
-        storageRequest = request;
+        calls.add(request.url.path);
         return http.Response(
-          jsonEncode({'Key': 'institution/publication/media'}),
+          jsonEncode({'error': 'invalid_asset_signature'}),
+          422,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+    await expectLater(
+      SupabaseNowPublicationRepository(client).uploadMedia(
+        NowPublicationContext.demo,
+        'publication-1',
+        NowMediaDraft.image(
+          localId: 'local-1',
+          name: 'foto.png',
+          mimeType: 'image/png',
+          bytes: Uint8List(8),
+        ),
+      ),
+      throwsA(isA<EdgeMediaException>()),
+    );
+    expect(calls, hasLength(1));
+    expect(calls.single, contains('/functions/v1/now-media'));
+  });
+
+  test('envia os bytes pela Edge num único POST binário, sem base64 e sem Storage', () async {
+    final uploads = <http.Request>[];
+    final client = SupabaseClient(
+      'https://coelo.test',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        expect(
+          request.url.path,
+          contains('/functions/v1/now-media'),
+          reason: 'nada vai ao Storage nem ao R2',
+        );
+        uploads.add(request);
+        return http.Response(
+          jsonEncode({'asset_id': 'asset-1', 'status': 'ready'}),
           200,
           headers: {'content-type': 'application/json'},
           request: request,
@@ -108,80 +80,23 @@ void main() {
       ),
     );
 
-    expect(functionBodies.map((body) => body['action']), ['prepare', 'finalize']);
-    expect(functionBodies.first, isNot(contains('content_base64')));
-    expect(functionBodies.last, isNot(contains('content_base64')));
-    expect(storageRequest?.url.path, contains('/object/upload/sign/coelo-now-mvp/'));
-    expect(storageRequest?.url.queryParameters['token'], 'short-lived-token');
-    expect(storageRequest, isNotNull);
-    expect(storageRequest?.headers['content-type'], startsWith('multipart/form-data;'));
+    final upload = uploads.single;
+    expect(upload.method, 'POST');
+    expect(upload.headers['content-type'], startsWith('application/octet-stream'));
+    expect(upload.bodyBytes, [1, 2, 3]);
+    final envelope = _envelope(upload);
+    expect(envelope['publication_id'], 'publication-1');
+    expect(envelope['institution_id'], NowPublicationContext.demo.institutionId);
+    expect(envelope['kind'], 'media');
+    expect(envelope['mime_type'], 'image/png');
+    expect(envelope['size_bytes'], 3);
+    expect(envelope.containsKey('content_base64'), isFalse);
     expect(uploaded.remoteAssetId, 'asset-1');
   });
 
-  test('no R2 envia os bytes por PUT assinado e nunca toca o Supabase Storage', () async {
-    final functionBodies = <Map<String, dynamic>>[];
-    http.Request? storageRequest;
-    http.Request? putRequest;
-    final client = SupabaseClient(
-      'https://coelo.test',
-      'publishable-key',
-      httpClient: MockClient((request) async {
-        if (request.url.path.contains('/functions/v1/now-media')) {
-          final body = jsonDecode(request.body) as Map<String, dynamic>;
-          functionBodies.add(body);
-          final response = body['action'] == 'prepare'
-              ? {
-                  'asset_id': 'asset-1',
-                  'storage_provider': 'r2',
-                  'upload_url': 'https://r2.test/put?X-Amz-Signature=abc',
-                  'required_headers': {'content-type': 'image/png', 'content-length': '3'},
-                  'expires_at': '2099-01-01T00:00:00Z',
-                }
-              : {'asset_id': 'asset-1', 'storage_provider': 'r2', 'object_key': 'opaque'};
-          return http.Response(
-            jsonEncode(response),
-            200,
-            headers: {'content-type': 'application/json'},
-            request: request,
-          );
-        }
-        storageRequest = request;
-        return http.Response('{}', 500, request: request);
-      }),
-    );
-    addTearDown(client.dispose);
-    final repository = SupabaseNowPublicationRepository(
-      client,
-      httpClient: MockClient((request) async {
-        putRequest = request;
-        return http.Response('', 200, request: request);
-      }),
-    );
-
-    final uploaded = await repository.uploadMedia(
-      NowPublicationContext.demo,
-      'publication-1',
-      NowMediaDraft.image(
-        localId: 'local-1',
-        name: 'foto.png',
-        mimeType: 'image/png',
-        bytes: Uint8List.fromList([1, 2, 3]),
-      ),
-    );
-
-    expect(functionBodies.map((body) => body['action']), ['prepare', 'finalize']);
-    expect(storageRequest, isNull, reason: 'o ramo R2 nunca chama o Supabase Storage');
-    expect(putRequest?.method, 'PUT');
-    expect(putRequest?.followRedirects, isFalse);
-    expect(putRequest?.url.host, 'r2.test');
-    expect(putRequest?.headers['content-type'], 'image/png');
-    expect(putRequest?.headers['content-length'], '3');
-    expect(putRequest?.bodyBytes, [1, 2, 3]);
-    expect(uploaded.remoteAssetId, 'asset-1');
-  });
-
-  test('restaura mídia do rascunho com URL assinada exclusiva do autor', () async {
+  test('restaura mídia do rascunho com bytes lidos pela Edge (sem URL assinada)', () async {
     final requests = <Map<String, dynamic>>[];
+    final png = Uint8List.fromList([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 0]);
     final client = SupabaseClient(
       'https://coelo.test',
       'publishable-key',
@@ -211,12 +126,11 @@ void main() {
             request: request,
           );
         }
-        final body = jsonDecode(request.body) as Map<String, dynamic>;
-        requests.add(body);
-        return http.Response(
-          jsonEncode({'signed_url': 'https://signed.test/draft?token=short-lived'}),
+        requests.add(jsonDecode(request.body) as Map<String, dynamic>);
+        return http.Response.bytes(
+          png,
           200,
-          headers: {'content-type': 'application/json'},
+          headers: {'content-type': 'application/octet-stream'},
           request: request,
         );
       }),
@@ -231,13 +145,20 @@ void main() {
       'action': 'read-draft',
       'institution_id': NowPublicationContext.demo.institutionId,
       'asset_id': 'asset-1',
+      'inline': true,
     });
     expect(draft?.media?.remoteAssetId, 'asset-1');
-    expect(draft?.media?.remoteUrl, 'https://signed.test/draft?token=short-lived');
+    expect(draft?.media?.remoteUrl, startsWith('data:image/png;base64,'));
     expect(draft?.media?.bytes, isEmpty);
     expect(draft?.media?.cropScale, 1.45);
     expect(draft?.media?.cropX, -0.3);
     expect(draft?.media?.cropY, 0.25);
     expect(draft?.media?.coverPosition, 0.7);
   });
+}
+
+Map<String, dynamic> _envelope(http.Request request) {
+  final raw = request.headers[edgeMediaEnvelopeHeader]!;
+  final padded = raw + '=' * ((4 - raw.length % 4) % 4);
+  return jsonDecode(utf8.decode(base64Url.decode(padded))) as Map<String, dynamic>;
 }

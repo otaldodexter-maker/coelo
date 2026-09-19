@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:coelo_superadmin/features/principal_now/data/supabase_principal_now_feed_repository.dart';
 import 'package:coelo_superadmin/features/principal_now/domain/principal_now_feed_repository.dart';
@@ -70,7 +71,7 @@ void main() {
     });
   });
 
-  test('resgata ticket público pela Edge e rejeita URL não HTTPS', () async {
+  test('resgata ticket público pela Edge (bytes inline) e rejeita conteúdo de outro tipo', () async {
     final requests = <Map<String, dynamic>>[];
     var secure = true;
     final client = SupabaseClient(
@@ -78,16 +79,11 @@ void main() {
       'publishable-key',
       httpClient: MockClient((request) async {
         requests.add(jsonDecode(request.body) as Map<String, dynamic>);
-        return http.Response(
-          jsonEncode({
-            'signed_url': secure
-                ? 'https://signed.test/object?token=short-lived'
-                : 'http://signed.test/object',
-            'mime_type': 'image/webp',
-            'expires_in': 60,
-          }),
+        // Bytes pela Edge: um webp minimo; com `secure` falso chegam bytes de outro tipo (MIME diverge).
+        return http.Response.bytes(
+          secure ? Uint8List.fromList([82, 73, 70, 70, 0, 0, 0, 0, 87, 69, 66, 80, 86, 80, 56, 32]) : Uint8List.fromList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
           200,
-          headers: {'content-type': 'application/json'},
+          headers: {'content-type': 'application/octet-stream'},
           request: request,
         );
       }),
@@ -101,10 +97,10 @@ void main() {
     );
 
     final read = await repository.resolveMedia(scope: scope, publicationId: 'active', media: media);
-    expect(read.signedUrl, startsWith('https://'));
-    expect(read.expiresIn, const Duration(seconds: 60));
+    expect(read.signedUrl, startsWith('data:image/webp;base64,'), reason: 'URL local a partir dos bytes');
+    expect(read.mimeType, 'image/webp');
     expect(read.kind, PrincipalNowMediaKind.media);
-    expect(requests.single, {'action': 'read', 'read_ticket': 'ticket-active'});
+    expect(requests.single, {'action': 'read', 'read_ticket': 'ticket-active', 'inline': true});
 
     secure = false;
     await expectLater(
@@ -194,14 +190,10 @@ void main() {
         }
         final body = jsonDecode(request.body) as Map<String, dynamic>;
         edgeTickets.add(body['read_ticket'] as String);
-        return http.Response(
-          jsonEncode({
-            'signed_url': 'https://signed.test/renewed',
-            'mime_type': 'image/webp',
-            'expires_in': 60,
-          }),
+        return http.Response.bytes(
+          Uint8List.fromList([82, 73, 70, 70, 0, 0, 0, 0, 87, 69, 66, 80, 86, 80, 56, 32]),
           200,
-          headers: {'content-type': 'application/json'},
+          headers: {'content-type': 'application/octet-stream'},
           request: request,
         );
       }),
@@ -217,7 +209,7 @@ void main() {
       media: item.media,
     );
 
-    expect(read.signedUrl, 'https://signed.test/renewed');
+    expect(read.signedUrl, startsWith('data:image/webp;base64,'));
     expect(rpcCalls, 2);
     expect(edgeTickets, ['ticket-active-renewed']);
   });
@@ -249,14 +241,10 @@ void main() {
         final ticket = body['read_ticket'] as String;
         edgeTickets.add(ticket);
         if (ticket.endsWith('old')) throw http.ClientException('response lost', request.url);
-        return http.Response(
-          jsonEncode({
-            'signed_url': 'https://signed.test/recovered',
-            'mime_type': 'image/webp',
-            'expires_in': 60,
-          }),
+        return http.Response.bytes(
+          Uint8List.fromList([82, 73, 70, 70, 0, 0, 0, 0, 87, 69, 66, 80, 86, 80, 56, 32]),
           200,
-          headers: {'content-type': 'application/json'},
+          headers: {'content-type': 'application/octet-stream'},
           request: request,
         );
       }),
@@ -271,7 +259,7 @@ void main() {
       media: item.media,
     );
 
-    expect(read.signedUrl, 'https://signed.test/recovered');
+    expect(read.signedUrl, startsWith('data:image/webp;base64,'));
     expect(read.kind, PrincipalNowMediaKind.media);
     expect(rpcCalls, 2);
     expect(edgeTickets, ['ticket-active-old', 'ticket-active-renewed']);
@@ -311,14 +299,10 @@ void main() {
             request: request,
           );
         }
-        return http.Response(
-          jsonEncode({
-            'signed_url': 'https://signed.test/recovered-consumed',
-            'mime_type': 'image/webp',
-            'expires_in': 60,
-          }),
+        return http.Response.bytes(
+          Uint8List.fromList([82, 73, 70, 70, 0, 0, 0, 0, 87, 69, 66, 80, 86, 80, 56, 32]),
           200,
-          headers: {'content-type': 'application/json'},
+          headers: {'content-type': 'application/octet-stream'},
           request: request,
         );
       }),
@@ -333,7 +317,7 @@ void main() {
       media: item.media,
     );
 
-    expect(read.signedUrl, 'https://signed.test/recovered-consumed');
+    expect(read.signedUrl, startsWith('data:image/webp;base64,'));
     expect(rpcCalls, 2);
     expect(edgeTickets, ['ticket-active-consumed', 'ticket-active-renewed']);
   });

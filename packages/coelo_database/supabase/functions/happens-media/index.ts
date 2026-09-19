@@ -194,6 +194,30 @@ export async function handleHappensMediaRequest(
       auth: { persistSession: false },
     });
 
+    if (body.action === "read-draft") {
+      // Autor relê a mídia pronta do próprio rascunho (regra em authorize_happens_draft_media_read).
+      if (typeof body.institution_id !== "string" || typeof body.asset_id !== "string") {
+        return respond(origin, 400, { error: "invalid_request" });
+      }
+      const authorized = await user.rpc("authorize_happens_draft_media_read", {
+        p_institution_id: body.institution_id,
+        p_asset_id: body.asset_id,
+      });
+      if (authorized.error) return respond(origin, 403, { error: "media_read_denied" });
+      const descriptor = authorized.data as Json;
+      let bytes: Uint8Array;
+      if (usesR2(descriptor)) {
+        bytes = await transportFor(dependencies, descriptorBucket(descriptor))
+          .get(String(descriptor.object_key), maxBytes(dependencies)).catch(opaqueTransport);
+      } else {
+        const stored = await admin.storage.from(String(descriptor.bucket_id))
+          .download(String(descriptor.object_key));
+        if (stored.error) throw new Error("media_read_denied");
+        bytes = new Uint8Array(await stored.data.arrayBuffer());
+      }
+      return bytesResponse(corsHeaders(dependencies, origin), bytes, String(descriptor.mime_type));
+    }
+
     if (body.action === "read") {
       if (typeof body.read_ticket !== "string") {
         return respond(origin, 400, { error: "invalid_request" });

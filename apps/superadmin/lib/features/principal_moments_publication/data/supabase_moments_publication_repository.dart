@@ -5,17 +5,19 @@ import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/moments_publication.dart';
+import '../../../shared/data/edge_media_bytes.dart';
 
 final class SupabaseMomentsPublicationRepository implements MomentsPublicationRepository {
+  /// [httpClient] fica só por compatibilidade: os bytes vão pela Edge
+  /// (`uploadBytesThroughEdge`), sem PUT direto ao R2.
   SupabaseMomentsPublicationRepository(
     this._client, {
+    // ignore: avoid_unused_constructor_parameters
     http.Client? httpClient,
     String Function()? requestIdFactory,
-  }) : _httpClient = httpClient ?? http.Client(),
-       _requestIdFactory = requestIdFactory ?? _uuid;
+  }) : _requestIdFactory = requestIdFactory ?? _uuid;
 
   final SupabaseClient _client;
-  final http.Client _httpClient;
   final String Function() _requestIdFactory;
   final Map<String, String> _requestIds = {};
   final Set<String> _uploadedMedia = {};
@@ -37,20 +39,20 @@ final class SupabaseMomentsPublicationRepository implements MomentsPublicationRe
       for (final raw in json['media'] as List? ?? const []) {
         final item = Map<String, dynamic>.from(raw as Map);
         final assetId = item['asset_id'] as String;
-        final response = await _client.functions.invoke(
-          'moments-media',
-          body: {'action': 'read', 'asset_id': assetId},
-        );
-        _requireSuccess(response, 'moments_media_read_failed');
-        final signed = Map<String, dynamic>.from(response.data as Map);
+        // Bytes pela Edge (sem URL assinada no navegador); URL local para a prévia.
+        final bytes = await readBytesThroughEdge(_client, 'moments-media', {
+          'action': 'read',
+          'asset_id': assetId,
+        }, failure: 'moments_media_read_failed');
+        final mimeType = item['mime_type'] as String;
         media.add(
           MomentsMediaDraft(
             localId: assetId,
             name: item['name'] as String,
-            mimeType: item['mime_type'] as String,
+            mimeType: mimeType,
             durationMilliseconds: (item['duration_milliseconds'] as num?)?.toInt(),
             remoteAssetId: assetId,
-            remoteUrl: signed['signed_url'] as String,
+            remoteUrl: mediaObjectUrl(bytes, mimeType),
           ),
         );
       }
@@ -163,36 +165,15 @@ final class SupabaseMomentsPublicationRepository implements MomentsPublicationRe
       'duration_milliseconds': media.durationMilliseconds,
       'display_order': displayOrder,
     };
-    final preparedResponse = await _client.functions.invoke(
+    // Upload binário pela Edge: ela prepara, grava no R2 e finaliza; o
+    // navegador nunca fala com o R2 (CORS do bucket fora da conta).
+    await uploadBytesThroughEdge(
+      _client,
       'moments-media',
-      body: {'action': 'prepare', ...envelope},
+      envelope: {...envelope, 'finalize_request_id': finalizeRequestId},
+      bytes: media.bytes,
+      failure: 'moments_media_upload_failed',
     );
-    _requireSuccess(preparedResponse, 'moments_media_prepare_failed');
-    final prepared = Map<String, dynamic>.from(preparedResponse.data as Map);
-    final requiredHeaders = (prepared['required_headers'] as Map? ?? const {}).map(
-      (key, value) => MapEntry(key.toString().toLowerCase(), value.toString()),
-    );
-    if (requiredHeaders['content-type'] != media.mimeType) {
-      throw Exception('moments_media_upload_invalid_headers');
-    }
-    final request = http.Request('PUT', Uri.parse(prepared['upload_url'] as String))
-      ..followRedirects = false
-      ..headers.addAll(requiredHeaders)
-      ..bodyBytes = media.bytes;
-    final uploadResponse = await http.Response.fromStream(await _httpClient.send(request));
-    if (uploadResponse.statusCode < 200 || uploadResponse.statusCode >= 300) {
-      throw http.ClientException('moments_media_put_failed', uploadResponse.request?.url);
-    }
-    final finalizedResponse = await _client.functions.invoke(
-      'moments-media',
-      body: {
-        'action': 'finalize',
-        ...envelope,
-        'asset_id': prepared['asset_id'],
-        'finalize_request_id': finalizeRequestId,
-      },
-    );
-    _requireSuccess(finalizedResponse, 'moments_media_finalize_failed');
     _requestIds
       ..remove(operationKey)
       ..remove(finalizeKey);
@@ -200,9 +181,6 @@ final class SupabaseMomentsPublicationRepository implements MomentsPublicationRe
   }
 }
 
-void _requireSuccess(FunctionResponse response, String code) {
-  if (response.status < 200 || response.status >= 300) throw Exception(code);
-}
 
 String _draftFingerprint(MomentsDraft draft) {
   final audiences = draft.audiences.map(_audienceWire).toList()..sort();

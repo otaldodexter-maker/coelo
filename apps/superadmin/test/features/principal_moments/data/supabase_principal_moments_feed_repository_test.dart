@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:coelo_superadmin/features/principal_moments/data/supabase_principal_moments_feed_repository.dart';
 import 'package:coelo_superadmin/features/principal_moments/domain/principal_moments_feed_repository.dart';
@@ -21,11 +22,13 @@ void main() {
       final body = jsonDecode(request.body) as Map<String, dynamic>;
       if (request.url.path.contains('/functions/v1/moments-media')) {
         edgeBodies.add(body);
-        return _json({
-          'signed_url': 'https://signed.example/${body['asset_id']}',
-          'mime_type': 'video/mp4',
-          'expires_in': 120,
-        }, request);
+        // Bytes pela Edge: um mp4 mínimo (assinatura `ftyp`), sem URL assinada.
+        return http.Response.bytes(
+          Uint8List.fromList([0, 0, 0, 24, 102, 116, 121, 112, 105, 115, 111, 109, 0, 0, 0, 0]),
+          200,
+          headers: {'content-type': 'application/octet-stream'},
+          request: request,
+        );
       }
       rpcBodies[request.url.pathSegments.last] = body;
       return _json([
@@ -65,12 +68,12 @@ void main() {
     expect(moment.caption, 'Registro autorizado.');
     expect(moment.resolvedInitials, 'EC');
     expect(moment.media.map((item) => item.displayOrder), [0, 1]);
-    expect(moment.media.map((item) => item.signedUrl), [
-      'https://signed.example/asset-1',
-      'https://signed.example/asset-2',
-    ]);
+    // Bytes pela Edge viram URL local (blob: no navegador, data: aqui); o MIME
+    // sai da assinatura real dos bytes.
+    expect(moment.media.map((item) => item.signedUrl), everyElement(startsWith('data:video/mp4;base64,')));
+    expect(moment.media.map((item) => item.mimeType), everyElement('video/mp4'));
     // O identificador opaco do módulo é o único dado enviado à Edge Function.
-    expect(edgeBodies.map((body) => body.keys.toSet()), everyElement({'action', 'asset_id'}));
+    expect(edgeBodies.map((body) => body.keys.toSet()), everyElement({'action', 'asset_id', 'inline'}));
     final projected = [
       moment.author,
       moment.context,

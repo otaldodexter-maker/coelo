@@ -4,77 +4,70 @@ import 'dart:typed_data';
 import 'package:coelo_superadmin/features/principal_happens_publication/application/happens_publication_controller.dart';
 import 'package:coelo_superadmin/features/principal_happens_publication/data/supabase_happens_publication_repository.dart';
 import 'package:coelo_superadmin/features/principal_happens_publication/domain/happens_publication.dart';
+import 'package:coelo_superadmin/shared/data/edge_media_bytes.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
-  for (final scenario in ['ready', 'redirect', 'wrong-mime']) {
-    test('R2 signed upload $scenario preserves intent and refuses unsafe transfer', () async {
-      final actions = <String>[];
-      var puts = 0;
+  // Bytes pela Edge (ADR 0032): o navegador nunca faz PUT ao R2; a Edge
+  // prepara, grava e finaliza num único POST binário com envelope no cabeçalho.
+  for (final scenario in ['ready', 'refused']) {
+    test('upload pela Edge $scenario: um POST binário com o envelope, sem PUT assinado', () async {
+      final uploads = <http.Request>[];
       final client = SupabaseClient(
         'https://coelo.test',
         'publishable-key',
         httpClient: MockClient((request) async {
-          final body = jsonDecode(request.body) as Map<String, dynamic>;
-          actions.add(body['action'] as String);
-          expect(body['asset_id'], 'asset-1');
-          expect(body['post_id'], 'post-1');
-          expect(body['institution_id'], 'institution-1');
-          expect(body['request_id'], 'request-1');
+          uploads.add(request);
+          expect(request.url.path, contains('/functions/v1/happens-media'));
+          if (scenario == 'refused') {
+            return http.Response(
+              jsonEncode({'error': 'invalid_media_signature'}),
+              422,
+              headers: {'content-type': 'application/json'},
+              request: request,
+            );
+          }
           return http.Response(
             jsonEncode({'asset_id': 'asset-1', 'object_key': 'opaque'}),
             200,
             headers: {'content-type': 'application/json'},
+            request: request,
           );
         }),
       );
       addTearDown(client.dispose);
-      final repository = SupabaseHappensPublicationRepository(
-        client,
-        httpClient: MockClient((request) async {
-          puts++;
-          expect(request.followRedirects, isFalse);
-          expect(request.headers, {'content-type': 'image/png', 'x-amz-meta-purpose': 'test'});
-          return http.Response(
-            '',
-            scenario == 'redirect' ? 307 : 200,
-            headers: {'location': 'https://other.invalid/file'},
-          );
-        }),
+      final repository = SupabaseHappensPublicationRepository(client);
+      final intent = await repository.prepareMedia(
+        const HappensPublicationContext(institutionId: 'institution-1', institutionName: 'Instituição 1'),
+        'post-1',
+        HappensMediaDraft(localId: 'request-1', name: 'image.png', mimeType: 'image/png', bytes: Uint8List(8)),
+        0,
       );
+      expect(uploads, isEmpty, reason: 'preparar não fala com a Edge: a janela assinada não existe mais');
       final result = repository.finalizeMedia(
-        HappensUploadIntent(
-          assetId: 'asset-1',
-          institutionId: 'institution-1',
-          postId: 'post-1',
-          requestId: 'request-1',
-          displayOrder: 0,
-          storageProvider: 'r2',
-          uploadUrl: Uri.parse('https://private.test/signed'),
-          requiredHeaders: {
-            'content-type': scenario == 'wrong-mime' ? 'image/jpeg' : 'image/png',
-            'x-amz-meta-purpose': 'test',
-          },
-          expiresAt: DateTime.now().add(const Duration(minutes: 5)),
-        ),
-        HappensMediaDraft(
-          localId: 'local-1',
-          name: 'image.png',
-          mimeType: 'image/png',
-          bytes: Uint8List(8),
-        ),
+        intent,
+        HappensMediaDraft(localId: 'request-1', name: 'image.png', mimeType: 'image/png', bytes: Uint8List(8)),
       );
       if (scenario == 'ready') {
         expect((await result).assetId, 'asset-1');
-        expect(actions, ['finalize']);
       } else {
-        await expectLater(result, throwsException);
-        expect(actions, isEmpty);
+        await expectLater(result, throwsA(isA<EdgeMediaException>()));
       }
-      expect(puts, scenario == 'wrong-mime' ? 0 : 1);
+      final upload = uploads.single;
+      expect(upload.method, 'POST');
+      expect(upload.headers['content-type'], startsWith('application/octet-stream'));
+      expect(upload.bodyBytes, hasLength(8));
+      final raw = upload.headers[edgeMediaEnvelopeHeader]!;
+      final envelope = jsonDecode(utf8.decode(base64Url.decode(raw + '=' * ((4 - raw.length % 4) % 4)))) as Map;
+      expect(envelope['post_id'], 'post-1');
+      expect(envelope['institution_id'], 'institution-1');
+      expect(envelope['request_id'], 'request-1');
+      expect(envelope['mime_type'], 'image/png');
+      expect(envelope['size_bytes'], 8);
+      expect(envelope['display_order'], 0);
     });
   }
 

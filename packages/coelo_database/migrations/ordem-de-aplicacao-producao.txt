@@ -470,6 +470,9 @@
 # rascunho "Cópia de …" em qualquer status, sem datas/recibos, auditoria notice.duplicate com after_json.id = origem).
 # pgTAP notices_duplicate_cta_target_v1_test 34/34 no espelho mirror-acesso; ledger 20260919230000 reparado.
 20260919230000_notices_duplicate_cta_target_v1.sql
+# Lote 92 (MÍDIA-E2E 19/09): authorize_happens_draft_media_read(institution, asset) — o autor relê a mídia pronta do
+# próprio rascunho do Acontece (Edge happens-media `read-draft`, bytes inline). pgTAP media_happens_draft_read_v1_test 7/7 no espelho.
+20260919213000_media_happens_draft_read_v1.sql
 # Lote 93 (Sessão ETAPA-3, 19/09/2026): Perfis de cuidado spec 065. public.health_care_catalog_items (food 57 / restriction 31 /
 # guidance 26, RLS deny, leitura só por superadmin_health_care_catalog_v1 com busca ≥ 2 caracteres); health_care_allergies ganha
 # catalog_item_id, other_text (obrigatório com 'other'), position e what_to_do; health_care_profile_items ganha position e

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/principal_now_feed_repository.dart';
+import '../../../shared/data/edge_media_bytes.dart';
 
 typedef PrincipalNowClock = DateTime Function();
 
@@ -161,36 +162,31 @@ final class SupabasePrincipalNowFeedRepository
 
   Future<PrincipalNowMediaRead> _redeem(PrincipalNowMediaDescriptor media) async {
     try {
-      final response = await _client.functions.invoke(
-        'now-media',
-        body: {'action': 'read', 'read_ticket': media.readTicket},
+      // Bytes pela Edge (bilhete de leitura resgatado no servidor); URL local
+      // `blob:` para a tela, sem URL assinada no navegador.
+      final bytes = await readBytesThroughEdge(_client, 'now-media', {
+        'action': 'read',
+        'read_ticket': media.readTicket,
+      });
+      // A assinatura real dos bytes tem de bater com o MIME anunciado no feed;
+      // áudio em contêiner mp4 compartilha o `ftyp` do vídeo, por isso o fallback.
+      final mimeType = sniffMediaMimeType(
+        bytes,
+        fallback: media.mimeType.startsWith('audio/') ? media.mimeType : 'application/octet-stream',
       );
-      if (response.status == 401) {
-        throw const PrincipalNowFeedUnauthorized();
-      }
-      if (response.status == 403) throw const _PrincipalNowTicketRejected();
-      if (response.status < 200 || response.status >= 300 || response.data is! Map) {
-        throw const PrincipalNowFeedUnavailable();
-      }
-      final json = Map<String, dynamic>.from(response.data as Map);
-      final signedUrl = Uri.tryParse(json['signed_url']?.toString() ?? '');
-      final mimeType = _requiredText(json, 'mime_type');
-      final expiresIn = json['expires_in'] as num?;
-      if (signedUrl == null ||
-          signedUrl.scheme != 'https' ||
-          signedUrl.host.isEmpty ||
-          signedUrl.userInfo.isNotEmpty ||
-          expiresIn == null ||
-          expiresIn <= 0 ||
-          mimeType != media.mimeType) {
-        throw const PrincipalNowFeedUnavailable();
-      }
+      if (mimeType != media.mimeType) throw const PrincipalNowFeedUnavailable();
       return PrincipalNowMediaRead(
-        signedUrl: signedUrl.toString(),
+        signedUrl: mediaObjectUrl(bytes, mimeType),
         mimeType: mimeType,
         kind: media.kind,
-        expiresIn: Duration(seconds: expiresIn.toInt()),
+        expiresIn: const Duration(days: 1),
       );
+    } on EdgeMediaException catch (error) {
+      if (error.status == 401) {
+        throw const PrincipalNowFeedUnauthorized();
+      }
+      if (error.status == 403) throw const _PrincipalNowTicketRejected();
+      throw const PrincipalNowFeedUnavailable();
     } on FunctionException catch (error) {
       if (error.status == 401) {
         throw const PrincipalNowFeedUnauthorized();
