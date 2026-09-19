@@ -11,32 +11,28 @@ import '../superadmin_screen_tour.dart';
 const principalNowViewerTourStep = CoeloTourStep(
   anchorId: 'now.viewer',
   title: 'O Agora',
-  text:
-      'Conteúdo institucional privado e temporário: fica 24 horas.',
+  text: 'Conteúdo institucional privado e temporário: fica 24 horas.',
 );
 
 /// Passo 2 — now.navigation.
 const principalNowNavigationTourStep = CoeloTourStep(
   anchorId: 'now.navigation',
   title: 'Anterior e próximo',
-  text:
-      'Passe de um Agora para outro.',
+  text: 'Passe de um Agora para outro.',
 );
 
 /// Passo 3 — now.options.
 const principalNowOptionsTourStep = CoeloTourStep(
   anchorId: 'now.options',
   title: 'Opções',
-  text:
-      'Audiência, compartilhar, publicar novo ou remover este Agora.',
+  text: 'Audiência, compartilhar, publicar novo ou remover este Agora.',
 );
 
 /// Passo 4 — now.reply.
 const principalNowReplyTourStep = CoeloTourStep(
   anchorId: 'now.reply',
   title: 'Resposta privada',
-  text:
-      'A família responde em particular à instituição.',
+  text: 'A família responde em particular à instituição.',
 );
 
 const principalNowScreenTour = SuperadminScreenTour(

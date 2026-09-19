@@ -11,72 +11,63 @@ import '../superadmin_screen_tour.dart';
 const unitsHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Unidades',
-  text:
-      'Cada escola, sede ou filial. Turmas, equipe e famílias pertencem sempre a uma unidade.',
+  text: 'Cada escola, sede ou filial. Turmas, equipe e famílias pertencem sempre a uma unidade.',
 );
 
 /// Passo 2 — directory.search.
 const unitsSearchTourStep = CoeloTourStep(
   anchorId: 'directory.search',
   title: 'Buscar por nome',
-  text:
-      'Encontre uma unidade pelo nome.',
+  text: 'Encontre uma unidade pelo nome.',
 );
 
 /// Passo 3 — directory.filters.
 const unitsFiltersTourStep = CoeloTourStep(
   anchorId: 'directory.filters',
   title: 'Filtros',
-  text:
-      'Filtre por instituição e situação. "Limpar filtros" desfaz tudo.',
+  text: 'Filtre por instituição e situação. "Limpar filtros" desfaz tudo.',
 );
 
 /// Passo 4 — directory.view.
 const unitsViewTourStep = CoeloTourStep(
   anchorId: 'directory.view',
   title: 'Cards ou tabela',
-  text:
-      'Na tabela você pode ver Agrupado, Por turmas ou Por atividades.',
+  text: 'Na tabela você pode ver Agrupado, Por turmas ou Por atividades.',
 );
 
 /// Passo 5 — directory.files.
 const unitsFilesTourStep = CoeloTourStep(
   anchorId: 'directory.files',
   title: 'Importar e exportar',
-  text:
-      'Importe unidades de uma planilha ou exporte em CSV ou XLSX.',
+  text: 'Importe unidades de uma planilha ou exporte em CSV ou XLSX.',
 );
 
 /// Passo 6 — directory.tabs.
 const unitsTabsTourStep = CoeloTourStep(
   anchorId: 'directory.tabs',
   title: 'Situação',
-  text:
-      'Todos, Ativos, Em Implantação ou Inativos.',
+  text: 'Todos, Ativos, Em Implantação ou Inativos.',
 );
 
 /// Passo 7 — directory.create.
 const unitsCreateTourStep = CoeloTourStep(
   anchorId: 'directory.create',
   title: 'Criar unidade',
-  text:
-      'Abre o formulário de uma nova unidade dentro de uma instituição.',
+  text: 'Abre o formulário de uma nova unidade dentro de uma instituição.',
 );
 
 /// Passo 8 — directory.body.
 const unitsBodyTourStep = CoeloTourStep(
   anchorId: 'directory.body',
   title: 'A lista',
-  text:
-      'Abra uma unidade para ver turmas, locais e equipe.',
+  text: 'Abra uma unidade para ver turmas, locais e equipe.',
 );
 
 /// Passo 9 — directory.pagination.
 const unitsPaginationTourStep = CoeloTourStep(
   anchorId: 'directory.pagination',
   title: 'Paginação',
-  text:
-      'Avance de página e escolha quantos itens ver por vez.',
+  text: 'Avance de página e escolha quantos itens ver por vez.',
 );
 
 const unitsScreenTour = SuperadminScreenTour(

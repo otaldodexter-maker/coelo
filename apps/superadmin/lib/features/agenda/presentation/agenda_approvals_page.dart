@@ -248,7 +248,10 @@ final class _AgendaApprovalsPageState extends State<AgendaApprovalsPage> {
           const SizedBox(height: CoeloSpacing.space2),
           const Align(
             alignment: Alignment.centerRight,
-            child: SuperadminPlaceholderFileActions(resourceLabel: 'aprovações da agenda'),
+            child: CoeloTourAnchor(
+              id: CoeloAdminDirectoryTourAnchors.files,
+              child: SuperadminPlaceholderFileActions(resourceLabel: 'aprovações da agenda'),
+            ),
           ),
           const SizedBox(height: CoeloSpacing.space3),
           if (widget._localFixtures) const _LocalFixtureNotice(),
@@ -260,11 +263,17 @@ final class _AgendaApprovalsPageState extends State<AgendaApprovalsPage> {
               onRetry: () => widget.store!.loadRequests(),
             )
           else if (compact)
-            _ApprovalCardList(items: _items, onDecide: _openDecision)
+            CoeloTourAnchor(
+              id: 'agenda-approvals.table',
+              child: _ApprovalCardList(items: _items, onDecide: _openDecision),
+            )
           else
-            SizedBox(
-              height: _items.length <= 3 ? 500 : 80 + _items.length * 140,
-              child: _ApprovalTable(items: _items, onDecide: _openDecision),
+            CoeloTourAnchor(
+              id: 'agenda-approvals.table',
+              child: SizedBox(
+                height: _items.length <= 3 ? 500 : 80 + _items.length * 140,
+                child: _ApprovalTable(items: _items, onDecide: _openDecision),
+              ),
             ),
           const SizedBox(height: CoeloSpacing.space4),
           if (widget._localFixtures || widget.store!.requestsRead == AgendaReadStatus.ready)

@@ -11,31 +11,37 @@ import '../superadmin_screen_tour.dart';
 const agendaApprovalsHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Aprovações de publicação',
-  text:
-      'Eventos aguardando decisão antes de aparecer para as famílias.',
+  text: 'Eventos aguardando decisão antes de aparecer para as famílias.',
 );
 
-/// Passo 2 — agenda-approvals.table.
+/// Passo 2 — directory.files.
+const agendaApprovalsFilesTourStep = CoeloTourStep(
+  anchorId: 'directory.files',
+  title: 'Importar e exportar',
+  text: 'Importe ou exporte as aprovações.',
+);
+
+/// Passo 3 — agenda-approvals.table.
 const agendaApprovalsTableTourStep = CoeloTourStep(
   anchorId: 'agenda-approvals.table',
   title: 'A lista',
   text:
-      'Evento, solicitação, estado e histórico. "Decidir" abre a decisão.',
+      'Evento, solicitação, estado e histórico. "Decidir" abre a decisão: aprove ou recuse com justificativa, registrada no histórico.',
 );
 
-/// Passo 3 — agenda-approvals.decide.
-const agendaApprovalsDecideTourStep = CoeloTourStep(
-  anchorId: 'agenda-approvals.decide',
-  title: 'Decidir',
-  text:
-      'Aprove ou recuse com justificativa; tudo fica registrado no histórico da Agenda.',
+/// Passo 4 — directory.pagination.
+const agendaApprovalsPaginationTourStep = CoeloTourStep(
+  anchorId: 'directory.pagination',
+  title: 'Paginação',
+  text: 'Avance de página e escolha quantos itens ver por vez.',
 );
 
 const agendaApprovalsScreenTour = SuperadminScreenTour(
   destinationId: 'agenda-approvals',
   steps: [
     agendaApprovalsHeaderTourStep,
+    agendaApprovalsFilesTourStep,
     agendaApprovalsTableTourStep,
-    agendaApprovalsDecideTourStep,
+    agendaApprovalsPaginationTourStep,
   ],
 );

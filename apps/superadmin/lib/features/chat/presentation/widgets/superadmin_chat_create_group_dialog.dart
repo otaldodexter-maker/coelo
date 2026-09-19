@@ -12,11 +12,7 @@ import '../../domain/chat_repository.dart';
 /// ponytail: escopo de unidade/turma/atividade fica para quando a tela pedir;
 /// hoje o grupo nasce no escopo da instituicao.
 final class SuperadminChatCreateGroupDialog extends StatefulWidget {
-  const SuperadminChatCreateGroupDialog({
-    required this.people,
-    required this.requestId,
-    super.key,
-  });
+  const SuperadminChatCreateGroupDialog({required this.people, required this.requestId, super.key});
 
   final PersonDirectoryRepository people;
   final String requestId;

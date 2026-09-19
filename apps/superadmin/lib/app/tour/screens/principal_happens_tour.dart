@@ -11,40 +11,35 @@ import '../superadmin_screen_tour.dart';
 const principalHappensNavTourStep = CoeloTourStep(
   anchorId: 'principal.nav',
   title: 'O app das famílias',
-  text:
-      'Aqui você vê o Coelo como a família vê. Home, Para você, Momentos, Publicar e Mensagens.',
+  text: 'Aqui você vê o Coelo como a família vê. Home, Para você, Momentos, Publicar e Mensagens.',
 );
 
 /// Passo 2 — principal.context.
 const principalHappensContextTourStep = CoeloTourStep(
   anchorId: 'principal.context',
   title: 'Trocar contexto',
-  text:
-      'Veja o app como outra instituição, unidade ou pessoa do seu escopo.',
+  text: 'Veja o app como outra instituição, unidade ou pessoa do seu escopo.',
 );
 
 /// Passo 3 — happens.now.
 const principalHappensNowTourStep = CoeloTourStep(
   anchorId: 'happens.now',
   title: 'Agora',
-  text:
-      'A faixa de conteúdos temporários de 24 horas. "Publicar agora" cria um novo.',
+  text: 'A faixa de conteúdos temporários de 24 horas. "Publicar agora" cria um novo.',
 );
 
 /// Passo 4 — happens.feed.
 const principalHappensFeedTourStep = CoeloTourStep(
   anchorId: 'happens.feed',
   title: 'O feed',
-  text:
-      'Publicações da instituição: comente, compartilhe ou retire uma publicação.',
+  text: 'Publicações da instituição: comente, compartilhe ou retire uma publicação.',
 );
 
 /// Passo 5 — happens.side.
 const principalHappensSideTourStep = CoeloTourStep(
   anchorId: 'happens.side',
   title: 'Ao lado',
-  text:
-      'Próximos eventos, avisos importantes e aniversariantes.',
+  text: 'Próximos eventos, avisos importantes e aniversariantes.',
 );
 
 const principalHappensScreenTour = SuperadminScreenTour(

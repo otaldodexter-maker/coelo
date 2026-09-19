@@ -1,5 +1,6 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 
 import '../../../app/brand/superadmin_brand_mark.dart';
 
@@ -162,43 +163,49 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
                   ),
                 ),
               if (onChooseContexts != null)
-                Theme(
-                  data: Theme.of(
-                    context,
-                  ).copyWith(hoverColor: Colors.transparent, highlightColor: Colors.transparent),
-                  child: PopupMenuButton<String>(
-                    key: ValueKey('$keyPrefix-context-avatar'),
-                    tooltip: 'Abrir menu do perfil',
-                    color: scheme.surface,
-                    surfaceTintColor: Colors.transparent,
-                    onSelected: (value) =>
-                        value == 'contexts' ? onChooseContexts!() : onOpenProfile(),
-                    itemBuilder: (_) => const [
-                      PopupMenuItem(value: 'profile', child: Text('Abrir perfil')),
-                      PopupMenuItem(value: 'contexts', child: Text('Ver como')),
-                    ],
-                    icon: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: avatarBackgroundColor,
-                      foregroundColor: avatarForegroundColor,
-                      backgroundImage: avatarImage,
-                      child: avatarImage == null ? Text(avatarInitials) : null,
+                CoeloTourAnchor(
+                  id: 'principal.context',
+                  child: Theme(
+                    data: Theme.of(
+                      context,
+                    ).copyWith(hoverColor: Colors.transparent, highlightColor: Colors.transparent),
+                    child: PopupMenuButton<String>(
+                      key: ValueKey('$keyPrefix-context-avatar'),
+                      tooltip: 'Abrir menu do perfil',
+                      color: scheme.surface,
+                      surfaceTintColor: Colors.transparent,
+                      onSelected: (value) =>
+                          value == 'contexts' ? onChooseContexts!() : onOpenProfile(),
+                      itemBuilder: (_) => const [
+                        PopupMenuItem(value: 'profile', child: Text('Abrir perfil')),
+                        PopupMenuItem(value: 'contexts', child: Text('Ver como')),
+                      ],
+                      icon: CircleAvatar(
+                        radius: 18,
+                        backgroundColor: avatarBackgroundColor,
+                        foregroundColor: avatarForegroundColor,
+                        backgroundImage: avatarImage,
+                        child: avatarImage == null ? Text(avatarInitials) : null,
+                      ),
                     ),
                   ),
                 )
               else
-                IconButton(
-                  key: ValueKey('$keyPrefix-context-avatar'),
-                  tooltip: 'Abrir perfil',
-                  onPressed: onOpenProfile,
-                  icon: CircleAvatar(
-                    radius: 18,
-                    backgroundColor: avatarBackgroundColor ?? scheme.primaryContainer,
-                    foregroundColor: avatarForegroundColor ?? scheme.onPrimaryContainer,
-                    backgroundImage: avatarImage,
-                    child: avatarImage == null
-                        ? _ClampedTextScale(maxScaleFactor: 1.3, child: Text(avatarInitials))
-                        : null,
+                CoeloTourAnchor(
+                  id: 'principal.context',
+                  child: IconButton(
+                    key: ValueKey('$keyPrefix-context-avatar'),
+                    tooltip: 'Abrir perfil',
+                    onPressed: onOpenProfile,
+                    icon: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: avatarBackgroundColor ?? scheme.primaryContainer,
+                      foregroundColor: avatarForegroundColor ?? scheme.onPrimaryContainer,
+                      backgroundImage: avatarImage,
+                      child: avatarImage == null
+                          ? _ClampedTextScale(maxScaleFactor: 1.3, child: Text(avatarInitials))
+                          : null,
+                    ),
                   ),
                 ),
             ],
@@ -300,50 +307,53 @@ final class PrincipalGlobalNavigation extends StatelessWidget {
                   clipBehavior: Clip.none,
                   alignment: Alignment.bottomCenter,
                   children: [
-                    Container(
-                      key: const Key('principal-global-dock'),
-                      height: dockHeight,
-                      decoration: BoxDecoration(
-                        color: scheme.surface,
-                        borderRadius: BorderRadius.circular(CoeloRadius.full),
-                        border: Border.all(color: scheme.outlineVariant),
-                        boxShadow: [
-                          BoxShadow(
-                            color: scheme.shadow.withValues(alpha: .06),
-                            blurRadius: 8,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          dockAction(
-                            tooltip: 'Home',
-                            icon: Icons.home_outlined,
-                            selected: selected == PrincipalDestination.home,
-                            onPressed: onHome,
-                          ),
-                          dockAction(
-                            tooltip: 'Para você',
-                            icon: Icons.favorite_border_rounded,
-                            selected: selected == PrincipalDestination.forYou,
-                            onPressed: onForYou,
-                          ),
-                          const SizedBox(width: 68),
-                          dockAction(
-                            tooltip: 'Momentos',
-                            icon: Icons.smart_display_outlined,
-                            selected: selected == PrincipalDestination.moments,
-                            onPressed: onMoments,
-                          ),
-                          dockAction(
-                            tooltip: 'Pesquisar',
-                            icon: Icons.search_rounded,
-                            selected: selected == PrincipalDestination.search,
-                            onPressed: onSearch,
-                          ),
-                        ],
+                    CoeloTourAnchor(
+                      id: 'principal.nav',
+                      child: Container(
+                        key: const Key('principal-global-dock'),
+                        height: dockHeight,
+                        decoration: BoxDecoration(
+                          color: scheme.surface,
+                          borderRadius: BorderRadius.circular(CoeloRadius.full),
+                          border: Border.all(color: scheme.outlineVariant),
+                          boxShadow: [
+                            BoxShadow(
+                              color: scheme.shadow.withValues(alpha: .06),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            dockAction(
+                              tooltip: 'Home',
+                              icon: Icons.home_outlined,
+                              selected: selected == PrincipalDestination.home,
+                              onPressed: onHome,
+                            ),
+                            dockAction(
+                              tooltip: 'Para você',
+                              icon: Icons.favorite_border_rounded,
+                              selected: selected == PrincipalDestination.forYou,
+                              onPressed: onForYou,
+                            ),
+                            const SizedBox(width: 68),
+                            dockAction(
+                              tooltip: 'Momentos',
+                              icon: Icons.smart_display_outlined,
+                              selected: selected == PrincipalDestination.moments,
+                              onPressed: onMoments,
+                            ),
+                            dockAction(
+                              tooltip: 'Pesquisar',
+                              icon: Icons.search_rounded,
+                              selected: selected == PrincipalDestination.search,
+                              onPressed: onSearch,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     if (canPublish)

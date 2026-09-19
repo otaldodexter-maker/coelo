@@ -11,35 +11,38 @@ import '../superadmin_screen_tour.dart';
 const safetyHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Segurança da criança',
-  text:
-      'Quem está autorizado a buscar cada criança, com revisão auditada pela unidade.',
+  text: 'Quem está autorizado a buscar cada criança, com revisão auditada pela unidade.',
 );
 
 /// Passo 2 — directory.search.
 const safetySearchTourStep = CoeloTourStep(
   anchorId: 'directory.search',
   title: 'Buscar',
-  text:
-      'Nome ou identificação interna da criança.',
+  text: 'Nome ou identificação interna da criança.',
 );
 
-/// Passo 3 — directory.files.
+/// Passo 3 — directory.view.
+const safetyViewTourStep = CoeloTourStep(
+  anchorId: 'directory.view',
+  title: 'Cards ou tabela',
+  text: 'Escolha ver cards por criança ou a tabela agrupada.',
+);
+
+/// Passo 4 — directory.files.
 const safetyFilesTourStep = CoeloTourStep(
   anchorId: 'directory.files',
   title: 'Importar e exportar',
-  text:
-      'Importe autorizações ou exporte em CSV.',
+  text: 'Importe autorizações ou exporte em CSV.',
 );
 
-/// Passo 4 — directory.tabs.
+/// Passo 5 — directory.tabs.
 const safetyTabsTourStep = CoeloTourStep(
   anchorId: 'directory.tabs',
   title: 'Segmentos',
-  text:
-      'Cada aba mostra a contagem: com autorização, em análise, sem autorização.',
+  text: 'Cada aba mostra a contagem: com autorização, em análise, sem autorização.',
 );
 
-/// Passo 5 — directory.create.
+/// Passo 6 — directory.create.
 const safetyCreateTourStep = CoeloTourStep(
   anchorId: 'directory.create',
   title: 'Criar segurança',
@@ -47,20 +50,18 @@ const safetyCreateTourStep = CoeloTourStep(
       'Abre o assistente de nova autorização: criança, pessoa autorizada, relação, capacidades e validade.',
 );
 
-/// Passo 6 — directory.body.
+/// Passo 7 — directory.body.
 const safetyBodyTourStep = CoeloTourStep(
   anchorId: 'directory.body',
   title: 'A lista',
-  text:
-      'Cada card mostra autorizações ativas e solicitações em análise. Clique para gerenciar.',
+  text: 'Cada card mostra autorizações ativas e solicitações em análise. Clique para gerenciar.',
 );
 
-/// Passo 7 — directory.pagination.
+/// Passo 8 — directory.pagination.
 const safetyPaginationTourStep = CoeloTourStep(
   anchorId: 'directory.pagination',
   title: 'Paginação',
-  text:
-      'Avance de página e escolha quantos itens ver por vez.',
+  text: 'Avance de página e escolha quantos itens ver por vez.',
 );
 
 const safetyScreenTour = SuperadminScreenTour(
@@ -68,6 +69,7 @@ const safetyScreenTour = SuperadminScreenTour(
   steps: [
     safetyHeaderTourStep,
     safetySearchTourStep,
+    safetyViewTourStep,
     safetyFilesTourStep,
     safetyTabsTourStep,
     safetyCreateTourStep,

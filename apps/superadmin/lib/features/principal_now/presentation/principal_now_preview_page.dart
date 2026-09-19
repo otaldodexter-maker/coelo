@@ -697,31 +697,34 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
   Widget _buildCompact(BuildContext context, {required bool compact}) => Center(
     child: ConstrainedBox(
       constraints: BoxConstraints(maxWidth: compact ? double.infinity : 430),
-      child: _StoryCard(
-        key: const Key('principal-now-story'),
-        story: _story,
-        stories: _stories,
-        activeIndex: _index,
-        progress: _progressController,
-        showReply: true,
-        edgeToEdge: compact,
-        showClose: true,
-        liked: _liked,
-        muted: _muted,
-        replyController: _replyController,
-        replyFocusNode: _replyFocusNode,
-        onPrevious: _previous,
-        onNext: _next,
-        onClose: _close,
-        onOptions: _showOptions,
-        onAudio: () => setState(() => _muted = !_muted),
-        onLike: () => setState(() => _liked = !_liked),
-        onShare: _share,
-        onSendReply: _sendReply,
-        onHoldChanged: (holding) {
-          _holding = holding;
-          _syncProgress();
-        },
+      child: CoeloTourAnchor(
+        id: 'now.viewer',
+        child: _StoryCard(
+          key: const Key('principal-now-story'),
+          story: _story,
+          stories: _stories,
+          activeIndex: _index,
+          progress: _progressController,
+          showReply: true,
+          edgeToEdge: compact,
+          showClose: true,
+          liked: _liked,
+          muted: _muted,
+          replyController: _replyController,
+          replyFocusNode: _replyFocusNode,
+          onPrevious: _previous,
+          onNext: _next,
+          onClose: _close,
+          onOptions: _showOptions,
+          onAudio: () => setState(() => _muted = !_muted),
+          onLike: () => setState(() => _liked = !_liked),
+          onShare: _share,
+          onSendReply: _sendReply,
+          onHoldChanged: (holding) {
+            _holding = holding;
+            _syncProgress();
+          },
+        ),
       ),
     ),
   );
@@ -752,53 +755,64 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _NeighborPreview(
-              key: const Key('principal-now-previous-preview'),
-              story: _stories[(_index - 1).clamp(0, _stories.length - 1)],
-              enabled: _index > 0,
-              icon: Icons.chevron_left_rounded,
-              label: 'Agora anterior',
-              onTap: _previous,
+            CoeloTourAnchor(
+              id: 'now.navigation',
+              union: true,
+              child: _NeighborPreview(
+                key: const Key('principal-now-previous-preview'),
+                story: _stories[(_index - 1).clamp(0, _stories.length - 1)],
+                enabled: _index > 0,
+                icon: Icons.chevron_left_rounded,
+                label: 'Agora anterior',
+                onTap: _previous,
+              ),
             ),
             const SizedBox(width: CoeloSpacing.space3),
             SizedBox(
               width: 330,
               height: 640,
-              child: _StoryCard(
-                key: const Key('principal-now-story'),
-                story: _story,
-                stories: _stories,
-                activeIndex: _index,
-                progress: _progressController,
-                showReply: true,
-                edgeToEdge: false,
-                showClose: false,
-                liked: _liked,
-                muted: _muted,
-                replyController: _replyController,
-                replyFocusNode: _replyFocusNode,
-                onPrevious: _previous,
-                onNext: _next,
-                onClose: _close,
-                onOptions: _showOptions,
-                onAudio: () => setState(() => _muted = !_muted),
-                onLike: () => setState(() => _liked = !_liked),
-                onShare: _share,
-                onSendReply: _sendReply,
-                onHoldChanged: (holding) {
-                  _holding = holding;
-                  _syncProgress();
-                },
+              child: CoeloTourAnchor(
+                id: 'now.viewer',
+                child: _StoryCard(
+                  key: const Key('principal-now-story'),
+                  story: _story,
+                  stories: _stories,
+                  activeIndex: _index,
+                  progress: _progressController,
+                  showReply: true,
+                  edgeToEdge: false,
+                  showClose: false,
+                  liked: _liked,
+                  muted: _muted,
+                  replyController: _replyController,
+                  replyFocusNode: _replyFocusNode,
+                  onPrevious: _previous,
+                  onNext: _next,
+                  onClose: _close,
+                  onOptions: _showOptions,
+                  onAudio: () => setState(() => _muted = !_muted),
+                  onLike: () => setState(() => _liked = !_liked),
+                  onShare: _share,
+                  onSendReply: _sendReply,
+                  onHoldChanged: (holding) {
+                    _holding = holding;
+                    _syncProgress();
+                  },
+                ),
               ),
             ),
             const SizedBox(width: CoeloSpacing.space3),
-            _NeighborPreview(
-              key: const Key('principal-now-next-preview'),
-              story: _stories[(_index + 1).clamp(0, _stories.length - 1)],
-              enabled: _index < _stories.length - 1,
-              icon: Icons.chevron_right_rounded,
-              label: 'Próximo Agora',
-              onTap: _next,
+            CoeloTourAnchor(
+              id: 'now.navigation',
+              union: true,
+              child: _NeighborPreview(
+                key: const Key('principal-now-next-preview'),
+                story: _stories[(_index + 1).clamp(0, _stories.length - 1)],
+                enabled: _index < _stories.length - 1,
+                icon: Icons.chevron_right_rounded,
+                label: 'Próximo Agora',
+                onTap: _next,
+              ),
             ),
           ],
         ),
@@ -994,11 +1008,14 @@ final class _StoryCard extends StatelessWidget {
                             icon: muted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
                             onPressed: onAudio,
                           ),
-                        _ViewerIconButton(
-                          key: const Key('principal-now-options'),
-                          tooltip: 'Opções do Agora',
-                          icon: Icons.more_horiz_rounded,
-                          onPressed: onOptions,
+                        CoeloTourAnchor(
+                          id: 'now.options',
+                          child: _ViewerIconButton(
+                            key: const Key('principal-now-options'),
+                            tooltip: 'Opções do Agora',
+                            icon: Icons.more_horiz_rounded,
+                            onPressed: onOptions,
+                          ),
                         ),
                       ],
                     ),
@@ -1068,34 +1085,37 @@ final class _StoryCard extends StatelessWidget {
                   left: CoeloSpacing.space3,
                   right: CoeloSpacing.space3,
                   bottom: CoeloSpacing.space4 + safePadding.bottom,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _PrivateReplyField(
-                          controller: replyController,
-                          focusNode: replyFocusNode,
-                          onSubmitted: onSendReply,
+                  child: CoeloTourAnchor(
+                    id: 'now.reply',
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _PrivateReplyField(
+                            controller: replyController,
+                            focusNode: replyFocusNode,
+                            onSubmitted: onSendReply,
+                          ),
                         ),
-                      ),
-                      _ViewerIconButton(
-                        key: const Key('principal-now-like'),
-                        tooltip: liked ? 'Remover reação' : 'Reagir a este Agora',
-                        icon: liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                        onPressed: onLike,
-                      ),
-                      _ViewerIconButton(
-                        key: const Key('principal-now-share'),
-                        tooltip: 'Compartilhar este Agora',
-                        icon: Icons.ios_share_rounded,
-                        onPressed: onShare,
-                      ),
-                      _ViewerIconButton(
-                        key: const Key('principal-now-send-reply'),
-                        tooltip: 'Enviar resposta privada',
-                        icon: Icons.send_rounded,
-                        onPressed: onSendReply,
-                      ),
-                    ],
+                        _ViewerIconButton(
+                          key: const Key('principal-now-like'),
+                          tooltip: liked ? 'Remover reação' : 'Reagir a este Agora',
+                          icon: liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                          onPressed: onLike,
+                        ),
+                        _ViewerIconButton(
+                          key: const Key('principal-now-share'),
+                          tooltip: 'Compartilhar este Agora',
+                          icon: Icons.ios_share_rounded,
+                          onPressed: onShare,
+                        ),
+                        _ViewerIconButton(
+                          key: const Key('principal-now-send-reply'),
+                          tooltip: 'Enviar resposta privada',
+                          icon: Icons.send_rounded,
+                          onPressed: onSendReply,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
             ],

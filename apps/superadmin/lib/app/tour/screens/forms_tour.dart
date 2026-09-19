@@ -11,40 +11,35 @@ import '../superadmin_screen_tour.dart';
 const formsHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Formulários',
-  text:
-      'Crie perguntas, escolha quem responde e acompanhe as respostas.',
+  text: 'Crie perguntas, escolha quem responde e acompanhe as respostas.',
 );
 
 /// Passo 2 — directory.search.
 const formsSearchTourStep = CoeloTourStep(
   anchorId: 'directory.search',
   title: 'Buscar formulários',
-  text:
-      'Encontre um formulário pelo nome.',
+  text: 'Encontre um formulário pelo nome.',
 );
 
 /// Passo 3 — directory.filters.
 const formsFiltersTourStep = CoeloTourStep(
   anchorId: 'directory.filters',
   title: 'Situação',
-  text:
-      'Rascunho, publicado, encerrado.',
+  text: 'Rascunho, publicado, encerrado.',
 );
 
 /// Passo 4 — directory.files.
 const formsFilesTourStep = CoeloTourStep(
   anchorId: 'directory.files',
   title: 'Importar e exportar',
-  text:
-      'Importe ou exporte formulários.',
+  text: 'Importe ou exporte formulários.',
 );
 
 /// Passo 5 — directory.create.
 const formsCreateTourStep = CoeloTourStep(
   anchorId: 'directory.create',
   title: 'Criar formulário',
-  text:
-      'Abre o editor: perguntas, público, agendamento e teste.',
+  text: 'Abre o editor: perguntas, público, agendamento e teste.',
 );
 
 /// Passo 6 — directory.body.
@@ -59,8 +54,7 @@ const formsBodyTourStep = CoeloTourStep(
 const formsPaginationTourStep = CoeloTourStep(
   anchorId: 'directory.pagination',
   title: 'Paginação',
-  text:
-      'Avance de página e escolha quantos itens ver por vez.',
+  text: 'Avance de página e escolha quantos itens ver por vez.',
 );
 
 const formsScreenTour = SuperadminScreenTour(

@@ -491,11 +491,25 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
-          ..._publicationFields(),
-          const PublicationLabel('Mais opções'),
-          ..._spaced([..._periodFields(), ..._responseFields()]),
+          CoeloTourAnchor(
+            id: 'agenda-create.basics',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: _publicationFields(),
+            ),
+          ),
+          CoeloTourAnchor(
+            id: 'agenda-create.options',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const PublicationLabel('Mais opções'),
+                ..._spaced([..._periodFields(), ..._responseFields()]),
+              ],
+            ),
+          ),
           const SizedBox(height: CoeloSpacing.space4),
-          _questionBuilder(),
+          CoeloTourAnchor(id: 'agenda-create.questions', child: _questionBuilder()),
           if (!widget.canPublish)
             const Padding(
               padding: EdgeInsets.only(top: CoeloSpacing.space3),
@@ -1017,7 +1031,20 @@ final class _AgendaEventPreview extends StatelessWidget {
   final String context;
   final Set<String> audience;
 
-  static const _months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+  static const _months = [
+    'JAN',
+    'FEV',
+    'MAR',
+    'ABR',
+    'MAI',
+    'JUN',
+    'JUL',
+    'AGO',
+    'SET',
+    'OUT',
+    'NOV',
+    'DEZ',
+  ];
 
   @override
   Widget build(BuildContext buildContext) {
@@ -1039,7 +1066,11 @@ final class _AgendaEventPreview extends StatelessWidget {
               borderRadius: BorderRadius.circular(CoeloRadius.sm),
               color: colors.surface,
               boxShadow: [
-                BoxShadow(color: colors.shadow.withValues(alpha: 0.06), blurRadius: 8, offset: const Offset(0, 2)),
+                BoxShadow(
+                  color: colors.shadow.withValues(alpha: 0.06),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
               ],
             ),
             child: Row(
@@ -1048,11 +1079,17 @@ final class _AgendaEventPreview extends StatelessWidget {
                   children: [
                     Text(
                       _months[start.month - 1],
-                      style: textTheme.labelSmall?.copyWith(color: colors.primary, fontWeight: FontWeight.w700),
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     Text(
                       '${start.day}',
-                      style: textTheme.titleLarge?.copyWith(color: colors.primary, fontWeight: FontWeight.w800),
+                      style: textTheme.titleLarge?.copyWith(
+                        color: colors.primary,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ],
                 ),

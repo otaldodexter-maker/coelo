@@ -897,7 +897,10 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       builder: (context, constraints) {
         final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
         final inbox = _inbox(page, compact: compact);
-        final thread = _threadBody(compact: compact);
+        final thread = CoeloTourAnchor(
+          id: 'chat.thread',
+          child: _threadBody(compact: compact),
+        );
         if (compact && _selected != null) return thread;
         return Row(
           children: [
@@ -915,24 +918,30 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     child: Row(
       children: [
         Expanded(
-          child: CoeloSearchField(
-            key: const Key('superadmin-chat-search'),
-            controller: _search,
-            onChanged: (_) => _scheduleInboxSearch(),
-            semanticLabel: 'Buscar conversas',
-            hintText: 'Buscar conversas',
+          child: CoeloTourAnchor(
+            id: 'chat.search',
+            child: CoeloSearchField(
+              key: const Key('superadmin-chat-search'),
+              controller: _search,
+              onChanged: (_) => _scheduleInboxSearch(),
+              semanticLabel: 'Buscar conversas',
+              hintText: 'Buscar conversas',
+            ),
           ),
         ),
         const SizedBox(width: CoeloSpacing.space2),
-        IconButton(
-          key: const Key('superadmin-chat-create-group'),
-          tooltip: 'Criar grupo',
-          onPressed: _managing ? null : _createGroup,
-          constraints: const BoxConstraints.tightFor(
-            width: CoeloSize.touchMin,
-            height: CoeloSize.touchMin,
+        CoeloTourAnchor(
+          id: 'chat.create',
+          child: IconButton(
+            key: const Key('superadmin-chat-create-group'),
+            tooltip: 'Criar grupo',
+            onPressed: _managing ? null : _createGroup,
+            constraints: const BoxConstraints.tightFor(
+              width: CoeloSize.touchMin,
+              height: CoeloSize.touchMin,
+            ),
+            icon: const Icon(Icons.group_add_outlined),
           ),
-          icon: const Icon(Icons.group_add_outlined),
         ),
       ],
     ),
@@ -945,65 +954,68 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       children: [
         _inboxHeader(),
         Expanded(
-          child: ListView.separated(
-            itemCount: page.items.length,
-            separatorBuilder: (_, _) => const Divider(height: 1),
-            itemBuilder: (context, index) {
-              final item = page.items[index];
-              final selected = item.id == _selected?.id;
-              return Semantics(
-                button: true,
-                selected: selected,
-                label: '${item.title}, ${item.unreadCount} nao lidas',
-                child: TextButton(
-                  key: Key('chat-real-conversation-${item.id}'),
-                  onPressed: () => _select(item),
-                  style: TextButton.styleFrom(
-                    minimumSize: const Size.fromHeight(CoeloSize.touchMin),
-                    padding: const EdgeInsets.all(CoeloSpacing.space3),
-                    alignment: Alignment.centerLeft,
-                    backgroundColor: selected ? colors.primaryContainer : colors.surface,
-                    foregroundColor: selected ? colors.primary : colors.onSurface,
-                    shape: const RoundedRectangleBorder(),
-                  ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(child: Text(_initials(item.title))),
-                      const SizedBox(width: CoeloSpacing.space3),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                            Text(
-                              '${_conversationKindLabel(item.kind)} · ${item.contextLabel}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(
-                                context,
-                              ).textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
-                            ),
-                            Text(
-                              item.preview,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
+          child: CoeloTourAnchor(
+            id: 'chat.list',
+            child: ListView.separated(
+              itemCount: page.items.length,
+              separatorBuilder: (_, _) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                final item = page.items[index];
+                final selected = item.id == _selected?.id;
+                return Semantics(
+                  button: true,
+                  selected: selected,
+                  label: '${item.title}, ${item.unreadCount} nao lidas',
+                  child: TextButton(
+                    key: Key('chat-real-conversation-${item.id}'),
+                    onPressed: () => _select(item),
+                    style: TextButton.styleFrom(
+                      minimumSize: const Size.fromHeight(CoeloSize.touchMin),
+                      padding: const EdgeInsets.all(CoeloSpacing.space3),
+                      alignment: Alignment.centerLeft,
+                      backgroundColor: selected ? colors.primaryContainer : colors.surface,
+                      foregroundColor: selected ? colors.primary : colors.onSurface,
+                      shape: const RoundedRectangleBorder(),
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(child: Text(_initials(item.title))),
+                        const SizedBox(width: CoeloSpacing.space3),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                              Text(
+                                '${_conversationKindLabel(item.kind)} · ${item.contextLabel}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
+                              ),
+                              Text(
+                                item.preview,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      if (item.unreadCount > 0)
-                        Badge(label: Text(item.unreadCount > 9 ? '9+' : '${item.unreadCount}')),
-                    ],
+                        if (item.unreadCount > 0)
+                          Badge(label: Text(item.unreadCount > 9 ? '9+' : '${item.unreadCount}')),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
         SuperadminListingPaginationFooter(
@@ -1123,12 +1135,15 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
           ),
         ),
         if (!conversation.isReadOnly)
-          SuperadminChatComposer(
-            controller: _composer,
-            compact: compact,
-            onSend: _send,
-            onAudio: () => _showNotice('Anexos aguardam o gateway R2 autorizado.'),
-            onImage: _attach,
+          CoeloTourAnchor(
+            id: 'chat.composer',
+            child: SuperadminChatComposer(
+              controller: _composer,
+              compact: compact,
+              onSend: _send,
+              onAudio: () => _showNotice('Anexos aguardam o gateway R2 autorizado.'),
+              onImage: _attach,
+            ),
           ),
       ],
     );

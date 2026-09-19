@@ -160,7 +160,7 @@ class _SupportPageState extends State<SupportPage> {
               padding: EdgeInsets.all(
                 CoeloAdminDirectoryMetrics.horizontalPadding(constraints.maxWidth),
               ),
-              child: _details(),
+              child: CoeloTourAnchor(id: 'support.detail', child: _details()),
             ),
             detailVisible: widget.controller.selectedTicket != null && !stackedDetail,
           );

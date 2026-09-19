@@ -538,11 +538,10 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     );
   }
 
-  /// Rola as listas verticais da página, uma tela por vez, até a âncora
-  /// montar. Sem sucesso, devolve cada lista à posição inicial.
-  Future<void> _scrollPageUntilAnchor(String id) async {
+  /// Listas verticais montadas na página (as mais externas primeiro).
+  List<ScrollableState> _pageScrollables() {
     final root = _pageBodyKey.currentContext;
-    if (root == null) return;
+    if (root == null) return const [];
     final scrollables = <ScrollableState>[];
     void visit(Element element) {
       if (element is StatefulElement && element.state is ScrollableState) {
@@ -553,40 +552,75 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     }
 
     (root as Element).visitChildElements(visit);
-    for (final scrollable in scrollables) {
+    return scrollables;
+  }
+
+  /// Rola as listas verticais da página, uma tela por vez, até [stop]
+  /// devolver true. Sem sucesso, devolve cada lista à posição inicial.
+  Future<bool> _scrollPage(bool Function() stop) async {
+    for (final scrollable in _pageScrollables()) {
       final position = scrollable.position;
       if (!position.hasContentDimensions || !position.hasViewportDimension) continue;
       final initial = position.pixels;
-      var found = false;
       var offset = initial;
       while (offset < position.maxScrollExtent) {
         offset = (offset + position.viewportDimension * 0.8).clamp(0.0, position.maxScrollExtent);
         position.jumpTo(offset);
         await WidgetsBinding.instance.endOfFrame;
-        if (!mounted) return;
-        if (_tourRegistry.contextOf(id) != null) {
-          found = true;
-          break;
-        }
+        if (!mounted) return false;
+        if (stop()) return true;
       }
-      if (found) return;
       position.jumpTo(initial);
       await WidgetsBinding.instance.endOfFrame;
-      if (!mounted) return;
+      if (!mounted) return false;
     }
+    return false;
+  }
+
+  Future<void> _scrollPageUntilAnchor(String id) =>
+      _scrollPage(() => _tourRegistry.contextOf(id) != null);
+
+  /// Quais âncoras do tour existem nesta tela: as montadas agora e as que
+  /// aparecem ao rolar a página uma vez (listas preguiçosas só montam o que
+  /// está visível). Assim o contador "n de N" conta só passos reais.
+  Future<Set<String>> _discoverScreenAnchors(SuperadminScreenTour tour) async {
+    final ids = {for (final step in tour.steps) step.anchorId};
+    final seen = <String>{};
+    void collect() {
+      for (final id in ids) {
+        if (_tourRegistry.contextOf(id) != null) seen.add(id);
+      }
+    }
+
+    collect();
+    if (seen.length == ids.length) return seen;
+    await _scrollPage(() {
+      collect();
+      return seen.length == ids.length;
+    });
+    if (!mounted) return seen;
+    // Volta ao topo: o primeiro passo costuma estar lá.
+    for (final scrollable in _pageScrollables()) {
+      if (scrollable.position.hasContentDimensions) scrollable.position.jumpTo(0);
+    }
+    await WidgetsBinding.instance.endOfFrame;
+    return seen;
   }
 
   Future<CoeloTourOutcome> _runScreenTour(
     SuperadminScreenTour tour, {
     CoeloTourSegment segment = CoeloTourSegment.single,
   }) async {
+    // Passo sem elemento na tela (estado vazio, sem permissão, largura
+    // estreita) fica fora do tour sem aviso; o mecanismo ainda pula, na hora,
+    // o que sumir depois da preparação.
+    final available = await _discoverScreenAnchors(tour);
+    if (!mounted) return CoeloTourOutcome.unavailable;
     final outcome = await showCoeloTour(
       context,
       steps: tour.steps,
       registry: _tourRegistry,
-      // Passo sem elemento na tela (estado vazio, sem permissão, largura
-      // estreita) é pulado sem aviso pelo mecanismo depois da preparação.
-      isStepAvailable: (_) => true,
+      isStepAvailable: (step) => available.contains(step.anchorId),
       onPrepareStep: _prepareScreenStep,
       segment: segment,
     );

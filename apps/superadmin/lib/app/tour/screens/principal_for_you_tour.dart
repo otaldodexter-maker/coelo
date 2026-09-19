@@ -11,40 +11,36 @@ import '../superadmin_screen_tour.dart';
 const principalForYouNavTourStep = CoeloTourStep(
   anchorId: 'principal.nav',
   title: 'Para você',
-  text:
-      'A página da família com o resumo do dia dos filhos.',
+  text: 'A página da família com o resumo do dia dos filhos.',
 );
 
-/// Passo 2 — for-you.context.
-const principalForYouContextTourStep = CoeloTourStep(
-  anchorId: 'for-you.context',
-  title: 'Seu contexto atual',
-  text:
-      'A visão geral ou por criança e vínculo. "Trocar contexto" muda.',
+/// Passo 2 — for-you.shortcuts.
+const principalForYouShortcutsTourStep = CoeloTourStep(
+  anchorId: 'for-you.shortcuts',
+  title: 'Atalhos essenciais',
+  text: 'Os acessos mais usados pela família.',
 );
 
 /// Passo 3 — for-you.summary.
 const principalForYouSummaryTourStep = CoeloTourStep(
   anchorId: 'for-you.summary',
   title: 'Resumo do dia',
-  text:
-      'Presença, rotina e recados de hoje.',
+  text: 'Presença, rotina e recados de hoje.',
 );
 
-/// Passo 4 — for-you.shortcuts.
-const principalForYouShortcutsTourStep = CoeloTourStep(
-  anchorId: 'for-you.shortcuts',
-  title: 'Atalhos essenciais',
-  text:
-      'Os acessos mais usados pela família.',
+/// Passo 4 — for-you.context.
+const principalForYouContextTourStep = CoeloTourStep(
+  anchorId: 'for-you.context',
+  title: 'Seu contexto atual',
+  text: 'A visão geral ou por criança e vínculo. "Trocar contexto" muda.',
 );
 
 const principalForYouScreenTour = SuperadminScreenTour(
   destinationId: 'principal-for-you',
   steps: [
     principalForYouNavTourStep,
-    principalForYouContextTourStep,
-    principalForYouSummaryTourStep,
     principalForYouShortcutsTourStep,
+    principalForYouSummaryTourStep,
+    principalForYouContextTourStep,
   ],
 );

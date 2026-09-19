@@ -11,24 +11,21 @@ import '../superadmin_screen_tour.dart';
 const assessmentClosingHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Fechamento de avaliações',
-  text:
-      'Revise pendências e publique resultados autorizados.',
+  text: 'Revise pendências e publique resultados autorizados.',
 );
 
-/// Passo 2 — directory.search.
+/// Passo 2 — page.actions.
+const assessmentClosingActionsTourStep = CoeloTourStep(
+  anchorId: 'page.actions',
+  title: 'Importar e exportar',
+  text: 'Exporte os fechamentos em CSV ou XLSX.',
+);
+
+/// Passo 3 — directory.search.
 const assessmentClosingSearchTourStep = CoeloTourStep(
   anchorId: 'directory.search',
   title: 'Buscar turma ou Atividade',
-  text:
-      'Encontre o envio pelo nome da turma ou da Atividade.',
-);
-
-/// Passo 3 — directory.files.
-const assessmentClosingFilesTourStep = CoeloTourStep(
-  anchorId: 'directory.files',
-  title: 'Importar e exportar',
-  text:
-      'Exporte os fechamentos em CSV ou XLSX.',
+  text: 'Encontre o envio pelo nome da turma ou da Atividade.',
 );
 
 /// Passo 4 — directory.body.
@@ -36,24 +33,23 @@ const assessmentClosingBodyTourStep = CoeloTourStep(
   anchorId: 'directory.body',
   title: 'Envios pendentes',
   text:
-      'Cada linha é um envio: turma, período e quantas pendências restam. Clique para abrir.',
+      'Cada linha é um envio: turma, período e quantas pendências restam. Clique para abrir e completar o que falta.',
 );
 
-/// Passo 5 — assessment-closing.detail.
-const assessmentClosingDetailTourStep = CoeloTourStep(
-  anchorId: 'assessment-closing.detail',
-  title: 'Completar pendências',
-  text:
-      'No detalhe você completa o que falta com justificativa, publica e vê o histórico de eventos.',
+/// Passo 5 — directory.pagination.
+const assessmentClosingPaginationTourStep = CoeloTourStep(
+  anchorId: 'directory.pagination',
+  title: 'Paginação',
+  text: 'Avance de página e escolha quantos itens ver por vez.',
 );
 
 const assessmentClosingScreenTour = SuperadminScreenTour(
   destinationId: 'assessment-closing',
   steps: [
     assessmentClosingHeaderTourStep,
+    assessmentClosingActionsTourStep,
     assessmentClosingSearchTourStep,
-    assessmentClosingFilesTourStep,
     assessmentClosingBodyTourStep,
-    assessmentClosingDetailTourStep,
+    assessmentClosingPaginationTourStep,
   ],
 );

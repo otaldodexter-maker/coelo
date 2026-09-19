@@ -37,8 +37,7 @@ final class _CoeloPrincipalActionCardState extends State<CoeloPrincipalActionCar
 
   void _onStatesChanged() => setState(() {});
 
-  void _syncFocusState() =>
-      _statesController.update(WidgetState.focused, _focusNode.hasFocus);
+  void _syncFocusState() => _statesController.update(WidgetState.focused, _focusNode.hasFocus);
 
   @override
   void dispose() {

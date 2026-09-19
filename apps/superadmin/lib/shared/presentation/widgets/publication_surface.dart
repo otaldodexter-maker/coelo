@@ -1,5 +1,6 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 
 import 'superadmin_form_action_footer.dart';
 
@@ -87,14 +88,25 @@ final class PublicationSurface extends StatelessWidget {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(child: form),
+                          Expanded(
+                            child: CoeloTourAnchor(id: 'form.body', child: form),
+                          ),
                           const SizedBox(width: CoeloSpacing.space6),
-                          SizedBox(width: 388, child: preview),
+                          SizedBox(
+                            width: 388,
+                            child: CoeloTourAnchor(id: 'publish.preview', child: preview!),
+                          ),
                         ],
                       ),
                     ],
                   )
-                : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [header, form]),
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      header,
+                      CoeloTourAnchor(id: 'form.body', child: form),
+                    ],
+                  ),
           );
           return Column(
             children: [
@@ -102,11 +114,14 @@ final class PublicationSurface extends StatelessWidget {
               if (feedback != null) Padding(padding: padding, child: feedback),
               Padding(
                 padding: padding.add(const EdgeInsets.only(top: CoeloSpacing.space3)),
-                child: SuperadminFormActionFooter(
-                  surfaceKey: footerKey,
-                  inlineMinimumWidth: 840,
-                  tertiaryAction: tertiaryAction,
-                  continuationActions: continuationActions,
+                child: CoeloTourAnchor(
+                  id: 'form.footer',
+                  child: SuperadminFormActionFooter(
+                    surfaceKey: footerKey,
+                    inlineMinimumWidth: 840,
+                    tertiaryAction: tertiaryAction,
+                    continuationActions: continuationActions,
+                  ),
                 ),
               ),
             ],

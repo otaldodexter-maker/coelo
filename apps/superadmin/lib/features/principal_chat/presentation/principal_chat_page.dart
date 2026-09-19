@@ -531,12 +531,15 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
             ],
           ),
           const SizedBox(height: CoeloSpacing.space2),
-          CoeloSearchField(
-            key: const Key('principal-chat-search'),
-            controller: _search,
-            semanticLabel: 'Buscar conversas',
-            hintText: 'Buscar conversas',
-            onChanged: (_) => _scheduleSearch(),
+          CoeloTourAnchor(
+            id: 'chat.search',
+            child: CoeloSearchField(
+              key: const Key('principal-chat-search'),
+              controller: _search,
+              semanticLabel: 'Buscar conversas',
+              hintText: 'Buscar conversas',
+              onChanged: (_) => _scheduleSearch(),
+            ),
           ),
         ],
       ),
@@ -648,7 +651,9 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         header,
-        Expanded(child: content),
+        Expanded(
+          child: CoeloTourAnchor(id: 'chat.list', child: content),
+        ),
       ],
     );
   }
@@ -695,8 +700,10 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
           ),
         ),
         const Divider(height: 1),
-        Expanded(child: _threadBody(conversation, thread)),
-        if (!conversation.isReadOnly) _composerBar(),
+        Expanded(
+          child: CoeloTourAnchor(id: 'chat.thread', child: _threadBody(conversation, thread)),
+        ),
+        if (!conversation.isReadOnly) CoeloTourAnchor(id: 'chat.composer', child: _composerBar()),
       ],
     );
   }

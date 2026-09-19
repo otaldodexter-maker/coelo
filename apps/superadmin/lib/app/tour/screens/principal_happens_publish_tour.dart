@@ -7,66 +7,51 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 
 import '../superadmin_screen_tour.dart';
 
-/// Passo 1 — page.header.
-const principalHappensPublishHeaderTourStep = CoeloTourStep(
-  anchorId: 'page.header',
-  title: 'Publicar no Acontece',
-  text:
-      'Um post novo no feed das famílias.',
-);
-
-/// Passo 2 — publish.media.
+/// Passo 1 — publish.media.
 const principalHappensPublishMediaTourStep = CoeloTourStep(
   anchorId: 'publish.media',
   title: 'Mídia',
-  text:
-      'Adicione fotos ou vídeos.',
+  text: 'Adicione fotos ou vídeos; arraste para reordenar.',
 );
 
-/// Passo 3 — publish.caption.
+/// Passo 2 — publish.caption.
 const principalHappensPublishCaptionTourStep = CoeloTourStep(
   anchorId: 'publish.caption',
   title: 'Legenda',
-  text:
-      'O texto do post.',
+  text: 'O texto do post.',
 );
 
-/// Passo 4 — publish.audience.
+/// Passo 3 — publish.audience.
 const principalHappensPublishAudienceTourStep = CoeloTourStep(
   anchorId: 'publish.audience',
   title: 'Público e contexto',
-  text:
-      'Quem vê: instituição, unidade ou turma.',
+  text: 'O contexto da publicação e quem vê: famílias, equipe ou ambos.',
 );
 
-/// Passo 5 — publish.schedule.
+/// Passo 4 — publish.schedule.
 const principalHappensPublishScheduleTourStep = CoeloTourStep(
   anchorId: 'publish.schedule',
   title: 'Agendamento e opções',
-  text:
-      'Publique agora, agende ou salve como rascunho.',
+  text: 'Marque data e hora para agendar; "Salvar como rascunho" guarda automaticamente.',
 );
 
-/// Passo 6 — publish.preview.
+/// Passo 5 — publish.preview.
 const principalHappensPublishPreviewTourStep = CoeloTourStep(
   anchorId: 'publish.preview',
   title: 'Prévia',
-  text:
-      'Como o post vai aparecer no feed.',
+  text: 'Como o post vai aparecer no feed do Acontece.',
 );
 
-/// Passo 7 — form.footer.
+/// Passo 6 — form.footer.
 const principalHappensPublishFooterTourStep = CoeloTourStep(
   anchorId: 'form.footer',
   title: 'Publicar',
-  text:
-      '"Publicar" envia; "Salvar rascunho" guarda; Cancelar descarta.',
+  text: '"Publicar no Acontece" envia (ou agenda); "Salvar rascunho" guarda; Cancelar volta.',
 );
 
 const principalHappensPublishScreenTour = SuperadminScreenTour(
   destinationId: 'principal-happens-publish',
   steps: [
-    principalHappensPublishHeaderTourStep,
     principalHappensPublishMediaTourStep,
     principalHappensPublishCaptionTourStep,
     principalHappensPublishAudienceTourStep,

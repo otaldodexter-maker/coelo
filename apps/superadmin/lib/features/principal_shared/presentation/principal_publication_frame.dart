@@ -1,6 +1,7 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 
 enum PrincipalPublicationStepStatus { current, complete, error, incomplete }
 
@@ -45,6 +46,8 @@ final class PrincipalPublicationFrame extends StatelessWidget {
           : showRail
           ? CoeloSpacing.space6
           : CoeloSpacing.space4;
+      // Âncoras do tour por tela, as mesmas do SuperadminFormFrame.
+      final navigation = CoeloTourAnchor(id: 'form.navigation', child: this.navigation);
       final content = Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -60,14 +63,14 @@ final class PrincipalPublicationFrame extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         if (!showRail) ...[navigation, const SizedBox(height: CoeloSpacing.space4)],
-                        body,
+                        CoeloTourAnchor(id: 'form.body', child: body),
                       ],
                     ),
                   ),
                 ),
               ),
             ),
-            footer,
+            CoeloTourAnchor(id: 'form.footer', child: footer),
           ],
         ),
       );
@@ -342,17 +345,24 @@ final class PrincipalPublicationSheet extends StatelessWidget {
             style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: CoeloSpacing.space5),
+          // Âncoras do tour por tela: as mesmas dos outros formulários.
           if (showAside)
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: body),
+                Expanded(
+                  child: CoeloTourAnchor(id: 'form.body', child: body),
+                ),
                 const SizedBox(width: CoeloSpacing.space6),
-                SizedBox(key: asideKey, width: asideWidth, child: aside),
+                SizedBox(
+                  key: asideKey,
+                  width: asideWidth,
+                  child: CoeloTourAnchor(id: 'publish.preview', child: aside!),
+                ),
               ],
             )
           else
-            body,
+            CoeloTourAnchor(id: 'form.body', child: body),
         ],
       );
       return Padding(
@@ -367,7 +377,7 @@ final class PrincipalPublicationSheet extends StatelessWidget {
                 child: content,
               ),
             ),
-            footer,
+            CoeloTourAnchor(id: 'form.footer', child: footer),
           ],
         ),
       );

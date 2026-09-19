@@ -133,7 +133,6 @@ final class SupportTicketFilters {
 
 List<String> _values(Iterable<String> values) => values.toSet().toList()..sort();
 
-
 String _menuLabel(String menu) => switch (menu) {
   'Instituicoes' => 'Instituições',
   'Configuracoes' => 'Configurações',

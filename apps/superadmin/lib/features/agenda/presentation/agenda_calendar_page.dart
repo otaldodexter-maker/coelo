@@ -183,10 +183,15 @@ final class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(child: body),
-              _AgendaFooter(
-                onToday: () => _changeMonth(widget.store!.referenceDate),
-                enabled: true,
+              Expanded(
+                child: CoeloTourAnchor(id: 'agenda.grid', child: body),
+              ),
+              CoeloTourAnchor(
+                id: 'agenda.today',
+                child: _AgendaFooter(
+                  onToday: () => _changeMonth(widget.store!.referenceDate),
+                  enabled: true,
+                ),
               ),
             ],
           ),
@@ -358,67 +363,81 @@ final class _AgendaToolbar extends StatelessWidget {
   Widget _build(BuildContext context, {required bool webToggle}) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Row(
-        children: [
-          Expanded(
-            child: Text(
-              _monthYear(month),
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+      CoeloTourAnchor(
+        id: 'agenda.month',
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                _monthYear(month),
+                style: Theme.of(
+                  context,
+                ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+              ),
             ),
-          ),
-          IconButton(
-            tooltip: 'Mês anterior',
-            onPressed: enabled ? onPrevious : null,
-            icon: const Icon(Icons.chevron_left_rounded),
-          ),
-          IconButton(
-            tooltip: 'Próximo mês',
-            onPressed: enabled ? onNext : null,
-            icon: const Icon(Icons.chevron_right_rounded),
-          ),
-        ],
+            IconButton(
+              tooltip: 'Mês anterior',
+              onPressed: enabled ? onPrevious : null,
+              icon: const Icon(Icons.chevron_left_rounded),
+            ),
+            IconButton(
+              tooltip: 'Próximo mês',
+              onPressed: enabled ? onNext : null,
+              icon: const Icon(Icons.chevron_right_rounded),
+            ),
+          ],
+        ),
       ),
       const SizedBox(height: CoeloSpacing.space3),
       CoeloAdminListingToolbar(
-        search: SizedBox(
-          width: 280,
-          child: CoeloSearchField(
-            controller: search,
-            semanticLabel: 'Buscar eventos da Agenda',
-            hintText: 'Buscar eventos',
-            onChanged: onSearchChanged,
-            enabled: enabled,
+        search: CoeloTourAnchor(
+          id: 'agenda.search',
+          union: true,
+          child: SizedBox(
+            width: 280,
+            child: CoeloSearchField(
+              controller: search,
+              semanticLabel: 'Buscar eventos da Agenda',
+              hintText: 'Buscar eventos',
+              onChanged: onSearchChanged,
+              enabled: enabled,
+            ),
           ),
         ),
         filters: [
-          SizedBox(
-            width: 220,
-            child: CoeloAdminSingleSelectField<String>(
-              label: 'Contexto',
-              value: contextValue,
-              options: const [
-                'Todos os contextos',
-                'Instituição',
-                'Unidades',
-                'Turmas',
-                'Atividades',
-              ],
-              optionLabel: (value) => value,
-              onChanged: onContextChanged,
-              enabled: enabled,
-              prefixIcon: Icons.account_tree_outlined,
+          CoeloTourAnchor(
+            id: 'agenda.search',
+            union: true,
+            child: SizedBox(
+              width: 220,
+              child: CoeloAdminSingleSelectField<String>(
+                label: 'Contexto',
+                value: contextValue,
+                options: const [
+                  'Todos os contextos',
+                  'Instituição',
+                  'Unidades',
+                  'Turmas',
+                  'Atividades',
+                ],
+                optionLabel: (value) => value,
+                onChanged: onContextChanged,
+                enabled: enabled,
+                prefixIcon: Icons.account_tree_outlined,
+              ),
             ),
           ),
         ],
         actions: [
           if (webToggle)
-            _AgendaViewToggle(
-              selected: view,
-              onSelected: onViewChanged,
-              enabled: enabled,
-              compact: true,
+            CoeloTourAnchor(
+              id: 'agenda.view',
+              child: _AgendaViewToggle(
+                selected: view,
+                onSelected: onViewChanged,
+                enabled: enabled,
+                compact: true,
+              ),
             ),
         ],
       ),
@@ -426,7 +445,10 @@ final class _AgendaToolbar extends StatelessWidget {
       // P33 (Owner, 11/09): no mobile o par Calendário/Lista divide a largura
       // em 50% cada, maior e centralizado.
       if (!webToggle) ...[
-        _AgendaViewToggle(selected: view, onSelected: onViewChanged, enabled: enabled),
+        CoeloTourAnchor(
+          id: 'agenda.view',
+          child: _AgendaViewToggle(selected: view, onSelected: onViewChanged, enabled: enabled),
+        ),
         const SizedBox(height: CoeloSpacing.space3),
       ],
     ],

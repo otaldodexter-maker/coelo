@@ -1,6 +1,7 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_domain/profile_about.dart';
 import 'package:flutter/material.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 
 import '../../principal_happens/domain/principal_happens_preview_data.dart';
 import '../../principal_moments/domain/principal_moments_preview_data.dart';
@@ -217,16 +218,23 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
   Widget _buildMainContent(BuildContext context, {required bool compact}) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      _IdentitySection(
-        data: widget.data,
-        wide: !compact,
-        onFollow: () =>
-            _runOrPreview(context, widget.showPreviewFeeds, widget.onFollow, 'Acompanhar'),
-        onMessage: () =>
-            _runOrPreview(context, widget.showPreviewFeeds, widget.onMessage, 'Mensagem'),
-        onOpenEdit: widget.onOpenEdit,
-        onOpenBio: () =>
-            _runOrPreview(context, widget.showPreviewFeeds, widget.onOpenBio, 'Biografia completa'),
+      CoeloTourAnchor(
+        id: 'profile.header',
+        child: _IdentitySection(
+          data: widget.data,
+          wide: !compact,
+          onFollow: () =>
+              _runOrPreview(context, widget.showPreviewFeeds, widget.onFollow, 'Acompanhar'),
+          onMessage: () =>
+              _runOrPreview(context, widget.showPreviewFeeds, widget.onMessage, 'Mensagem'),
+          onOpenEdit: widget.onOpenEdit,
+          onOpenBio: () => _runOrPreview(
+            context,
+            widget.showPreviewFeeds,
+            widget.onOpenBio,
+            'Biografia completa',
+          ),
+        ),
       ),
       if (widget.data.metrics.isNotEmpty) ...[
         const SizedBox(height: CoeloSpacing.space4),
@@ -234,17 +242,25 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
       ],
       if (widget.data.highlights.isNotEmpty) ...[
         const SizedBox(height: CoeloSpacing.space5),
-        _HighlightsSection(items: widget.data.highlights, compact: compact),
+        CoeloTourAnchor(
+          id: 'profile.highlights',
+          union: true,
+          child: _HighlightsSection(items: widget.data.highlights, compact: compact),
+        ),
       ],
       if (widget.data.links.isNotEmpty) ...[
         const SizedBox(height: CoeloSpacing.space5),
-        _LinksSection(
-          links: widget.data.links,
-          onOpenAll: () => _runOrPreview(
-            context,
-            widget.showPreviewFeeds,
-            widget.onOpenLinks,
-            'Todos os vínculos',
+        CoeloTourAnchor(
+          id: 'profile.highlights',
+          union: true,
+          child: _LinksSection(
+            links: widget.data.links,
+            onOpenAll: () => _runOrPreview(
+              context,
+              widget.showPreviewFeeds,
+              widget.onOpenLinks,
+              'Todos os vínculos',
+            ),
           ),
         ),
       ],
@@ -253,21 +269,24 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
         _AgendaSummary(event: event, onOpenAgenda: widget.onOpenAgenda),
       ],
       const SizedBox(height: CoeloSpacing.space4),
-      _ProfileTabs(
-        selected: _selectedTab,
-        onSelected: (tab) {
-          final destination = switch (tab) {
-            _ProfileTab.happens => widget.onOpenHappens,
-            _ProfileTab.moments => widget.onOpenMoments,
-            _ProfileTab.circulars => null,
-            _ProfileTab.about => null,
-          };
-          if (destination != null) {
-            destination();
-            return;
-          }
-          setState(() => _selectedTab = tab);
-        },
+      CoeloTourAnchor(
+        id: 'profile.tabs',
+        child: _ProfileTabs(
+          selected: _selectedTab,
+          onSelected: (tab) {
+            final destination = switch (tab) {
+              _ProfileTab.happens => widget.onOpenHappens,
+              _ProfileTab.moments => widget.onOpenMoments,
+              _ProfileTab.circulars => null,
+              _ProfileTab.about => null,
+            };
+            if (destination != null) {
+              destination();
+              return;
+            }
+            setState(() => _selectedTab = tab);
+          },
+        ),
       ),
       const SizedBox(height: CoeloSpacing.space4),
       _TabContent(
@@ -569,32 +588,35 @@ final class _IdentitySection extends StatelessWidget {
         ),
       ],
     );
-    final actions = Wrap(
-      spacing: CoeloSpacing.space2,
-      runSpacing: CoeloSpacing.space2,
-      children: [
-        // V-1 (Owner, 11/09/2026): o botao Acompanhar tinha sumido; volta como
-        // acao primaria. Sem porta de follow composta, informa indisponibilidade.
-        FilledButton.icon(
-          key: const Key('principal-profile-follow'),
-          onPressed: onFollow,
-          icon: const Icon(Icons.person_add_alt_1_outlined),
-          label: const Text('Acompanhar'),
-        ),
-        OutlinedButton.icon(
-          key: const Key('principal-profile-message'),
-          onPressed: onMessage,
-          icon: const Icon(Icons.chat_bubble_outline_rounded),
-          label: const Text('Mensagem'),
-        ),
-        if (onOpenEdit case final openEdit?)
-          OutlinedButton.icon(
-            key: const Key('principal-profile-edit'),
-            onPressed: openEdit,
-            icon: const Icon(Icons.edit_outlined),
-            label: const Text('Editar perfil'),
+    final actions = CoeloTourAnchor(
+      id: 'profile.actions',
+      child: Wrap(
+        spacing: CoeloSpacing.space2,
+        runSpacing: CoeloSpacing.space2,
+        children: [
+          // V-1 (Owner, 11/09/2026): o botao Acompanhar tinha sumido; volta como
+          // acao primaria. Sem porta de follow composta, informa indisponibilidade.
+          FilledButton.icon(
+            key: const Key('principal-profile-follow'),
+            onPressed: onFollow,
+            icon: const Icon(Icons.person_add_alt_1_outlined),
+            label: const Text('Acompanhar'),
           ),
-      ],
+          OutlinedButton.icon(
+            key: const Key('principal-profile-message'),
+            onPressed: onMessage,
+            icon: const Icon(Icons.chat_bubble_outline_rounded),
+            label: const Text('Mensagem'),
+          ),
+          if (onOpenEdit case final openEdit?)
+            OutlinedButton.icon(
+              key: const Key('principal-profile-edit'),
+              onPressed: openEdit,
+              icon: const Icon(Icons.edit_outlined),
+              label: const Text('Editar perfil'),
+            ),
+        ],
+      ),
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

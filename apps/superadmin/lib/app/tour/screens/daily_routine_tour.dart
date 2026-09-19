@@ -11,48 +11,42 @@ import '../superadmin_screen_tour.dart';
 const dailyRoutineHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Rotina diária',
-  text:
-      'Modelos, versões e alcances do registro cotidiano (sono, alimentação, higiene).',
+  text: 'Modelos, versões e alcances do registro cotidiano (sono, alimentação, higiene).',
 );
 
-/// Passo 2 — daily-routine.tabs.
+/// Passo 2 — directory.tabs.
 const dailyRoutineTabsTourStep = CoeloTourStep(
-  anchorId: 'daily-routine.tabs',
+  anchorId: 'directory.tabs',
   title: 'Modelos ou rotinas',
-  text:
-      '"Modelos" são a base; "Rotinas" são as versões aplicadas a cada unidade ou turma.',
+  text: '"Modelos" são a base; "Rotinas" são as versões aplicadas a cada unidade ou turma.',
 );
 
 /// Passo 3 — directory.search.
 const dailyRoutineSearchTourStep = CoeloTourStep(
   anchorId: 'directory.search',
   title: 'Buscar',
-  text:
-      'Encontre um modelo ou rotina pelo nome.',
+  text: 'Encontre um modelo ou rotina pelo nome.',
 );
 
 /// Passo 4 — directory.filters.
 const dailyRoutineFiltersTourStep = CoeloTourStep(
   anchorId: 'directory.filters',
   title: 'Status e tabela',
-  text:
-      'Filtre por status e alterne para a tabela com nome, origem, versão e ações.',
+  text: 'Filtre por status e alterne para a tabela com nome, origem, versão e ações.',
 );
 
 /// Passo 5 — directory.files.
 const dailyRoutineFilesTourStep = CoeloTourStep(
   anchorId: 'directory.files',
   title: 'Configuração',
-  text:
-      'Importe ou exporte a configuração completa da rotina.',
+  text: 'Importe ou exporte a configuração completa da rotina.',
 );
 
 /// Passo 6 — directory.create.
 const dailyRoutineCreateTourStep = CoeloTourStep(
   anchorId: 'directory.create',
   title: 'Criar',
-  text:
-      'Abre o editor de um novo modelo ou rotina.',
+  text: 'Abre o editor de um novo modelo ou rotina.',
 );
 
 /// Passo 7 — directory.body.
@@ -61,6 +55,13 @@ const dailyRoutineBodyTourStep = CoeloTourStep(
   title: 'A lista',
   text:
       'Cada item mostra versão, origem e vigência. Nas ações: editar, arquivar, restaurar ou publicar.',
+);
+
+/// Passo 8 — directory.pagination.
+const dailyRoutinePaginationTourStep = CoeloTourStep(
+  anchorId: 'directory.pagination',
+  title: 'Paginação',
+  text: 'Avance de página e escolha quantos itens ver por vez.',
 );
 
 const dailyRoutineScreenTour = SuperadminScreenTour(
@@ -73,5 +74,6 @@ const dailyRoutineScreenTour = SuperadminScreenTour(
     dailyRoutineFilesTourStep,
     dailyRoutineCreateTourStep,
     dailyRoutineBodyTourStep,
+    dailyRoutinePaginationTourStep,
   ],
 );

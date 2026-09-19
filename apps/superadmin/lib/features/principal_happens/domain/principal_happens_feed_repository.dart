@@ -71,11 +71,7 @@ abstract interface class PrincipalHappensPostWithdrawal {
   /// [PrincipalHappensFeedUnauthorized] quando o ator nao pode retirar,
   /// [PrincipalHappensWithdrawalConflict] quando a versao ficou obsoleta e
   /// [PrincipalHappensFeedUnavailable] para qualquer outra falha.
-  Future<void> withdrawPost({
-    required String postId,
-    required int expectedVersion,
-    String? reason,
-  });
+  Future<void> withdrawPost({required String postId, required int expectedVersion, String? reason});
 }
 
 final class PrincipalHappensWithdrawalConflict implements Exception {

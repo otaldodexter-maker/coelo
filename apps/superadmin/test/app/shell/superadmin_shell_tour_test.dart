@@ -1,5 +1,6 @@
 import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/app/tour/superadmin_menu_tour_steps.dart';
+import 'package:coelo_superadmin/app/tour/superadmin_screen_tours.dart';
 import 'package:coelo_superadmin/app/tour/superadmin_tour_store.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -9,12 +10,16 @@ import 'package:flutter_test/flutter_test.dart';
 
 const _balloon = Key('coelo-tour-balloon');
 const _next = Key('coelo-tour-next');
+const _back = Key('coelo-tour-back');
 const _skip = Key('coelo-tour-skip');
+const _counter = Key('coelo-tour-counter');
 
 Widget _shellApp({
   SuperadminTourStore? tourStore,
   List<CoeloTourStep> steps = superadminMenuTourSteps,
+  List<SuperadminScreenTour> screenTours = superadminScreenTourList,
   String currentDestination = 'institutions',
+  Widget child = const SizedBox.expand(),
 }) {
   return MaterialApp(
     theme: CoeloTheme.light,
@@ -26,12 +31,84 @@ Widget _shellApp({
           currentDestination: currentDestination,
           tourStore: tourStore,
           menuTourSteps: steps,
-          child: const SizedBox.expand(),
+          screenTours: screenTours,
+          child: child,
         ),
       ),
     ),
   );
 }
+
+// Dois passos do menu e duas telas com uma âncora cada: o hospedeiro troca
+// a página quando o shell navega, como o router faz.
+const _menuSteps = <CoeloTourStep>[
+  CoeloTourStep(anchorId: 'tour-button', title: 'Menu 1', text: 'x'),
+  CoeloTourStep(anchorId: 'home', title: 'Menu 2', text: 'x'),
+];
+const _screenA = SuperadminScreenTour(
+  destinationId: 'institutions',
+  steps: [
+    CoeloTourStep(anchorId: 'a.one', title: 'Tela A', text: 'x'),
+    CoeloTourStep(anchorId: 'a.missing', title: 'Tela A ausente', text: 'x'),
+  ],
+);
+const _screenB = SuperadminScreenTour(
+  destinationId: 'units',
+  steps: [CoeloTourStep(anchorId: 'b.one', title: 'Tela B', text: 'x')],
+);
+
+class _NavigatingHost extends StatefulWidget {
+  const _NavigatingHost({required this.store, this.initial = 'institutions', super.key});
+
+  final SuperadminTourStore store;
+  final String initial;
+
+  @override
+  State<_NavigatingHost> createState() => _NavigatingHostState();
+}
+
+class _NavigatingHostState extends State<_NavigatingHost> {
+  late String destination = widget.initial;
+  final visited = <String>[];
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+    theme: CoeloTheme.light,
+    home: Builder(
+      builder: (context) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(disableAnimations: true),
+        child: SuperadminShell.host(
+          logout: () async => const LogoutResult.success(),
+          currentDestination: destination,
+          onDestinationSelected: (value) => setState(() {
+            destination = value;
+            visited.add(value);
+          }),
+          tourStore: widget.store,
+          menuTourSteps: _menuSteps,
+          screenTours: const [_screenA, _screenB],
+          child: switch (destination) {
+            'institutions' => const Center(
+              child: CoeloTourAnchor(id: 'a.one', child: Text('Página A')),
+            ),
+            'units' => const Center(
+              child: CoeloTourAnchor(id: 'b.one', child: Text('Página B')),
+            ),
+            _ => const Center(child: Text('Outra página')),
+          },
+        ),
+      ),
+    ),
+  );
+}
+
+Future<void> _pumpFrames(WidgetTester tester, int frames) async {
+  for (var i = 0; i < frames; i++) {
+    await tester.pump(const Duration(milliseconds: 16));
+  }
+}
+
+String _counterText(WidgetTester tester) => tester.widget<Text>(find.byKey(_counter)).data!;
 
 Future<void> _resize(WidgetTester tester, Size size) async {
   await tester.binding.setSurfaceSize(size);
@@ -58,14 +135,137 @@ void main() {
     expect(find.text('1 de ${superadminMenuTourSteps.length}'), findsOneWidget);
   });
 
-  testWidgets('"Tour completo" abre, nesta versão, o mesmo tour do menu e avisa', (tester) async {
+  testWidgets('"Tour desta tela" abre o tour do destino atual e pula o passo sem elemento', (
+    tester,
+  ) async {
     await _resize(tester, const Size(1440, 900));
-    await tester.pumpWidget(_shellApp());
-    await _openMenuTour(tester, option: 'Tour completo');
+    await tester.pumpWidget(
+      _shellApp(
+        screenTours: const [_screenA],
+        child: const Center(
+          child: CoeloTourAnchor(id: 'a.one', child: Text('Página A')),
+        ),
+      ),
+    );
+    await _openMenuTour(tester, option: 'Tour desta tela');
 
     expect(find.byKey(_balloon), findsOneWidget);
-    expect(find.text('Bem-vindo ao Coelo'), findsOneWidget);
-    expect(find.textContaining('O tour completo (menu e todas as telas) chega em breve'), findsOneWidget);
+    expect(find.text('Tela A'), findsOneWidget);
+    // O passo com âncora ausente não entra no contador.
+    expect(_counterText(tester), '1 de 1');
+    expect(find.text('Concluir'), findsOneWidget);
+    await tester.tap(find.byKey(_next));
+    await tester.pumpAndSettle();
+    expect(find.byKey(_balloon), findsNothing);
+  });
+
+  testWidgets('"Tour desta tela" numa tela sem tour avisa', (tester) async {
+    await _resize(tester, const Size(1440, 900));
+    await tester.pumpWidget(_shellApp(screenTours: const [_screenB]));
+    await _openMenuTour(tester, option: 'Tour desta tela');
+
+    expect(find.byKey(_balloon), findsNothing);
+    expect(find.text('Esta tela ainda não tem tour.'), findsOneWidget);
+  });
+
+  testWidgets('tour completo: menu, telas em sequência, contador global, voltar e origem', (
+    tester,
+  ) async {
+    await _resize(tester, const Size(1440, 900));
+    final store = InMemorySuperadminTourStore(seen: true);
+    final hostKey = GlobalKey<_NavigatingHostState>();
+    await tester.pumpWidget(_NavigatingHost(key: hostKey, store: store));
+    await _openMenuTour(tester, option: 'Tour completo');
+
+    // Menu: 2 passos; telas: A (1 disponível de 2 declarados) e B (1). O
+    // total conta os declarados.
+    expect(find.text('Menu 1'), findsOneWidget);
+    expect(_counterText(tester), '1 de 5');
+    await tester.tap(find.byKey(_next));
+    await tester.pumpAndSettle();
+    expect(find.text('Menu 2'), findsOneWidget);
+    expect(_counterText(tester), '2 de 5');
+    // Último passo do menu continua para as telas: "Próximo", não "Concluir".
+    expect(find.text('Próximo'), findsOneWidget);
+    await tester.tap(find.byKey(_next));
+    await _pumpFrames(tester, 10);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Tela A'), findsOneWidget);
+    expect(_counterText(tester), '3 de 5');
+    expect(store.completeProgress, 0);
+    // "Voltar" no primeiro passo da tela volta ao último passo do menu.
+    await tester.tap(find.byKey(_back));
+    await _pumpFrames(tester, 10);
+    await tester.pumpAndSettle();
+    expect(find.text('Menu 2'), findsOneWidget);
+    await tester.tap(find.byKey(_next));
+    await _pumpFrames(tester, 10);
+    await tester.pumpAndSettle();
+    expect(find.text('Tela A'), findsOneWidget);
+
+    // Próximo navega para a tela B e espera a página montar.
+    await tester.tap(find.byKey(_next));
+    await _pumpFrames(tester, 10);
+    await tester.pumpAndSettle();
+    expect(hostKey.currentState!.destination, 'units');
+    expect(find.text('Página B'), findsOneWidget);
+    expect(find.text('Tela B'), findsOneWidget);
+    expect(_counterText(tester), '5 de 5');
+    expect(find.text('Concluir'), findsOneWidget);
+    expect(store.completeProgress, 1);
+
+    await tester.tap(find.byKey(_next));
+    await _pumpFrames(tester, 5);
+    await tester.pumpAndSettle();
+    expect(find.byKey(_balloon), findsNothing);
+    expect(store.lastCompleteOutcome, 'done');
+    expect(store.completeProgress, isNull);
+    // Volta à tela de origem.
+    expect(hostKey.currentState!.destination, 'institutions');
+  });
+
+  testWidgets('tour completo: "Pular tour" numa tela encerra tudo e volta à origem', (
+    tester,
+  ) async {
+    await _resize(tester, const Size(1440, 900));
+    final store = InMemorySuperadminTourStore(seen: true);
+    final hostKey = GlobalKey<_NavigatingHostState>();
+    await tester.pumpWidget(_NavigatingHost(key: hostKey, store: store, initial: 'units'));
+    await _openMenuTour(tester, option: 'Tour completo');
+    await tester.tap(find.byKey(_next));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(_next));
+    await _pumpFrames(tester, 10);
+    await tester.pumpAndSettle();
+    expect(hostKey.currentState!.destination, 'institutions');
+    expect(find.text('Tela A'), findsOneWidget);
+
+    await tester.tap(find.byKey(_skip));
+    await _pumpFrames(tester, 5);
+    await tester.pumpAndSettle();
+    expect(find.byKey(_balloon), findsNothing);
+    expect(store.lastCompleteOutcome, 'skipped');
+    expect(hostKey.currentState!.destination, 'units');
+  });
+
+  testWidgets('tour completo retoma após reload na tela gravada', (tester) async {
+    await _resize(tester, const Size(1440, 900));
+    // Reload simulado: o store diz que parou na tela de índice 1 (B).
+    final store = InMemorySuperadminTourStore(seen: true, completeProgress: 1);
+    final hostKey = GlobalKey<_NavigatingHostState>();
+    await tester.pumpWidget(_NavigatingHost(key: hostKey, store: store));
+    await _pumpFrames(tester, 10);
+    await tester.pumpAndSettle();
+
+    expect(hostKey.currentState!.destination, 'units');
+    expect(find.text('Tela B'), findsOneWidget);
+    expect(_counterText(tester), '5 de 5');
+    await tester.tap(find.byKey(_next));
+    await _pumpFrames(tester, 5);
+    await tester.pumpAndSettle();
+    expect(store.lastCompleteOutcome, 'done');
+    expect(hostKey.currentState!.destination, 'institutions');
   });
 
   testWidgets('passos do menu da conta abrem o menu, apontam cada item e fecham ao sair', (

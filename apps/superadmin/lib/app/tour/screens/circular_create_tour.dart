@@ -11,56 +11,50 @@ import '../superadmin_screen_tour.dart';
 const circularCreateHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Publicar Circular',
-  text:
-      'Uma circular nova.',
+  text: 'Uma circular nova: comunicado formal com texto, mídia e perguntas.',
 );
 
 /// Passo 2 — circular.title.
 const circularCreateTitleTourStep = CoeloTourStep(
   anchorId: 'circular.title',
   title: 'Título',
-  text:
-      'O assunto da circular.',
+  text: 'O assunto da circular.',
 );
 
 /// Passo 3 — circular.blocks.
 const circularCreateBlocksTourStep = CoeloTourStep(
   anchorId: 'circular.blocks',
-  title: 'Blocos',
+  title: 'Conteúdo',
   text:
-      'Adicione texto, mídia (PDF, imagem ou vídeo) e perguntas; reordene ou exclua.',
+      'Adicione texto, mídia (PDF, imagem ou vídeo) e perguntas na ordem de leitura; mova ou exclua blocos.',
 );
 
 /// Passo 4 — publish.audience.
 const circularCreateAudienceTourStep = CoeloTourStep(
   anchorId: 'publish.audience',
   title: 'Público e contexto',
-  text:
-      'Quem recebe a circular.',
+  text: 'Quem recebe a circular e a resposta esperada.',
 );
 
 /// Passo 5 — publish.schedule.
 const circularCreateScheduleTourStep = CoeloTourStep(
   anchorId: 'publish.schedule',
-  title: 'Agendamento',
-  text:
-      'Publique agora, agende ou salve como rascunho.',
+  title: 'Agendamento e opções',
+  text: 'Publique agora, agende ou salve como rascunho.',
 );
 
 /// Passo 6 — publish.preview.
 const circularCreatePreviewTourStep = CoeloTourStep(
   anchorId: 'publish.preview',
   title: 'Prévia',
-  text:
-      'Como a circular aparece para a família.',
+  text: 'Como a circular aparece para a família.',
 );
 
 /// Passo 7 — form.footer.
 const circularCreateFooterTourStep = CoeloTourStep(
   anchorId: 'form.footer',
   title: 'Publicar',
-  text:
-      '"Publicar" envia; "Salvar rascunho" guarda; Cancelar descarta.',
+  text: '"Publicar" envia; "Salvar rascunho" guarda; Cancelar volta.',
 );
 
 const circularCreateScreenTour = SuperadminScreenTour(

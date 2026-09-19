@@ -318,43 +318,41 @@ Home vai no primeiro lote.
 
 | # | Âncora | Título | Texto |
 |---|---|---|---|
-| 1 | `page.header` | Agenda institucional | Calendário, eventos e respostas por contexto. |
-| 2 | `agenda.areas` | Áreas da Agenda | Calendário, Eventos, Solicitações, Aprovações e Permissões. Cada uma é uma tela. |
-| 3 | `agenda.month` | Navegar no mês | Mês anterior, próximo mês e "Hoje". |
-| 4 | `agenda.search` | Buscar e contexto | Busque eventos pelo nome e filtre pelo contexto. |
-| 5 | `agenda.view` | Visualização | Alterne entre o calendário mensal e a lista. |
-| 6 | `agenda.grid` | O calendário | Cada dia mostra seus eventos; clique num dia para expandir o detalhe. |
-| 7 | `agenda.create` | Criar item | Abre o formulário de um novo evento. |
+| 1 | `page.header` | Agenda institucional | Calendário, eventos e respostas por contexto. Criar evento, Solicitações e Aprovações ficam no menu. |
+| 2 | `agenda.month` | Navegar no mês | Use as setas para ir ao mês anterior ou ao próximo. |
+| 3 | `agenda.search` | Buscar e contexto | Busque eventos pelo nome e filtre pelo contexto: instituição, unidades, turmas ou atividades. |
+| 4 | `agenda.view` | Visualização | Alterne entre o calendário mensal e a lista. |
+| 5 | `agenda.grid` | O calendário | Cada dia mostra seus eventos; clique num dia para abrir o detalhe. |
+| 6 | `agenda.today` | Hoje | Volta ao mês atual. |
 
 ### Criar evento (`agenda-create`)
 
 | # | Âncora | Título | Texto |
 |---|---|---|---|
-| 1 | `page.header` | Criar evento | Um evento novo na Agenda institucional. |
-| 2 | `form.navigation` | Seções | Navegue entre as seções do formulário. |
-| 3 | `agenda-create.basics` | Título, período e local | Nome do evento, data e horário de início e fim, dia inteiro e local. |
-| 4 | `agenda-create.context` | Contexto principal | Quem vê o evento: instituição, unidade ou turma. |
-| 5 | `agenda-create.recurrence` | Recorrência e prioridade | Repita o evento, defina o término da série e a prioridade. |
-| 6 | `agenda-create.response` | Resposta e lembretes | Modo de resposta (ciência, presença, autorização), política de responsáveis e lembretes. |
-| 7 | `agenda-create.questions` | Perguntas do evento | Adicione perguntas que a família responde ao confirmar. |
-| 8 | `agenda-create.preview` | Prévia na Agenda | Como o evento aparece no calendário do público escolhido. |
-| 9 | `form.footer` | Salvar | "Salvar rascunho" guarda sem publicar. Cancelar descarta. |
+| 1 | `page.header` | Criar evento | Um evento novo na Agenda institucional, como uma publicação numa única tela. |
+| 2 | `agenda-create.basics` | Título, data, local e público | Nome do evento, data e horário, local, descrição, categoria e quem vê: instituição, unidade ou turma. |
+| 3 | `agenda-create.options` | Mais opções | Dia inteiro, fuso, recorrência, prioridade, modo de resposta (ciência, presença, autorização) e lembretes. |
+| 4 | `agenda-create.questions` | Perguntas do evento | Adicione perguntas que a família responde ao confirmar. |
+| 5 | `publish.preview` | Prévia na Agenda | Como o evento aparece no calendário do público escolhido. |
+| 6 | `form.footer` | Salvar ou publicar | "Salvar rascunho" guarda sem publicar; "Publicar evento" (ou "Solicitar publicação") envia. Cancelar descarta. |
 
 ### Solicitações (`agenda-requests`)
 
 | # | Âncora | Título | Texto |
 |---|---|---|---|
 | 1 | `page.header` | Solicitações e retornos | Pedidos de ciência, presença e autorização enviados às famílias e o que cada uma respondeu. |
-| 2 | `agenda-requests.list` | A lista | Solicitação, tipo e política, estado e retorno. O primeiro retorno válido encerra a pendência dos demais. |
-| 3 | `agenda-requests.actions` | Responder | Autorizar, confirmar presença ou ciência em nome do responsável quando permitido. |
+| 2 | `directory.files` | Importar e exportar | Importe ou exporte as solicitações. |
+| 3 | `agenda-requests.list` | A lista | Solicitação, tipo e política, estado e retorno. O primeiro retorno válido encerra a pendência dos demais. |
+| 4 | `directory.pagination` | Paginação | Avance de página e escolha quantos itens ver por vez. |
 
 ### Aprovações (`agenda-approvals`)
 
 | # | Âncora | Título | Texto |
 |---|---|---|---|
 | 1 | `page.header` | Aprovações de publicação | Eventos aguardando decisão antes de aparecer para as famílias. |
-| 2 | `agenda-approvals.table` | A lista | Evento, solicitação, estado e histórico. "Decidir" abre a decisão. |
-| 3 | `agenda-approvals.decide` | Decidir | Aprove ou recuse com justificativa; tudo fica registrado no histórico da Agenda. |
+| 2 | `directory.files` | Importar e exportar | Importe ou exporte as aprovações. |
+| 3 | `agenda-approvals.table` | A lista | Evento, solicitação, estado e histórico. "Decidir" abre a decisão: aprove ou recuse com justificativa, registrada no histórico. |
+| 4 | `directory.pagination` | Paginação | Avance de página e escolha quantos itens ver por vez. |
 
 ## Lote Comunicação
 
@@ -444,22 +442,21 @@ Home vai no primeiro lote.
 
 | # | Âncora | Título | Texto |
 |---|---|---|---|
-| 1 | `page.header` | Publicar no Acontece | Um post novo no feed das famílias. |
-| 2 | `publish.media` | Mídia | Adicione fotos ou vídeos. |
-| 3 | `publish.caption` | Legenda | O texto do post. |
-| 4 | `publish.audience` | Público e contexto | Quem vê: instituição, unidade ou turma. |
-| 5 | `publish.schedule` | Agendamento e opções | Publique agora, agende ou salve como rascunho. |
-| 6 | `publish.preview` | Prévia | Como o post vai aparecer no feed. |
-| 7 | `form.footer` | Publicar | "Publicar" envia; "Salvar rascunho" guarda; Cancelar descarta. |
+| 1 | `publish.media` | Mídia | Adicione fotos ou vídeos; arraste para reordenar. |
+| 2 | `publish.caption` | Legenda | O texto do post. |
+| 3 | `publish.audience` | Público e contexto | O contexto da publicação e quem vê: famílias, equipe ou ambos. |
+| 4 | `publish.schedule` | Agendamento e opções | Marque data e hora para agendar; "Salvar como rascunho" guarda automaticamente. |
+| 5 | `publish.preview` | Prévia | Como o post vai aparecer no feed do Acontece. |
+| 6 | `form.footer` | Publicar | "Publicar no Acontece" envia (ou agenda); "Salvar rascunho" guarda; Cancelar volta. |
 
 ### Para você (`principal-for-you`)
 
 | # | Âncora | Título | Texto |
 |---|---|---|---|
 | 1 | `principal.nav` | Para você | A página da família com o resumo do dia dos filhos. |
-| 2 | `for-you.context` | Seu contexto atual | A visão geral ou por criança e vínculo. "Trocar contexto" muda. |
+| 2 | `for-you.shortcuts` | Atalhos essenciais | Os acessos mais usados pela família. |
 | 3 | `for-you.summary` | Resumo do dia | Presença, rotina e recados de hoje. |
-| 4 | `for-you.shortcuts` | Atalhos essenciais | Os acessos mais usados pela família. |
+| 4 | `for-you.context` | Seu contexto atual | A visão geral ou por criança e vínculo. "Trocar contexto" muda. |
 
 ### Momentos (`principal-moments`)
 
@@ -473,13 +470,12 @@ Home vai no primeiro lote.
 
 | # | Âncora | Título | Texto |
 |---|---|---|---|
-| 1 | `page.header` | Publicar em Momentos | Um momento novo. |
-| 2 | `publish.media` | Mídia e capa | Adicione a mídia e escolha a capa. |
-| 3 | `publish.caption` | Legenda | Conte o que torna este momento especial. |
-| 4 | `publish.audience` | Público e contexto | Quem vê o momento. |
-| 5 | `publish.schedule` | Agendamento e opções | Publique agora, agende ou salve como rascunho. |
-| 6 | `publish.preview` | Prévia | Como o momento vai aparecer. |
-| 7 | `form.footer` | Publicar | "Publicar" envia; "Salvar rascunho" guarda; Cancelar descarta. |
+| 1 | `publish.media` | Mídia e capa | Adicione a mídia e escolha a capa do momento. |
+| 2 | `publish.caption` | Legenda | Conte o que torna este momento especial. |
+| 3 | `publish.audience` | Público e contexto | Quem vê o momento. |
+| 4 | `publish.schedule` | Agendamento e opções | Publique agora, agende ou salve como rascunho. |
+| 5 | `publish.preview` | Prévia | Como o momento vai aparecer. |
+| 6 | `form.footer` | Publicar | "Publicar em Momentos" envia; "Salvar rascunho" guarda; Cancelar volta. |
 
 ### Agora (`principal-now`)
 
@@ -494,12 +490,12 @@ Home vai no primeiro lote.
 
 | # | Âncora | Título | Texto |
 |---|---|---|---|
-| 1 | `page.header` | Publicar no Agora | Um conteúdo temporário de 24 horas. |
-| 2 | `publish.media` | Mídia | Adicione ou troque a mídia. |
-| 3 | `now-publish.tools` | Texto, música, cortar e capa | Ajuste o conteúdo sobre a mídia. |
+| 1 | `publish.media` | Mídia | Adicione ou troque a mídia. O Agora fica disponível por 24 horas. |
+| 2 | `now-publish.tools` | Texto, música, cortar e capa | Ajuste o conteúdo sobre a mídia. |
+| 3 | `publish.caption` | Contexto opcional | Uma frase curta que acompanha a mídia. |
 | 4 | `publish.audience` | Público e contexto | Quem vê o Agora. |
 | 5 | `publish.schedule` | Agendar | Publique agora ou marque data e hora. |
-| 6 | `form.footer` | Publicar | "Publicar" envia; "Salvar rascunho" guarda; Cancelar descarta. |
+| 6 | `form.footer` | Publicar | "Publicar no Agora" envia; "Salvar rascunho" guarda; Cancelar volta. |
 
 ### Chat (`principal-chat`)
 
@@ -536,10 +532,10 @@ Home vai no primeiro lote.
 
 | # | Âncora | Título | Texto |
 |---|---|---|---|
-| 1 | `page.header` | Publicar Circular | Uma circular nova. |
+| 1 | `page.header` | Publicar Circular | Uma circular nova: comunicado formal com texto, mídia e perguntas. |
 | 2 | `circular.title` | Título | O assunto da circular. |
-| 3 | `circular.blocks` | Blocos | Adicione texto, mídia (PDF, imagem ou vídeo) e perguntas; reordene ou exclua. |
-| 4 | `publish.audience` | Público e contexto | Quem recebe a circular. |
-| 5 | `publish.schedule` | Agendamento | Publique agora, agende ou salve como rascunho. |
+| 3 | `circular.blocks` | Conteúdo | Adicione texto, mídia (PDF, imagem ou vídeo) e perguntas na ordem de leitura; mova ou exclua blocos. |
+| 4 | `publish.audience` | Público e contexto | Quem recebe a circular e a resposta esperada. |
+| 5 | `publish.schedule` | Agendamento e opções | Publique agora, agende ou salve como rascunho. |
 | 6 | `publish.preview` | Prévia | Como a circular aparece para a família. |
-| 7 | `form.footer` | Publicar | "Publicar" envia; "Salvar rascunho" guarda; Cancelar descarta. |
+| 7 | `form.footer` | Publicar | "Publicar" envia; "Salvar rascunho" guarda; Cancelar volta. |

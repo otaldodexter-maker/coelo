@@ -278,7 +278,10 @@ final class _PrincipalMomentsPreviewPageState extends State<PrincipalMomentsPrev
     builder: (context, constraints) {
       final framed = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
       final desktop = constraints.maxWidth >= CoeloBreakpoints.large.minWidth;
-      final surface = _buildFeedSurface(framed: framed);
+      final surface = CoeloTourAnchor(
+        id: 'moments.feed',
+        child: _buildFeedSurface(framed: framed),
+      );
       return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: !framed
@@ -959,11 +962,14 @@ final class _DesktopAside extends StatelessWidget {
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: CoeloSpacing.space3),
-            FilledButton.icon(
-              key: const Key('principal-moments-create'),
-              onPressed: onSend,
-              icon: const Icon(Icons.upload_outlined),
-              label: const Text('Enviar momento'),
+            CoeloTourAnchor(
+              id: 'moments.create',
+              child: FilledButton.icon(
+                key: const Key('principal-moments-create'),
+                onPressed: onSend,
+                icon: const Icon(Icons.upload_outlined),
+                label: const Text('Enviar momento'),
+              ),
             ),
           ],
         ),

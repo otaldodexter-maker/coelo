@@ -34,6 +34,7 @@ final class HappensPublicationContext {
 
   final String institutionId;
   final String institutionName;
+
   /// Unidade e turma sao opcionais: o contexto de instituicao (Owner,
   /// Superadmin "ve tudo", P35) publica para a instituicao inteira. O servidor
   /// aceita nulos e autoriza pelo escopo do ator.
@@ -184,8 +185,7 @@ final class HappensUploadIntent {
   /// A janela assinada e curta de proposito: transferir contra uma assinatura
   /// vencida falha de forma obscura, entao o cliente prefere falhar honesto e
   /// preparar de novo.
-  bool expiredAt(DateTime moment) =>
-      expiresAt != null && !moment.toUtc().isBefore(expiresAt!);
+  bool expiredAt(DateTime moment) => expiresAt != null && !moment.toUtc().isBefore(expiresAt!);
 }
 
 abstract interface class HappensPublicationRepository {
@@ -199,6 +199,7 @@ abstract interface class HappensPublicationRepository {
   );
   Future<HappensMediaDraft> finalizeMedia(HappensUploadIntent intent, HappensMediaDraft media);
   Future<void> removeMedia(HappensPublicationContext context, HappensMediaDraft media);
+
   /// Publica [draft] sob a chave de idempotencia [requestId].
   ///
   /// A chave pertence a intencao, nao a chamada: repetir a mesma tentativa

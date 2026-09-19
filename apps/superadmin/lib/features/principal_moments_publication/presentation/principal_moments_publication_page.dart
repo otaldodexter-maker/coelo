@@ -276,19 +276,19 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
   Widget _publicationBody() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      _mediaPanel(),
+      CoeloTourAnchor(id: 'publish.media', child: _mediaPanel()),
       const SizedBox(height: CoeloSpacing.space4),
-      _captionCard(),
+      CoeloTourAnchor(id: 'publish.caption', child: _captionCard()),
       const SizedBox(height: CoeloSpacing.space4),
-      _audienceCard(),
+      CoeloTourAnchor(id: 'publish.audience', child: _audienceCard()),
       const SizedBox(height: CoeloSpacing.space4),
-      _scheduleCard(),
+      CoeloTourAnchor(id: 'publish.schedule', union: true, child: _scheduleCard()),
       const SizedBox(height: CoeloSpacing.space3),
       const PrincipalPublicationNote(
         text: 'Somente pessoas do contexto selecionado poderão ver este momento.',
       ),
       const SizedBox(height: CoeloSpacing.space4),
-      _optionsCard(),
+      CoeloTourAnchor(id: 'publish.schedule', union: true, child: _optionsCard()),
     ],
   );
 

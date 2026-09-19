@@ -419,10 +419,9 @@ final class _RecentAvatarStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final textStyle = Theme.of(context).textTheme.labelMedium?.copyWith(
-      color: colors.onSurfaceVariant,
-      fontWeight: FontWeight.w700,
-    );
+    final textStyle = Theme.of(
+      context,
+    ).textTheme.labelMedium?.copyWith(color: colors.onSurfaceVariant, fontWeight: FontWeight.w700);
     final width = _avatarSize + (initials.length - 1) * (_avatarSize - _overlap);
     return ExcludeSemantics(
       child: Container(

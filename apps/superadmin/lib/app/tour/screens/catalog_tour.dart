@@ -11,31 +11,24 @@ import '../superadmin_screen_tour.dart';
 const catalogHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Catálogo',
-  text:
-      'Fundamentos, componentes e padrões aprovados da interface.',
+  text: 'Fundamentos, componentes e padrões aprovados da interface.',
 );
 
 /// Passo 2 — page.actions.
 const catalogActionsTourStep = CoeloTourStep(
   anchorId: 'page.actions',
   title: 'Abrir em nova aba',
-  text:
-      'Abra o catálogo numa aba própria do navegador.',
+  text: 'Abra o catálogo numa aba própria do navegador.',
 );
 
 /// Passo 3 — catalog.frame.
 const catalogFrameTourStep = CoeloTourStep(
   anchorId: 'catalog.frame',
   title: 'O catálogo',
-  text:
-      'Navegue pelos componentes aqui mesmo.',
+  text: 'Navegue pelos componentes aqui mesmo.',
 );
 
 const catalogScreenTour = SuperadminScreenTour(
   destinationId: 'catalog',
-  steps: [
-    catalogHeaderTourStep,
-    catalogActionsTourStep,
-    catalogFrameTourStep,
-  ],
+  steps: [catalogHeaderTourStep, catalogActionsTourStep, catalogFrameTourStep],
 );

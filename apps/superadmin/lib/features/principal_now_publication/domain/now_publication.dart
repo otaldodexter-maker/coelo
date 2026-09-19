@@ -58,6 +58,7 @@ final class NowPublicationContext {
 
   final String tenantId;
   final String institutionId;
+
   /// Unidade e turma sao opcionais: o contexto de instituicao (Owner,
   /// Superadmin "ve tudo", P35) publica para a instituicao inteira. O servidor
   /// aceita nulos e autoriza pelo escopo do ator.
@@ -289,6 +290,7 @@ abstract interface class NowPublicationRepository {
     String publicationId,
     NowAudioDraft audio,
   );
+
   /// Publica [draft] sob a chave de idempotencia [requestId].
   ///
   /// A chave pertence a intencao, nao a chamada: repetir a mesma tentativa

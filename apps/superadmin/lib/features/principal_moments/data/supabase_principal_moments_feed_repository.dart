@@ -173,8 +173,9 @@ final class _MediaDescriptor {
   final int displayOrder;
 }
 
-PrincipalMomentsFeedFailure _mapFeedError(PostgrestException error) =>
-    _denied(error) ? const PrincipalMomentsFeedUnauthorized() : const PrincipalMomentsFeedUnavailable();
+PrincipalMomentsFeedFailure _mapFeedError(PostgrestException error) => _denied(error)
+    ? const PrincipalMomentsFeedUnauthorized()
+    : const PrincipalMomentsFeedUnavailable();
 
 PrincipalMomentsWithdrawalFailure _mapWithdrawalError(PostgrestException error) => _denied(error)
     ? const PrincipalMomentsWithdrawalDenied()

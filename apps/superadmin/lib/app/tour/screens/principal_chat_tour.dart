@@ -11,32 +11,28 @@ import '../superadmin_screen_tour.dart';
 const principalChatSearchTourStep = CoeloTourStep(
   anchorId: 'chat.search',
   title: 'Buscar conversas',
-  text:
-      'Encontre uma conversa.',
+  text: 'Encontre uma conversa.',
 );
 
 /// Passo 2 — chat.list.
 const principalChatListTourStep = CoeloTourStep(
   anchorId: 'chat.list',
   title: 'Lista',
-  text:
-      'As conversas da família, com não lidas.',
+  text: 'As conversas da família, com não lidas.',
 );
 
 /// Passo 3 — chat.thread.
 const principalChatThreadTourStep = CoeloTourStep(
   anchorId: 'chat.thread',
   title: 'A conversa',
-  text:
-      'Mensagens e anexos. Role para carregar as anteriores.',
+  text: 'Mensagens e anexos. Role para carregar as anteriores.',
 );
 
 /// Passo 4 — chat.composer.
 const principalChatComposerTourStep = CoeloTourStep(
   anchorId: 'chat.composer',
   title: 'Escrever',
-  text:
-      'Digite e envie.',
+  text: 'Digite e envie.',
 );
 
 const principalChatScreenTour = SuperadminScreenTour(

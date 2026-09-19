@@ -11,8 +11,7 @@ import '../superadmin_screen_tour.dart';
 const attendanceHistoryHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Histórico de chamadas',
-  text:
-      'Chamadas lançadas no seu escopo; abra uma para ver o detalhe.',
+  text: 'Chamadas lançadas no seu escopo; abra uma para ver o detalhe.',
 );
 
 /// Passo 2 — directory.leading.
@@ -27,8 +26,7 @@ const attendanceHistoryLeadingTourStep = CoeloTourStep(
 const attendanceHistoryFiltersTourStep = CoeloTourStep(
   anchorId: 'directory.filters',
   title: 'Filtros',
-  text:
-      'Instituição, Unidade, Turma, Atividade e Situação.',
+  text: 'Instituição, Unidade, Turma, Atividade e Situação.',
 );
 
 /// Passo 4 — directory.body.
@@ -43,8 +41,7 @@ const attendanceHistoryBodyTourStep = CoeloTourStep(
 const attendanceHistoryPaginationTourStep = CoeloTourStep(
   anchorId: 'directory.pagination',
   title: 'Paginação',
-  text:
-      'Avance de página e escolha quantos itens ver por vez.',
+  text: 'Avance de página e escolha quantos itens ver por vez.',
 );
 
 const attendanceHistoryScreenTour = SuperadminScreenTour(

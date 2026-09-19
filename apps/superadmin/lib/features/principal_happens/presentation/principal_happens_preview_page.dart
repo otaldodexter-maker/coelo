@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 
 import '../domain/principal_happens_feed_repository.dart';
 import '../domain/principal_happens_preview_data.dart';
@@ -499,9 +500,12 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
                   ),
                 ),
                 if (large)
-                  _ContextColumn(
-                    data: widget.data,
-                    onOpenAgenda: () => widget.onOpenAgenda?.call(),
+                  CoeloTourAnchor(
+                    id: 'happens.side',
+                    child: _ContextColumn(
+                      data: widget.data,
+                      onOpenAgenda: () => widget.onOpenAgenda?.call(),
+                    ),
                   ),
               ],
             ),
@@ -593,11 +597,14 @@ final class _Feed extends StatelessWidget {
             CoeloSpacing.space3,
           ),
           sliver: SliverToBoxAdapter(
-            child: _NowSection(
-              items: data.nowItems,
-              compact: compact,
-              onPublish: onCreatePost,
-              onOpenItem: onOpenNow,
+            child: CoeloTourAnchor(
+              id: 'happens.now',
+              child: _NowSection(
+                items: data.nowItems,
+                compact: compact,
+                onPublish: onCreatePost,
+                onOpenItem: onOpenNow,
+              ),
             ),
           ),
         ),
@@ -637,7 +644,10 @@ final class _Feed extends StatelessWidget {
             separatorBuilder: (_, _) => const SizedBox(height: CoeloSpacing.space3),
             itemBuilder: (context, index) => Padding(
               padding: EdgeInsets.symmetric(horizontal: compact ? 0 : horizontal),
-              child: _feedItem(index),
+              // O tour aponta a primeira publicação do feed.
+              child: index == 0
+                  ? CoeloTourAnchor(id: 'happens.feed', child: _feedItem(index))
+                  : _feedItem(index),
             ),
           ),
         if (canLoadMore || loadingMore || loadMoreError != null)

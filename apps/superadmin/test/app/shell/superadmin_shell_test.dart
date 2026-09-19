@@ -1721,13 +1721,20 @@ void main() {
       kind: PointerDeviceKind.mouse,
     );
     await tester.pumpAndSettle();
-    expect(find.text('O tour desta tela chega em breve.'), findsNothing);
+    expect(find.text('Esta tela ainda não tem tour.'), findsNothing);
 
-    // `screen` segue placeholder; `menu` e `complete` abrem o tour do menu
-    // (coberto em superadmin_shell_tour_test.dart).
+    // Sem tour para o destino: aviso. Os tours estão cobertos em
+    // superadmin_shell_tour_test.dart.
+    await tester.pumpWidget(_shellApp(currentDestination: 'plans'));
+    await tester.pumpAndSettle();
+    // O flyout anterior continua aberto no mesmo estado; garante aberto.
+    if (find.text('Tour desta tela').evaluate().isEmpty) {
+      await tester.tap(find.byKey(const Key('superadmin-onboarding-tour')));
+      await tester.pumpAndSettle();
+    }
     await tester.tap(find.text('Tour desta tela'));
     await tester.pumpAndSettle();
-    expect(find.text('O tour desta tela chega em breve.'), findsOneWidget);
+    expect(find.text('Esta tela ainda não tem tour.'), findsOneWidget);
   });
 
   testWidgets('repaints the onboarding egg when semantic colors change', (tester) async {

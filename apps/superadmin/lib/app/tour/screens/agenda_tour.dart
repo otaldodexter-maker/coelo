@@ -12,66 +12,53 @@ const agendaHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Agenda institucional',
   text:
-      'Calendário, eventos e respostas por contexto.',
+      'Calendário, eventos e respostas por contexto. Criar evento, Solicitações e Aprovações ficam no menu.',
 );
 
-/// Passo 2 — agenda.areas.
-const agendaAreasTourStep = CoeloTourStep(
-  anchorId: 'agenda.areas',
-  title: 'Áreas da Agenda',
-  text:
-      'Calendário, Eventos, Solicitações, Aprovações e Permissões. Cada uma é uma tela.',
-);
-
-/// Passo 3 — agenda.month.
+/// Passo 2 — agenda.month.
 const agendaMonthTourStep = CoeloTourStep(
   anchorId: 'agenda.month',
   title: 'Navegar no mês',
-  text:
-      'Mês anterior, próximo mês e "Hoje".',
+  text: 'Use as setas para ir ao mês anterior ou ao próximo.',
 );
 
-/// Passo 4 — agenda.search.
+/// Passo 3 — agenda.search.
 const agendaSearchTourStep = CoeloTourStep(
   anchorId: 'agenda.search',
   title: 'Buscar e contexto',
   text:
-      'Busque eventos pelo nome e filtre pelo contexto.',
+      'Busque eventos pelo nome e filtre pelo contexto: instituição, unidades, turmas ou atividades.',
 );
 
-/// Passo 5 — agenda.view.
+/// Passo 4 — agenda.view.
 const agendaViewTourStep = CoeloTourStep(
   anchorId: 'agenda.view',
   title: 'Visualização',
-  text:
-      'Alterne entre o calendário mensal e a lista.',
+  text: 'Alterne entre o calendário mensal e a lista.',
 );
 
-/// Passo 6 — agenda.grid.
+/// Passo 5 — agenda.grid.
 const agendaGridTourStep = CoeloTourStep(
   anchorId: 'agenda.grid',
   title: 'O calendário',
-  text:
-      'Cada dia mostra seus eventos; clique num dia para expandir o detalhe.',
+  text: 'Cada dia mostra seus eventos; clique num dia para abrir o detalhe.',
 );
 
-/// Passo 7 — agenda.create.
-const agendaCreateTourStep = CoeloTourStep(
-  anchorId: 'agenda.create',
-  title: 'Criar item',
-  text:
-      'Abre o formulário de um novo evento.',
+/// Passo 6 — agenda.today.
+const agendaTodayTourStep = CoeloTourStep(
+  anchorId: 'agenda.today',
+  title: 'Hoje',
+  text: 'Volta ao mês atual.',
 );
 
 const agendaScreenTour = SuperadminScreenTour(
   destinationId: 'agenda',
   steps: [
     agendaHeaderTourStep,
-    agendaAreasTourStep,
     agendaMonthTourStep,
     agendaSearchTourStep,
     agendaViewTourStep,
     agendaGridTourStep,
-    agendaCreateTourStep,
+    agendaTodayTourStep,
   ],
 );

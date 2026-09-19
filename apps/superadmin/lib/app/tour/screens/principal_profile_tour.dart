@@ -11,32 +11,28 @@ import '../superadmin_screen_tour.dart';
 const principalProfileHeaderTourStep = CoeloTourStep(
   anchorId: 'profile.header',
   title: 'O perfil',
-  text:
-      'Nome, brasão, campus e verificação da instituição.',
+  text: 'Nome, brasão, campus e verificação da instituição.',
 );
 
 /// Passo 2 — profile.actions.
 const principalProfileActionsTourStep = CoeloTourStep(
   anchorId: 'profile.actions',
   title: 'Acompanhar, mensagem e editar',
-  text:
-      'Siga o perfil, envie mensagem ou edite (quando permitido).',
+  text: 'Siga o perfil, envie mensagem ou edite (quando permitido).',
 );
 
 /// Passo 3 — profile.highlights.
 const principalProfileHighlightsTourStep = CoeloTourStep(
   anchorId: 'profile.highlights',
   title: 'Destaques e vínculos',
-  text:
-      'Conteúdos em destaque e as pessoas vinculadas.',
+  text: 'Conteúdos em destaque e as pessoas vinculadas.',
 );
 
 /// Passo 4 — profile.tabs.
 const principalProfileTabsTourStep = CoeloTourStep(
   anchorId: 'profile.tabs',
   title: 'Abas',
-  text:
-      'Acontece, Momentos, Circulares e Sobre.',
+  text: 'Acontece, Momentos, Circulares e Sobre.',
 );
 
 const principalProfileScreenTour = SuperadminScreenTour(

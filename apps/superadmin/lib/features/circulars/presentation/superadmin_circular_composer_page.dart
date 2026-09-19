@@ -152,81 +152,100 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const PublicationLabel('Título'),
-        PublicationTextField(
-          fieldKey: const Key('circular-title'),
-          controller: _title,
-          hintText: 'Reunião de pais e responsáveis — 3º ano',
-          maxLength: CircularLimits.titleCharacters,
-          onChanged: controller.updateTitle,
+        CoeloTourAnchor(
+          id: 'circular.title',
+          child: PublicationTextField(
+            fieldKey: const Key('circular-title'),
+            controller: _title,
+            hintText: 'Reunião de pais e responsáveis — 3º ano',
+            maxLength: CircularLimits.titleCharacters,
+            onChanged: controller.updateTitle,
+          ),
         ),
         const PublicationLabel(
           'Conteúdo da circular',
           hint: 'texto, mídia e perguntas na ordem de leitura',
         ),
-        for (var index = 0; index < draft.blocks.length; index++) ...[
-          _editorBlock(draft.blocks[index], index),
-          if (index == 0 || mediaCount < CircularLimits.files)
-            // Altura minima, nao fixa: a 200% o rotulo da tile ocupa mais
-            // linhas e a coluna interna estourava 16 px (375 px, R16).
-            ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 160),
-              child: CoeloCreateAction(
-                key: Key(
-                  index == 0
-                      ? 'circular-pick-files'
-                      : 'circular-pick-files-after-${draft.blocks[index].id}',
-                ),
-                onPressed: mediaCount >= CircularLimits.files
-                    ? null
-                    : () => widget.onPickFiles(draft.blocks[index].id),
-                icon: Icons.add_photo_alternate_outlined,
-                label: 'Adicionar mídia aqui',
+        CoeloTourAnchor(
+          id: 'circular.blocks',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var index = 0; index < draft.blocks.length; index++) ...[
+                _editorBlock(draft.blocks[index], index),
+                if (index == 0 || mediaCount < CircularLimits.files)
+                  // Altura minima, nao fixa: a 200% o rotulo da tile ocupa mais
+                  // linhas e a coluna interna estourava 16 px (375 px, R16).
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 160),
+                    child: CoeloCreateAction(
+                      key: Key(
+                        index == 0
+                            ? 'circular-pick-files'
+                            : 'circular-pick-files-after-${draft.blocks[index].id}',
+                      ),
+                      onPressed: mediaCount >= CircularLimits.files
+                          ? null
+                          : () => widget.onPickFiles(draft.blocks[index].id),
+                      icon: Icons.add_photo_alternate_outlined,
+                      label: 'Adicionar mídia aqui',
+                    ),
+                  ),
+                const SizedBox(height: CoeloSpacing.space2),
+              ],
+              Wrap(
+                spacing: CoeloSpacing.space2,
+                runSpacing: CoeloSpacing.space2,
+                children: [
+                  TextButton.icon(
+                    key: const Key('circular-add-text'),
+                    onPressed: () => controller.addTextBlock(),
+                    icon: const Icon(Icons.notes_rounded),
+                    label: const Text('Adicionar texto'),
+                  ),
+                  TextButton.icon(
+                    key: const Key('circular-add-question'),
+                    onPressed: questions.length >= CircularLimits.questions
+                        ? null
+                        : () => controller.addQuestion(CircularQuestionKind.singleChoice),
+                    icon: const Icon(Icons.add_rounded),
+                    label: const Text('Adicionar pergunta'),
+                  ),
+                ],
               ),
-            ),
-          const SizedBox(height: CoeloSpacing.space2),
-        ],
-        Wrap(
-          spacing: CoeloSpacing.space2,
-          runSpacing: CoeloSpacing.space2,
-          children: [
-            TextButton.icon(
-              key: const Key('circular-add-text'),
-              onPressed: () => controller.addTextBlock(),
-              icon: const Icon(Icons.notes_rounded),
-              label: const Text('Adicionar texto'),
-            ),
-            TextButton.icon(
-              key: const Key('circular-add-question'),
-              onPressed: questions.length >= CircularLimits.questions
-                  ? null
-                  : () => controller.addQuestion(CircularQuestionKind.singleChoice),
-              icon: const Icon(Icons.add_rounded),
-              label: const Text('Adicionar pergunta'),
-            ),
-          ],
+            ],
+          ),
         ),
         const PublicationLabel('Público e contexto'),
-        PublicationRow(
-          icon: Icons.group_outlined,
-          title: 'Público e contexto',
-          lines: [
-            widget.contextLabel ?? 'Instituição selecionada',
-            'O servidor valida os vínculos e o escopo',
-          ],
+        CoeloTourAnchor(
+          id: 'publish.audience',
+          union: true,
+          child: PublicationRow(
+            icon: Icons.group_outlined,
+            title: 'Público e contexto',
+            lines: [
+              widget.contextLabel ?? 'Instituição selecionada',
+              'O servidor valida os vínculos e o escopo',
+            ],
+          ),
         ),
         const SizedBox(height: CoeloSpacing.space3),
-        Wrap(
-          spacing: CoeloSpacing.space2,
-          runSpacing: CoeloSpacing.space2,
-          children: [
-            for (final entry in _audienceLabels.entries)
-              PublicationChip(
-                key: Key('circular-audience-${entry.key.name}'),
-                label: entry.value,
-                selected: draft.audiences.contains(entry.key),
-                onTap: () => controller.toggleAudience(entry.key),
-              ),
-          ],
+        CoeloTourAnchor(
+          id: 'publish.audience',
+          union: true,
+          child: Wrap(
+            spacing: CoeloSpacing.space2,
+            runSpacing: CoeloSpacing.space2,
+            children: [
+              for (final entry in _audienceLabels.entries)
+                PublicationChip(
+                  key: Key('circular-audience-${entry.key.name}'),
+                  label: entry.value,
+                  selected: draft.audiences.contains(entry.key),
+                  onTap: () => controller.toggleAudience(entry.key),
+                ),
+            ],
+          ),
         ),
         const PublicationLabel('Resposta esperada'),
         Wrap(
@@ -243,13 +262,17 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
           ],
         ),
         const SizedBox(height: CoeloSpacing.space2),
-        _scheduleRow(context),
+        CoeloTourAnchor(id: 'publish.schedule', union: true, child: _scheduleRow(context)),
         const PublicationLabel('Opções'),
-        PublicationToggleRow(
-          icon: Icons.description_outlined,
-          label: 'Salvar como rascunho',
-          value: draft.status == CircularStatus.draft && draft.id.isNotEmpty,
-          onChanged: controller.busy ? null : (_) => _save(),
+        CoeloTourAnchor(
+          id: 'publish.schedule',
+          union: true,
+          child: PublicationToggleRow(
+            icon: Icons.description_outlined,
+            label: 'Salvar como rascunho',
+            value: draft.status == CircularStatus.draft && draft.id.isNotEmpty,
+            onChanged: controller.busy ? null : (_) => _save(),
+          ),
         ),
         if (draft.status != CircularStatus.draft)
           Padding(

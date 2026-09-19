@@ -11,48 +11,42 @@ import '../superadmin_screen_tour.dart';
 const institutionsHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Instituições',
-  text:
-      'Cada cliente do Coelo. A instituição é única e administra suas unidades.',
+  text: 'Cada cliente do Coelo. A instituição é única e administra suas unidades.',
 );
 
 /// Passo 2 — directory.search.
 const institutionsSearchTourStep = CoeloTourStep(
   anchorId: 'directory.search',
   title: 'Buscar por nome',
-  text:
-      'Digite parte do nome para filtrar a lista na hora.',
+  text: 'Digite parte do nome para filtrar a lista na hora.',
 );
 
 /// Passo 3 — directory.filters.
 const institutionsFiltersTourStep = CoeloTourStep(
   anchorId: 'directory.filters',
   title: 'Filtros',
-  text:
-      'Refine por plano, situação e outros critérios. "Limpar filtros" volta à lista completa.',
+  text: 'Refine por plano, situação e outros critérios. "Limpar filtros" volta à lista completa.',
 );
 
 /// Passo 4 — directory.view.
 const institutionsViewTourStep = CoeloTourStep(
   anchorId: 'directory.view',
   title: 'Cards ou tabela',
-  text:
-      'Escolha ver como cards, com resumo de cada instituição, ou como tabela, com mais colunas.',
+  text: 'Escolha ver como cards, com resumo de cada instituição, ou como tabela, com mais colunas.',
 );
 
 /// Passo 5 — directory.files.
 const institutionsFilesTourStep = CoeloTourStep(
   anchorId: 'directory.files',
   title: 'Importar e exportar',
-  text:
-      'Traga instituições de uma planilha ou exporte a lista atual em CSV ou XLSX.',
+  text: 'Traga instituições de uma planilha ou exporte a lista atual em CSV ou XLSX.',
 );
 
 /// Passo 6 — directory.tabs.
 const institutionsTabsTourStep = CoeloTourStep(
   anchorId: 'directory.tabs',
   title: 'Situação',
-  text:
-      'Todos, Ativos, Em Implantação ou Inativos. A aba muda o que aparece abaixo.',
+  text: 'Todos, Ativos, Em Implantação ou Inativos. A aba muda o que aparece abaixo.',
 );
 
 /// Passo 7 — directory.create.
@@ -67,16 +61,14 @@ const institutionsCreateTourStep = CoeloTourStep(
 const institutionsBodyTourStep = CoeloTourStep(
   anchorId: 'directory.body',
   title: 'A lista',
-  text:
-      'Clique numa instituição para abrir seus dados, unidades e locais.',
+  text: 'Clique numa instituição para abrir seus dados, unidades e locais.',
 );
 
 /// Passo 9 — directory.pagination.
 const institutionsPaginationTourStep = CoeloTourStep(
   anchorId: 'directory.pagination',
   title: 'Paginação',
-  text:
-      'Avance de página e escolha quantos itens ver por vez.',
+  text: 'Avance de página e escolha quantos itens ver por vez.',
 );
 
 const institutionsScreenTour = SuperadminScreenTour(

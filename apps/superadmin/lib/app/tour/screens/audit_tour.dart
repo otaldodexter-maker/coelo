@@ -11,40 +11,35 @@ import '../superadmin_screen_tour.dart';
 const auditHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Auditoria',
-  text:
-      'Tudo o que foi feito no painel: quem, quando e o quê.',
+  text: 'Tudo o que foi feito no painel: quem, quando e o quê.',
 );
 
 /// Passo 2 — directory.search.
 const auditSearchTourStep = CoeloTourStep(
   anchorId: 'directory.search',
   title: 'Buscar na auditoria',
-  text:
-      'Filtre os eventos por texto.',
+  text: 'Filtre os eventos por texto.',
 );
 
 /// Passo 3 — directory.files.
 const auditFilesTourStep = CoeloTourStep(
   anchorId: 'directory.files',
   title: 'Exportar',
-  text:
-      'Exporte os eventos em CSV ou XLSX.',
+  text: 'Exporte os eventos em CSV ou XLSX.',
 );
 
 /// Passo 4 — directory.body.
 const auditBodyTourStep = CoeloTourStep(
   anchorId: 'directory.body',
   title: 'Eventos',
-  text:
-      'Cada linha é um evento; clique para ver o detalhe.',
+  text: 'Cada linha é um evento; clique para ver o detalhe.',
 );
 
 /// Passo 5 — directory.pagination.
 const auditPaginationTourStep = CoeloTourStep(
   anchorId: 'directory.pagination',
   title: 'Paginação',
-  text:
-      'Avance de página e escolha quantos itens ver por vez.',
+  text: 'Avance de página e escolha quantos itens ver por vez.',
 );
 
 const auditScreenTour = SuperadminScreenTour(

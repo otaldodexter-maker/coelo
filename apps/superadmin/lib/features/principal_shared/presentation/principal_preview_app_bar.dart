@@ -1,5 +1,6 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 
 import 'principal_global_navigation.dart';
 
@@ -53,16 +54,19 @@ final class PrincipalPreviewAppBar extends StatelessWidget implements PreferredS
         ),
         Padding(
           padding: const EdgeInsets.only(right: CoeloSpacing.space3),
-          child: IconButton(
-            key: ValueKey('$keyPrefix-context-avatar'),
-            tooltip: 'Trocar contexto',
-            onPressed: onOpenContext,
-            style: _headerActionStyle(scheme),
-            icon: CircleAvatar(
-              radius: 18,
-              backgroundColor: scheme.primaryContainer,
-              foregroundColor: scheme.onPrimaryContainer,
-              child: const Text('AC'),
+          child: CoeloTourAnchor(
+            id: 'principal.context',
+            child: IconButton(
+              key: ValueKey('$keyPrefix-context-avatar'),
+              tooltip: 'Trocar contexto',
+              onPressed: onOpenContext,
+              style: _headerActionStyle(scheme),
+              icon: CircleAvatar(
+                radius: 18,
+                backgroundColor: scheme.primaryContainer,
+                foregroundColor: scheme.onPrimaryContainer,
+                child: const Text('AC'),
+              ),
             ),
           ),
         ),

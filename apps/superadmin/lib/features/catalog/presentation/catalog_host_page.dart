@@ -76,29 +76,32 @@ final class CatalogHostPage extends StatelessWidget {
             icon: const Icon(Icons.open_in_new_outlined),
           ),
       ],
-      child: localPreview && uri != null && _isLocalCatalog(uri)
-          ? buildCatalogPlatformHost(uri)
-          : localPreview
-          ? const Center(
-              child: Padding(
-                padding: EdgeInsets.all(CoeloSpacing.space6),
-                child: CoeloStatePanel(
-                  key: Key('catalog-local-preview'),
-                  title: 'Catálogo local',
-                  message: 'Catálogo local disponível sem depender do domínio externo.',
-                  icon: Icons.widgets_outlined,
+      child: CoeloTourAnchor(
+        id: 'catalog.frame',
+        child: localPreview && uri != null && _isLocalCatalog(uri)
+            ? buildCatalogPlatformHost(uri)
+            : localPreview
+            ? const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(CoeloSpacing.space6),
+                  child: CoeloStatePanel(
+                    key: Key('catalog-local-preview'),
+                    title: 'Catálogo local',
+                    message: 'Catálogo local disponível sem depender do domínio externo.',
+                    icon: Icons.widgets_outlined,
+                  ),
                 ),
-              ),
-            )
-          : uri == null
-          ? const CoeloStatePanel(
-              title: 'Endereço do catálogo indisponível',
-              message: 'Configure uma origem HTTPS própria para o catálogo.',
-              icon: Icons.link_off_outlined,
-            )
-          : catalogEmbeddingSupported
-          ? buildCatalogPlatformHost(uri)
-          : _CatalogPlatformFallback(uri: uri),
+              )
+            : uri == null
+            ? const CoeloStatePanel(
+                title: 'Endereço do catálogo indisponível',
+                message: 'Configure uma origem HTTPS própria para o catálogo.',
+                icon: Icons.link_off_outlined,
+              )
+            : catalogEmbeddingSupported
+            ? buildCatalogPlatformHost(uri)
+            : _CatalogPlatformFallback(uri: uri),
+      ),
     );
   }
 

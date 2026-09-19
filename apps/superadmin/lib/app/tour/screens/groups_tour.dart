@@ -11,24 +11,21 @@ import '../superadmin_screen_tour.dart';
 const groupsHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Turmas',
-  text:
-      'Os grupos de crianças ou alunos dentro de cada unidade, com seus educadores.',
+  text: 'Os grupos de crianças ou alunos dentro de cada unidade, com seus educadores.',
 );
 
 /// Passo 2 — directory.search.
 const groupsSearchTourStep = CoeloTourStep(
   anchorId: 'directory.search',
   title: 'Buscar por nome',
-  text:
-      'Encontre uma turma pelo nome.',
+  text: 'Encontre uma turma pelo nome.',
 );
 
 /// Passo 3 — directory.filters.
 const groupsFiltersTourStep = CoeloTourStep(
   anchorId: 'directory.filters',
   title: 'Filtros',
-  text:
-      'Instituições, Unidades e Tipo da turma. "Limpar filtros" volta ao início.',
+  text: 'Instituições, Unidades e Tipo da turma. "Limpar filtros" volta ao início.',
 );
 
 /// Passo 4 — directory.view.
@@ -43,40 +40,35 @@ const groupsViewTourStep = CoeloTourStep(
 const groupsFilesTourStep = CoeloTourStep(
   anchorId: 'directory.files',
   title: 'Importar e exportar',
-  text:
-      'Importe turmas de uma planilha ou exporte em CSV ou XLSX.',
+  text: 'Importe turmas de uma planilha ou exporte em CSV ou XLSX.',
 );
 
 /// Passo 6 — directory.tabs.
 const groupsTabsTourStep = CoeloTourStep(
   anchorId: 'directory.tabs',
   title: 'Situação',
-  text:
-      'Filtre pela situação da turma.',
+  text: 'Filtre pela situação da turma.',
 );
 
 /// Passo 7 — directory.create.
 const groupsCreateTourStep = CoeloTourStep(
   anchorId: 'directory.create',
   title: 'Criar turma',
-  text:
-      'Abre o formulário de uma nova turma.',
+  text: 'Abre o formulário de uma nova turma.',
 );
 
 /// Passo 8 — directory.body.
 const groupsBodyTourStep = CoeloTourStep(
   anchorId: 'directory.body',
   title: 'A lista',
-  text:
-      'Abra uma turma para ver alunos, atividades e professores.',
+  text: 'Abra uma turma para ver alunos, atividades e professores.',
 );
 
 /// Passo 9 — directory.pagination.
 const groupsPaginationTourStep = CoeloTourStep(
   anchorId: 'directory.pagination',
   title: 'Paginação',
-  text:
-      'Avance de página e escolha quantos itens ver por vez.',
+  text: 'Avance de página e escolha quantos itens ver por vez.',
 );
 
 const groupsScreenTour = SuperadminScreenTour(

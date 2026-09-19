@@ -11,16 +11,14 @@ import '../superadmin_screen_tour.dart';
 const attendanceCreateHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Lançar chamada',
-  text:
-      'Selecione o contexto antes de registrar a presença.',
+  text: 'Selecione o contexto antes de registrar a presença.',
 );
 
 /// Passo 2 — attendance-create.context.
 const attendanceCreateContextTourStep = CoeloTourStep(
   anchorId: 'attendance-create.context',
   title: 'Contexto da chamada',
-  text:
-      'Instituição, unidade, turma e atividade na turma. A data padrão é hoje.',
+  text: 'Instituição, unidade, turma e atividade na turma. A data padrão é hoje.',
 );
 
 /// Passo 3 — attendance-create.participants.
@@ -34,9 +32,9 @@ const attendanceCreateParticipantsTourStep = CoeloTourStep(
 /// Passo 4 — form.footer.
 const attendanceCreateFooterTourStep = CoeloTourStep(
   anchorId: 'form.footer',
-  title: 'Continuar',
+  title: 'Lançar chamada',
   text:
-      '"Salvar e continuar depois" guarda o rascunho; "Concluir chamada" registra oficialmente. Cancelar não salva.',
+      '"Lançar chamada" cria a chamada e abre a lista de participantes para marcar presença. Cancelar volta sem criar.',
 );
 
 const attendanceCreateScreenTour = SuperadminScreenTour(

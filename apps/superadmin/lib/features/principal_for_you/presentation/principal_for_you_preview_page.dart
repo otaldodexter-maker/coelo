@@ -1,5 +1,6 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 
 import '../../principal_shared/presentation/principal_global_navigation.dart';
 import '../domain/principal_for_you_preview_data.dart';
@@ -231,19 +232,28 @@ final class _ForYouScroll extends StatelessWidget {
               const SizedBox(height: CoeloSpacing.space4),
               _HeroCard(highlight: data.primaryHighlight, onAction: onAction),
               const SizedBox(height: CoeloSpacing.space5),
-              _Shortcuts(items: data.shortcuts, compact: compact, onAction: onAction),
+              CoeloTourAnchor(
+                id: 'for-you.shortcuts',
+                child: _Shortcuts(items: data.shortcuts, compact: compact, onAction: onAction),
+              ),
               const SizedBox(height: CoeloSpacing.space5),
               _EditorialGrid(items: data.editorialItems, compact: compact, onAction: onAction),
               if (data.dayItems.isNotEmpty) ...[
                 const SizedBox(height: CoeloSpacing.space5),
-                _DaySummary(items: data.dayItems, onAction: onAction),
+                CoeloTourAnchor(
+                  id: 'for-you.summary',
+                  child: _DaySummary(items: data.dayItems, onAction: onAction),
+                ),
               ],
               if (activeContext != null) ...[
                 const SizedBox(height: CoeloSpacing.space5),
-                _CurrentContext(
-                  contextData: activeContext!,
-                  onContext: onContext,
-                  canSwitchContext: data.contexts.length > 1,
+                CoeloTourAnchor(
+                  id: 'for-you.context',
+                  child: _CurrentContext(
+                    contextData: activeContext!,
+                    onContext: onContext,
+                    canSwitchContext: data.contexts.length > 1,
+                  ),
                 ),
               ],
             ],
@@ -372,53 +382,53 @@ final class _HeroCard extends StatelessWidget {
                   // geometry: when it fits, the layout is unchanged.
                   child: _HeroContent(
                     child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          // Achado de acessibilidade de 09/09/2026: branco a 16%
-                          // sobre o laranja media 3,75:1 (abaixo de 4,5:1 AA).
-                          // Decisao da Fase 0 (10/09/2026): o veu usa orange950 a
-                          // 16% (5,75:1 no claro, simetrico ao escuro).
-                          color: CoeloPalette.orange950.withValues(alpha: 0.16),
-                          borderRadius: BorderRadius.circular(CoeloRadius.full),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: CoeloSpacing.space2,
-                            vertical: CoeloSpacing.space1,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        DecoratedBox(
+                          decoration: BoxDecoration(
+                            // Achado de acessibilidade de 09/09/2026: branco a 16%
+                            // sobre o laranja media 3,75:1 (abaixo de 4,5:1 AA).
+                            // Decisao da Fase 0 (10/09/2026): o veu usa orange950 a
+                            // 16% (5,75:1 no claro, simetrico ao escuro).
+                            color: CoeloPalette.orange950.withValues(alpha: 0.16),
+                            borderRadius: BorderRadius.circular(CoeloRadius.full),
                           ),
-                          child: Text(
-                            item.type.label.toUpperCase(),
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: scheme.onPrimary,
-                              fontWeight: FontWeight.w800,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: CoeloSpacing.space2,
+                              vertical: CoeloSpacing.space1,
+                            ),
+                            child: Text(
+                              item.type.label.toUpperCase(),
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: scheme.onPrimary,
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: CoeloSpacing.space3),
-                      Text(
-                        item.title,
-                        maxLines: largeText ? null : 2,
-                        overflow: largeText ? null : TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: scheme.onPrimary,
-                          fontWeight: FontWeight.w900,
+                        const SizedBox(height: CoeloSpacing.space3),
+                        Text(
+                          item.title,
+                          maxLines: largeText ? null : 2,
+                          overflow: largeText ? null : TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            color: scheme.onPrimary,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: CoeloSpacing.space2),
-                      if (largeText) body else Flexible(child: body),
-                      const Spacer(),
-                      FilledButton.tonalIcon(
-                        key: const Key('principal-for-you-hero-action'),
-                        onPressed: () => onAction(item.cta),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: scheme.surface,
-                          foregroundColor: scheme.onSurface,
-                        ),
-                        label: Text(item.cta),
-                        icon: const Icon(Icons.chevron_right_rounded),
+                        const SizedBox(height: CoeloSpacing.space2),
+                        if (largeText) body else Flexible(child: body),
+                        const Spacer(),
+                        FilledButton.tonalIcon(
+                          key: const Key('principal-for-you-hero-action'),
+                          onPressed: () => onAction(item.cta),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: scheme.surface,
+                            foregroundColor: scheme.onSurface,
+                          ),
+                          label: Text(item.cta),
+                          icon: const Icon(Icons.chevron_right_rounded),
                         ),
                       ],
                     ),

@@ -69,8 +69,7 @@ final class PrincipalForYouAudienceScope {
           other.membershipId == membershipId;
 
   @override
-  int get hashCode =>
-      Object.hash(institutionId, unitId, groupId, personId, roleCode, membershipId);
+  int get hashCode => Object.hash(institutionId, unitId, groupId, personId, roleCode, membershipId);
 }
 
 /// Projects the shared Communications contract into the read-only Principal hub.

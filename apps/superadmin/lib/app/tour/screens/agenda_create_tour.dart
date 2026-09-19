@@ -11,83 +11,53 @@ import '../superadmin_screen_tour.dart';
 const agendaCreateHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Criar evento',
-  text:
-      'Um evento novo na Agenda institucional.',
+  text: 'Um evento novo na Agenda institucional, como uma publicação numa única tela.',
 );
 
-/// Passo 2 — form.navigation.
-const agendaCreateNavigationTourStep = CoeloTourStep(
-  anchorId: 'form.navigation',
-  title: 'Seções',
-  text:
-      'Navegue entre as seções do formulário.',
-);
-
-/// Passo 3 — agenda-create.basics.
+/// Passo 2 — agenda-create.basics.
 const agendaCreateBasicsTourStep = CoeloTourStep(
   anchorId: 'agenda-create.basics',
-  title: 'Título, período e local',
+  title: 'Título, data, local e público',
   text:
-      'Nome do evento, data e horário de início e fim, dia inteiro e local.',
+      'Nome do evento, data e horário, local, descrição, categoria e quem vê: instituição, unidade ou turma.',
 );
 
-/// Passo 4 — agenda-create.context.
-const agendaCreateContextTourStep = CoeloTourStep(
-  anchorId: 'agenda-create.context',
-  title: 'Contexto principal',
+/// Passo 3 — agenda-create.options.
+const agendaCreateOptionsTourStep = CoeloTourStep(
+  anchorId: 'agenda-create.options',
+  title: 'Mais opções',
   text:
-      'Quem vê o evento: instituição, unidade ou turma.',
+      'Dia inteiro, fuso, recorrência, prioridade, modo de resposta (ciência, presença, autorização) e lembretes.',
 );
 
-/// Passo 5 — agenda-create.recurrence.
-const agendaCreateRecurrenceTourStep = CoeloTourStep(
-  anchorId: 'agenda-create.recurrence',
-  title: 'Recorrência e prioridade',
-  text:
-      'Repita o evento, defina o término da série e a prioridade.',
-);
-
-/// Passo 6 — agenda-create.response.
-const agendaCreateResponseTourStep = CoeloTourStep(
-  anchorId: 'agenda-create.response',
-  title: 'Resposta e lembretes',
-  text:
-      'Modo de resposta (ciência, presença, autorização), política de responsáveis e lembretes.',
-);
-
-/// Passo 7 — agenda-create.questions.
+/// Passo 4 — agenda-create.questions.
 const agendaCreateQuestionsTourStep = CoeloTourStep(
   anchorId: 'agenda-create.questions',
   title: 'Perguntas do evento',
-  text:
-      'Adicione perguntas que a família responde ao confirmar.',
+  text: 'Adicione perguntas que a família responde ao confirmar.',
 );
 
-/// Passo 8 — agenda-create.preview.
+/// Passo 5 — publish.preview.
 const agendaCreatePreviewTourStep = CoeloTourStep(
-  anchorId: 'agenda-create.preview',
+  anchorId: 'publish.preview',
   title: 'Prévia na Agenda',
-  text:
-      'Como o evento aparece no calendário do público escolhido.',
+  text: 'Como o evento aparece no calendário do público escolhido.',
 );
 
-/// Passo 9 — form.footer.
+/// Passo 6 — form.footer.
 const agendaCreateFooterTourStep = CoeloTourStep(
   anchorId: 'form.footer',
-  title: 'Salvar',
+  title: 'Salvar ou publicar',
   text:
-      '"Salvar rascunho" guarda sem publicar. Cancelar descarta.',
+      '"Salvar rascunho" guarda sem publicar; "Publicar evento" (ou "Solicitar publicação") envia. Cancelar descarta.',
 );
 
 const agendaCreateScreenTour = SuperadminScreenTour(
   destinationId: 'agenda-create',
   steps: [
     agendaCreateHeaderTourStep,
-    agendaCreateNavigationTourStep,
     agendaCreateBasicsTourStep,
-    agendaCreateContextTourStep,
-    agendaCreateRecurrenceTourStep,
-    agendaCreateResponseTourStep,
+    agendaCreateOptionsTourStep,
     agendaCreateQuestionsTourStep,
     agendaCreatePreviewTourStep,
     agendaCreateFooterTourStep,

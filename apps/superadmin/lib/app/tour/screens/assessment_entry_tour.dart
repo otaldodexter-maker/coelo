@@ -11,11 +11,18 @@ import '../superadmin_screen_tour.dart';
 const assessmentEntryHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Lançar avaliações',
-  text:
-      'Registre resultados e acompanhe as pendências da turma.',
+  text: 'Registre resultados e acompanhe as pendências da turma.',
 );
 
-/// Passo 2 — assessment.context.
+/// Passo 2 — form.navigation.
+const assessmentEntryNavigationTourStep = CoeloTourStep(
+  anchorId: 'form.navigation',
+  title: 'Etapas do lançamento',
+  text:
+      'Contexto, Notas e competências, Comentários e Revisão e envio. Cada etapa libera a seguinte.',
+);
+
+/// Passo 3 — assessment.context.
 const assessmentEntryContextTourStep = CoeloTourStep(
   anchorId: 'assessment.context',
   title: 'Contexto do lançamento',
@@ -23,15 +30,14 @@ const assessmentEntryContextTourStep = CoeloTourStep(
       'Escolha instituição, unidade, turma e Atividade. O diário só abre com o contexto completo.',
 );
 
-/// Passo 3 — assessment.period.
+/// Passo 4 — assessment.period.
 const assessmentEntryPeriodTourStep = CoeloTourStep(
   anchorId: 'assessment.period',
   title: 'Período avaliativo',
-  text:
-      'O período vigente da configuração da Atividade. Período fechado não aceita lançamento.',
+  text: 'O período vigente da configuração da Atividade. Período fechado não aceita lançamento.',
 );
 
-/// Passo 4 — assessment.toolbar.
+/// Passo 5 — assessment.toolbar.
 const assessmentEntryToolbarTourStep = CoeloTourStep(
   anchorId: 'assessment.toolbar',
   title: 'Aluno, situação e modo',
@@ -39,7 +45,7 @@ const assessmentEntryToolbarTourStep = CoeloTourStep(
       'Busque um aluno, filtre por situação e escolha o modo de lançamento (tabela ou aluno a aluno).',
 );
 
-/// Passo 5 — assessment.gradebook.
+/// Passo 6 — assessment.gradebook.
 const assessmentEntryGradebookTourStep = CoeloTourStep(
   anchorId: 'assessment.gradebook',
   title: 'O diário',
@@ -47,18 +53,19 @@ const assessmentEntryGradebookTourStep = CoeloTourStep(
       'Uma linha por aluno, uma coluna por instrumento com seu peso. A média sugerida é calculada na hora.',
 );
 
-/// Passo 6 — assessment.footer.
+/// Passo 7 — form.footer.
 const assessmentEntryFooterTourStep = CoeloTourStep(
-  anchorId: 'assessment.footer',
-  title: 'Salvar e enviar',
+  anchorId: 'form.footer',
+  title: 'Salvar e avançar',
   text:
-      '"Salvar rascunho" guarda sem publicar; "Revisão e envio" confere pendências e envia para fechamento.',
+      '"Salvar rascunho" guarda sem publicar; o botão de avançar leva à próxima etapa até a revisão e o envio.',
 );
 
 const assessmentEntryScreenTour = SuperadminScreenTour(
   destinationId: 'assessment-entry',
   steps: [
     assessmentEntryHeaderTourStep,
+    assessmentEntryNavigationTourStep,
     assessmentEntryContextTourStep,
     assessmentEntryPeriodTourStep,
     assessmentEntryToolbarTourStep,

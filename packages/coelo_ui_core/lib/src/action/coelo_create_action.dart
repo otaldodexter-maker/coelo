@@ -23,7 +23,6 @@ final class CoeloCreateAction extends StatelessWidget {
   final CoeloCreateActionVariant variant;
   final String? description;
 
-  @override
   /// Âncora do tour por tela: o Criar de qualquer diretório.
   static const tourAnchorId = 'directory.create';
 

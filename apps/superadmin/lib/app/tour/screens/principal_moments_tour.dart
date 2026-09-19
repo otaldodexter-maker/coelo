@@ -11,24 +11,21 @@ import '../superadmin_screen_tour.dart';
 const principalMomentsNavTourStep = CoeloTourStep(
   anchorId: 'principal.nav',
   title: 'Momentos',
-  text:
-      'Registros em vídeo e foto que merecem ser lembrados.',
+  text: 'Registros em vídeo e foto que merecem ser lembrados.',
 );
 
 /// Passo 2 — moments.feed.
 const principalMomentsFeedTourStep = CoeloTourStep(
   anchorId: 'moments.feed',
   title: 'O feed',
-  text:
-      'Cada momento tem autor, contexto e legenda. Comente, compartilhe ou retire.',
+  text: 'Cada momento tem autor, contexto e legenda. Comente, compartilhe ou retire.',
 );
 
 /// Passo 3 — moments.create.
 const principalMomentsCreateTourStep = CoeloTourStep(
   anchorId: 'moments.create',
   title: 'Enviar momento',
-  text:
-      'Publique um momento novo.',
+  text: 'Publique um momento novo.',
 );
 
 const principalMomentsScreenTour = SuperadminScreenTour(

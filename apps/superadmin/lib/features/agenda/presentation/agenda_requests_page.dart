@@ -218,7 +218,10 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
             const SizedBox(height: CoeloSpacing.space2),
             const Align(
               alignment: Alignment.centerRight,
-              child: SuperadminPlaceholderFileActions(resourceLabel: 'solicitações da agenda'),
+              child: CoeloTourAnchor(
+                id: CoeloAdminDirectoryTourAnchors.files,
+                child: SuperadminPlaceholderFileActions(resourceLabel: 'solicitações da agenda'),
+              ),
             ),
             const SizedBox(height: CoeloSpacing.space3),
             if (widget._localFixtures) const _LocalFixtureNotice(),
@@ -237,13 +240,22 @@ final class _AgendaRequestsPageState extends State<AgendaRequestsPage> {
                 onRetry: () => widget.store!.loadRequests(),
               )
             else if (compact)
-              _RequestCardList(items: _items, onAnswer: widget._localFixtures ? _answer : null)
-            else
-              SizedBox(
-                height: 700,
-                child: _RequestTable(
+              CoeloTourAnchor(
+                id: 'agenda-requests.list',
+                child: _RequestCardList(
                   items: _items,
                   onAnswer: widget._localFixtures ? _answer : null,
+                ),
+              )
+            else
+              CoeloTourAnchor(
+                id: 'agenda-requests.list',
+                child: SizedBox(
+                  height: 700,
+                  child: _RequestTable(
+                    items: _items,
+                    onAnswer: widget._localFixtures ? _answer : null,
+                  ),
                 ),
               ),
             const SizedBox(height: CoeloSpacing.space4),

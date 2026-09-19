@@ -11,64 +11,56 @@ import '../superadmin_screen_tour.dart';
 const invitesHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Convites',
-  text:
-      'Convites de acesso enviados a responsáveis e equipe.',
+  text: 'Convites de acesso enviados a responsáveis e equipe.',
 );
 
 /// Passo 2 — directory.search.
 const invitesSearchTourStep = CoeloTourStep(
   anchorId: 'directory.search',
   title: 'Buscar destinatário',
-  text:
-      'Encontre pelo nome ou contato do destinatário.',
+  text: 'Encontre pelo nome ou contato do destinatário.',
 );
 
 /// Passo 3 — directory.filters.
 const invitesFiltersTourStep = CoeloTourStep(
   anchorId: 'directory.filters',
   title: 'Canal',
-  text:
-      'E-mail, WhatsApp ou link. "Limpar filtros" volta ao início.',
+  text: 'E-mail, WhatsApp ou link. "Limpar filtros" volta ao início.',
 );
 
 /// Passo 4 — directory.files.
 const invitesFilesTourStep = CoeloTourStep(
   anchorId: 'directory.files',
   title: 'Importar e exportar',
-  text:
-      'Importe destinatários ou exporte a lista.',
+  text: 'Importe destinatários ou exporte a lista.',
 );
 
 /// Passo 5 — directory.tabs.
 const invitesTabsTourStep = CoeloTourStep(
   anchorId: 'directory.tabs',
   title: 'Todos os convites',
-  text:
-      'Filtre por situação do convite.',
+  text: 'Filtre por situação do convite.',
 );
 
 /// Passo 6 — directory.create.
 const invitesCreateTourStep = CoeloTourStep(
   anchorId: 'directory.create',
   title: 'Novo convite',
-  text:
-      'Abre o formulário: destinatário, perfil, contexto e canal.',
+  text: 'Abre o formulário: destinatário, perfil, contexto e canal.',
 );
 
 /// Passo 7 — directory.body.
 const invitesBodyTourStep = CoeloTourStep(
   anchorId: 'directory.body',
   title: 'A lista',
-  text:
-      'Situação de cada convite; "Copiar link" copia o link de acesso.',
+  text: 'Situação de cada convite; "Copiar link" copia o link de acesso.',
 );
 
 /// Passo 8 — directory.pagination.
 const invitesPaginationTourStep = CoeloTourStep(
   anchorId: 'directory.pagination',
   title: 'Paginação',
-  text:
-      'Avance de página e escolha quantos itens ver por vez.',
+  text: 'Avance de página e escolha quantos itens ver por vez.',
 );
 
 const invitesScreenTour = SuperadminScreenTour(

@@ -7,60 +7,54 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 
 import '../superadmin_screen_tour.dart';
 
-/// Passo 1 — page.header.
-const principalNowPublishHeaderTourStep = CoeloTourStep(
-  anchorId: 'page.header',
-  title: 'Publicar no Agora',
-  text:
-      'Um conteúdo temporário de 24 horas.',
-);
-
-/// Passo 2 — publish.media.
+/// Passo 1 — publish.media.
 const principalNowPublishMediaTourStep = CoeloTourStep(
   anchorId: 'publish.media',
   title: 'Mídia',
-  text:
-      'Adicione ou troque a mídia.',
+  text: 'Adicione ou troque a mídia. O Agora fica disponível por 24 horas.',
 );
 
-/// Passo 3 — now-publish.tools.
+/// Passo 2 — now-publish.tools.
 const principalNowPublishToolsTourStep = CoeloTourStep(
   anchorId: 'now-publish.tools',
   title: 'Texto, música, cortar e capa',
-  text:
-      'Ajuste o conteúdo sobre a mídia.',
+  text: 'Ajuste o conteúdo sobre a mídia.',
+);
+
+/// Passo 3 — publish.caption.
+const principalNowPublishCaptionTourStep = CoeloTourStep(
+  anchorId: 'publish.caption',
+  title: 'Contexto opcional',
+  text: 'Uma frase curta que acompanha a mídia.',
 );
 
 /// Passo 4 — publish.audience.
 const principalNowPublishAudienceTourStep = CoeloTourStep(
   anchorId: 'publish.audience',
   title: 'Público e contexto',
-  text:
-      'Quem vê o Agora.',
+  text: 'Quem vê o Agora.',
 );
 
 /// Passo 5 — publish.schedule.
 const principalNowPublishScheduleTourStep = CoeloTourStep(
   anchorId: 'publish.schedule',
   title: 'Agendar',
-  text:
-      'Publique agora ou marque data e hora.',
+  text: 'Publique agora ou marque data e hora.',
 );
 
 /// Passo 6 — form.footer.
 const principalNowPublishFooterTourStep = CoeloTourStep(
   anchorId: 'form.footer',
   title: 'Publicar',
-  text:
-      '"Publicar" envia; "Salvar rascunho" guarda; Cancelar descarta.',
+  text: '"Publicar no Agora" envia; "Salvar rascunho" guarda; Cancelar volta.',
 );
 
 const principalNowPublishScreenTour = SuperadminScreenTour(
   destinationId: 'principal-now-publish',
   steps: [
-    principalNowPublishHeaderTourStep,
     principalNowPublishMediaTourStep,
     principalNowPublishToolsTourStep,
+    principalNowPublishCaptionTourStep,
     principalNowPublishAudienceTourStep,
     principalNowPublishScheduleTourStep,
     principalNowPublishFooterTourStep,

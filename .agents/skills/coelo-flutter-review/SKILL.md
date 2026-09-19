@@ -33,3 +33,4 @@ Versão anterior em `docs/archive/skills-20260918/`.
 - Nenhum segredo, CPF ou dado de criança em bundle, asset, URL ou log.
 - Shell aceita só identidade interna; conta só de responsável não abre tela.
 - Responsivo: 375, 600 e 1440 sem estouro horizontal; teclado e semântica nos controles.
+- Tour: texto só em `apps/superadmin/lib/app/tour/` (menu em `superadmin_menu_tour_steps.dart`, telas em `screens/<destino>_tour.dart`, registro em `superadmin_screen_tours.dart`); componente compartilhado leva `CoeloTourAnchor` com id genérico (`directory.*`, `form.*`, `page.*`) uma vez só; a tela só envolve o que é específico dela. Todo destino roteado novo entra no registro ou em `superadminScreenTourExclusions` com motivo (teste cobra).

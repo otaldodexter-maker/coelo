@@ -11,24 +11,21 @@ import '../superadmin_screen_tour.dart';
 const studentsHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Acompanhamento',
-  text:
-      'A visão da família por aluno, contexto e período, como o responsável vê.',
+  text: 'A visão da família por aluno, contexto e período, como o responsável vê.',
 );
 
 /// Passo 2 — students.selectors.
 const studentsSelectorsTourStep = CoeloTourStep(
   anchorId: 'students.selectors',
   title: 'Aluno, contexto e período',
-  text:
-      'Escolha o aluno, o vínculo escolar e o período que quer ver.',
+  text: 'Escolha o aluno, o vínculo escolar e o período que quer ver.',
 );
 
 /// Passo 3 — students.tabs.
 const studentsTabsTourStep = CoeloTourStep(
   anchorId: 'students.tabs',
   title: 'Abas',
-  text:
-      'Visão geral, Assiduidade, Avaliações, Competências, Boletins, Agenda, Participação e Comportamento.',
+  text: 'Visão geral, Assiduidade, Avaliações, Competências e Boletins.',
 );
 
 /// Passo 4 — students.body.

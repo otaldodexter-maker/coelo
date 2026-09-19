@@ -11,8 +11,7 @@ import '../superadmin_screen_tour.dart';
 const homeHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Home',
-  text:
-      'Sua página inicial. Tire dúvidas e encontre orientações sobre o Coelo sem sair do painel.',
+  text: 'Sua página inicial. Tire dúvidas e encontre orientações sobre o Coelo sem sair do painel.',
 );
 
 /// Passo 2 — home.question.
@@ -33,9 +32,5 @@ const homeHistoryTourStep = CoeloTourStep(
 
 const homeScreenTour = SuperadminScreenTour(
   destinationId: 'home',
-  steps: [
-    homeHeaderTourStep,
-    homeQuestionTourStep,
-    homeHistoryTourStep,
-  ],
+  steps: [homeHeaderTourStep, homeQuestionTourStep, homeHistoryTourStep],
 );

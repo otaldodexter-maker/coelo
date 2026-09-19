@@ -11,64 +11,56 @@ import '../superadmin_screen_tour.dart';
 const healthCareProfilesHeaderTourStep = CoeloTourStep(
   anchorId: 'page.header',
   title: 'Perfis de cuidado',
-  text:
-      'Alergias, restrições e o que fazer em caso de contato, por criança.',
+  text: 'Alergias, restrições e o que fazer em caso de contato, por criança.',
 );
 
 /// Passo 2 — directory.search.
 const healthCareProfilesSearchTourStep = CoeloTourStep(
   anchorId: 'directory.search',
   title: 'Buscar criança',
-  text:
-      'Encontre o perfil pelo nome da criança.',
+  text: 'Encontre o perfil pelo nome da criança.',
 );
 
 /// Passo 3 — directory.view.
 const healthCareProfilesViewTourStep = CoeloTourStep(
   anchorId: 'directory.view',
   title: 'Cards ou tabela',
-  text:
-      'A tabela agrupa por unidade.',
+  text: 'A tabela agrupa por unidade.',
 );
 
 /// Passo 4 — directory.files.
 const healthCareProfilesFilesTourStep = CoeloTourStep(
   anchorId: 'directory.files',
   title: 'Importar e exportar',
-  text:
-      'Importe perfis ou exporte em CSV ou XLSX.',
+  text: 'Importe perfis ou exporte em CSV ou XLSX.',
 );
 
 /// Passo 5 — directory.tabs.
 const healthCareProfilesTabsTourStep = CoeloTourStep(
   anchorId: 'directory.tabs',
   title: 'Situação',
-  text:
-      'Todos, Ativos, Em implantação ou Inativos.',
+  text: 'Todos, Ativos, Em implantação ou Inativos.',
 );
 
 /// Passo 6 — directory.create.
 const healthCareProfilesCreateTourStep = CoeloTourStep(
   anchorId: 'directory.create',
   title: 'Criar perfil de cuidado',
-  text:
-      'Abre o formulário: criança, alimentos, restrições e orientações.',
+  text: 'Abre o formulário: criança, alimentos, restrições e orientações.',
 );
 
 /// Passo 7 — directory.body.
 const healthCareProfilesBodyTourStep = CoeloTourStep(
   anchorId: 'directory.body',
   title: 'A lista',
-  text:
-      'Criança, alergias e restrições. Só quem cuida da criança vê o perfil.',
+  text: 'Criança, alergias e restrições. Só quem cuida da criança vê o perfil.',
 );
 
 /// Passo 8 — directory.pagination.
 const healthCareProfilesPaginationTourStep = CoeloTourStep(
   anchorId: 'directory.pagination',
   title: 'Paginação',
-  text:
-      'Avance de página e escolha quantos itens ver por vez.',
+  text: 'Avance de página e escolha quantos itens ver por vez.',
 );
 
 const healthCareProfilesScreenTour = SuperadminScreenTour(

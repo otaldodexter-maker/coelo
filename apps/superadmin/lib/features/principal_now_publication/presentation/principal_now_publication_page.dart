@@ -575,19 +575,22 @@ final class _MediaAndTools extends StatelessWidget {
     builder: (context, constraints) {
       final enlargedText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
       final stackTools = enlargedText || constraints.maxWidth < width + 120;
-      final stage = SizedBox(
-        key: const Key('now-media-stage'),
-        width: width,
-        child: AspectRatio(
-          aspectRatio: 9 / 16,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(CoeloRadius.lg),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerLowest,
-                border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      final stage = CoeloTourAnchor(
+        id: 'publish.media',
+        child: SizedBox(
+          key: const Key('now-media-stage'),
+          width: width,
+          child: AspectRatio(
+            aspectRatio: 9 / 16,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(CoeloRadius.lg),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerLowest,
+                  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                ),
+                child: _MediaPreview(controller: controller, onPick: onPickMedia),
               ),
-              child: _MediaPreview(controller: controller, onPick: onPickMedia),
             ),
           ),
         ),
@@ -603,7 +606,14 @@ final class _MediaAndTools extends StatelessWidget {
           children: [
             stage,
             const SizedBox(height: CoeloSpacing.space2),
-            Wrap(alignment: WrapAlignment.center, spacing: CoeloSpacing.space2, children: tools),
+            CoeloTourAnchor(
+              id: 'now-publish.tools',
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                spacing: CoeloSpacing.space2,
+                children: tools,
+              ),
+            ),
           ],
         );
       }
@@ -613,7 +623,10 @@ final class _MediaAndTools extends StatelessWidget {
         children: [
           stage,
           const SizedBox(width: CoeloSpacing.space3),
-          Column(mainAxisSize: MainAxisSize.min, children: tools),
+          CoeloTourAnchor(
+            id: 'now-publish.tools',
+            child: Column(mainAxisSize: MainAxisSize.min, children: tools),
+          ),
         ],
       );
     },
@@ -920,24 +933,33 @@ final class _Details extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CoeloFormTextField(
-          fieldKey: const Key('now-caption-field'),
-          controller: captionController,
-          labelText: 'Contexto opcional',
-          hintText: 'Escreva algo (opcional)',
-          prefixIcon: Icons.short_text_rounded,
-          maxLength: 60,
-          maxLines: 3,
-          onChanged: controller.setCaption,
+        CoeloTourAnchor(
+          id: 'publish.caption',
+          child: CoeloFormTextField(
+            fieldKey: const Key('now-caption-field'),
+            controller: captionController,
+            labelText: 'Contexto opcional',
+            hintText: 'Escreva algo (opcional)',
+            prefixIcon: Icons.short_text_rounded,
+            maxLength: 60,
+            maxLines: 3,
+            onChanged: controller.setCaption,
+          ),
         ),
         const SizedBox(height: CoeloSpacing.space3),
-        _ContextCard(
-          contextData: controller.context,
-          selected: draft.audiences.contains(NowAudience.families),
-          onTap: () => controller.toggleAudience(NowAudience.families),
+        CoeloTourAnchor(
+          id: 'publish.audience',
+          child: _ContextCard(
+            contextData: controller.context,
+            selected: draft.audiences.contains(NowAudience.families),
+            onTap: () => controller.toggleAudience(NowAudience.families),
+          ),
         ),
         const SizedBox(height: CoeloSpacing.space3),
-        _ScheduleCard(controller: controller),
+        CoeloTourAnchor(
+          id: 'publish.schedule',
+          child: _ScheduleCard(controller: controller),
+        ),
         const SizedBox(height: CoeloSpacing.space3),
         DecoratedBox(
           decoration: BoxDecoration(
