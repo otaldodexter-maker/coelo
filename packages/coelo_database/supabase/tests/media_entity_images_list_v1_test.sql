@@ -4,7 +4,7 @@
 -- G1: responsável com guardian_links + can_view em A (sem membership). G2: responsável sem can_view.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(34);
+select plan(37);
 
 create function pg_temp.e2(n integer) returns uuid language sql immutable as $$
   select ('e2000000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid;
@@ -66,6 +66,7 @@ insert into public.people(id,person_type,first_name,last_name,display_name,statu
  (pg_temp.e2(203),'adult','E2','Leitor L','E2 Leitor L','active'),
  (pg_temp.e2(204),'adult','E2','Resp G1','E2 Resp G1','active'),
  (pg_temp.e2(205),'adult','E2','Resp G2','E2 Resp G2','active'),
+ (pg_temp.e2(206),'adult','E2','Servico L','E2 Servico L','active'),
  (pg_temp.e2(221),'child','E2','Crianca A','E2 Crianca A','active');
 insert into public.person_auth_links(person_id,auth_user_id,status) values
  (pg_temp.e2(201),pg_temp.e2(101),'active'),(pg_temp.e2(202),pg_temp.e2(102),'active'),(pg_temp.e2(203),pg_temp.e2(103),'active'),
@@ -127,6 +128,19 @@ select is((select public.superadmin_entity_images_list_v1('unit',array[pg_temp.e
 select throws_ok($$select public.superadmin_entity_images_list_v1('planet',array[pg_temp.e2(11)])$$,'22023','invalid_entity_image_query','unknown kind is refused');
 select throws_ok($$select public.superadmin_entity_images_list_v1('unit',(select array_agg(gen_random_uuid()) from generate_series(1,201)))$$,
   '22023','invalid_entity_image_query','more than 200 ids is refused');
+
+-- usuários internos (lote 89): chave = internal_identity_id, foto = pessoa de serviço --------------
+insert into app_private.superadmin_internal_identities(id)
+ values (pg_temp.e2(601));
+insert into app_private.superadmin_internal_actor_people(internal_identity_id,person_id) values (pg_temp.e2(601),pg_temp.e2(206));
+select pg_temp.as_user(101);
+select lives_ok($$select public.superadmin_entity_image_prepare_v1(pg_temp.e2(540),'person',pg_temp.e2(206),'profile','l.png','image/png',1024,repeat('4',64))$$,'P prepares the service person photo of internal user L');
+select pg_temp.activate(540);
+select pg_temp.as_user(101);
+select is((select public.superadmin_entity_images_list_v1('internal_user',array[pg_temp.e2(601),pg_temp.e2(99)]) -> pg_temp.e2(601)::text -> 'profile' ->> 'asset_id'),
+  pg_temp.asset_of(540)::text, 'internal_user list is keyed by the internal identity id');
+select pg_temp.as_user(102);
+select is((select public.superadmin_entity_images_list_v1('internal_user',array[pg_temp.e2(601)])), '{}'::jsonb, 'Q (tenant B) does not see the photo of an internal user of A');
 
 -- leitor do Principal ------------------------------------------------------------------------------
 select pg_temp.as_user(104);

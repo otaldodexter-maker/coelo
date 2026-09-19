@@ -454,6 +454,9 @@
 # Lote 88 (MÍDIA-E2E 19/09): expiração dos rascunhos de entity_image_assets direto no Postgres
 # (app_private.entity_image_expire_drafts_v1 pelo cron coelo-entity-media-expire, sem Edge/Vault/segredo; dispatch do 87 removido).
 20260919211000_media_entity_images_expire_cron_v1.sql
+# Lote 89 (MÍDIA-E2E 19/09): superadmin_entity_images_list_v1 aceita 'internal_user' (chave = internal_identity_id,
+# foto da pessoa de serviço via superadmin_internal_actor_people; exige platform.member.read). pgTAP 37/37 no espelho.
+20260919212000_media_entity_images_internal_user_v1.sql
 # Lote 91 (Sessão ETAPA-3, 19/09/2026): Avisos spec 069. platform_notices.cta_target_kind/cta_target_id (destino interno do
 # CTA: circular | form | invite | notice; validado contra o catálogo e a audiência por instituição); superadmin_notice_json expõe
 # cta_target (Superadmin e leitor do Principal); save_draft_v2 aceita cta_target; superadmin_notice_duplicate_v2 (notices.publish,
