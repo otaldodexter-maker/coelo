@@ -506,3 +506,11 @@
 # institutions.lifecycle_reason/lifecycle_changed_at; institution_directory expõe management_version (payload_v2 delega à _base).
 # pgTAP institution_lifecycle_v1_test 27/27 no espelho mirror-acesso; ledger 20260920001000 reparado.
 20260920001000_institution_lifecycle_v1.sql
+# Lote 95 (Sessão ETAPA-3, 20/09/2026): Perfis oficiais spec 068. 20260920002500 acrescenta 'official_auto' a follow_origin;
+# 20260920003000 cria public.official_profiles (carga `coelo` obrigatório → pessoa técnica c0e1…0001), backfill idempotente
+# app_private.official_profiles_backfill_follows_v1 (pg_cron coelo-official-profiles-follow */15, respeita follow revogado de oficial
+# não obrigatório), follow_set não deixa de seguir oficial obrigatório, platform_notices.official_profile_id (+ `author` no json,
+# save_draft_v2/duplicate_v2 preservam) e superadmin_official_profiles_list_v1. Sem permissão nova: publicação segue por notices.*.
+# pgTAP official_profiles_v1_test 18/18 e notices_duplicate_cta_target_v1_test 34/34 no espelho; ledgers reparados.
+20260920002500_official_profiles_follow_origin_v1.sql
+20260920003000_official_profiles_v1.sql
