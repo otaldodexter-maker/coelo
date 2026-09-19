@@ -302,8 +302,8 @@ final class _UnitFormPageState extends State<UnitFormPage> {
       'addressNumber' => original.addressNumber,
       'complement' => original.complement,
       'contactEmail' => original.contactEmail,
-      'contactPhone' => original.contactPhone,
-      'contactMobilePhone' => original.contactMobilePhone,
+      'contactPhone' => CoeloBrazilianPhoneInputFormatter.format(original.contactPhone),
+      'contactMobilePhone' => CoeloBrazilianPhoneInputFormatter.format(original.contactMobilePhone),
       _ => '',
     };
   }
@@ -395,8 +395,8 @@ final class _UnitFormPageState extends State<UnitFormPage> {
         addressNumber: _text('addressNumber'),
         complement: _text('complement'),
         contactEmail: _text('contactEmail'),
-        contactPhone: _text('contactPhone'),
-        contactMobilePhone: _text('contactMobilePhone'),
+        contactPhone: CoeloBrazilianPhoneInputFormatter.toE164(_text('contactPhone')),
+        contactMobilePhone: CoeloBrazilianPhoneInputFormatter.toE164(_text('contactMobilePhone')),
         planOverride: _inheritPlan ? null : _plan,
         inheritInstitutionBranding:
             _inheritLogo &&
@@ -1054,8 +1054,18 @@ final class _UnitFormPageState extends State<UnitFormPage> {
             Icons.email_outlined,
             key: const Key('unit-contact-email-field'),
           ),
-          _field('contactPhone', 'Telefone', Icons.phone_outlined),
-          _field('contactMobilePhone', 'Celular', Icons.smartphone_outlined),
+          _field(
+            'contactPhone',
+            'Telefone',
+            Icons.phone_outlined,
+            inputFormatters: const [CoeloBrazilianPhoneInputFormatter()],
+          ),
+          _field(
+            'contactMobilePhone',
+            'Celular',
+            Icons.smartphone_outlined,
+            inputFormatters: const [CoeloBrazilianPhoneInputFormatter()],
+          ),
         ]),
         const SizedBox(height: CoeloSpacing.space4),
         SuperadminLocationMapPreview(
