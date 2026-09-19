@@ -796,11 +796,12 @@ $$;
 revoke all on function public.staff_access_rule_save_v1(uuid, bigint, jsonb) from public, anon, authenticated;
 grant execute on function public.staff_access_rule_save_v1(uuid, bigint, jsonb) to authenticated;
 
+-- p_period: current | upcoming | past | null (todos).
 create or replace function public.staff_leaves_list_v1(
   p_search text default null,
   p_institution_id uuid default null,
   p_unit_id uuid default null,
-  p_period text default null,  -- current | upcoming | past | null (todos)
+  p_period text default null,
   p_page integer default 1,
   p_page_size integer default 20
 )
