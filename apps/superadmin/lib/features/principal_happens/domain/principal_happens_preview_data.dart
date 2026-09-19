@@ -115,11 +115,15 @@ final class PrincipalPostPreviewItem {
     this.managementVersion,
     this.canWithdraw = false,
     this.publishedAt,
+    this.authorPersonId,
   });
   final String author;
   final String context;
   final String time;
   final String initials;
+
+  /// Pessoa autora (foto real pelo leitor do Principal). Nulo nas fixtures.
+  final String? authorPersonId;
   final String body;
   final List<PrincipalHappensMediaDescriptor> media;
 

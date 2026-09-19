@@ -229,6 +229,7 @@ PrincipalNowFeedItem _itemFromJson(Map<String, dynamic> json, DateTime current) 
     publicationId: _requiredText(json, 'publication_id'),
     author: _requiredText(json, 'author_name'),
     authorInitials: _requiredText(json, 'author_initials'),
+    authorPersonId: (json['author_person_id'] as String?)?.trim(),
     contextLabel: _requiredText(json, 'context_label'),
     timeLabel: _relativeTime(publishedAt, current),
     caption: overlay.isNotEmpty ? overlay : caption,

@@ -41,6 +41,7 @@ final class CircularSummary {
     required this.questionCount,
     required this.responseState,
     this.revisedAt,
+    this.authorPersonId,
   });
 
   final String id;
@@ -50,6 +51,9 @@ final class CircularSummary {
   final String contextLabel;
   final DateTime publishedAt;
   final DateTime? revisedAt;
+
+  /// Pessoa autora (foto real pelo leitor do Principal); só o feed misto a traz.
+  final String? authorPersonId;
   final int attachmentCount;
   final int questionCount;
   final CircularResponseState responseState;

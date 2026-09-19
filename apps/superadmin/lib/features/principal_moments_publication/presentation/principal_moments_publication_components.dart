@@ -111,7 +111,19 @@ class _MomentAssetState extends State<_MomentAsset> {
     final isVideo = media.mimeType.toLowerCase().startsWith('video/');
     final isImage = media.mimeType.toLowerCase().startsWith('image/');
     if (isVideo) {
-      image = _unavailableMomentVideo(context);
+      // Vídeo escolhido localmente (bytes) ou já enviado (URL): toca inline.
+      final source = media.bytes.isNotEmpty
+          ? mediaObjectUrl(media.bytes, media.mimeType)
+          : remoteUrl;
+      image = source == null
+          ? _unavailableMomentVideo(context)
+          : MediaInlineVideo(
+              key: const Key('moments-media-video'),
+              url: source,
+              fit: BoxFit.cover,
+              semanticLabel: 'Vídeo do momento selecionado',
+              unavailable: _unavailableMomentVideo(context),
+            );
     } else if (!isImage && media.assetPath.isEmpty) {
       image = _unavailableMomentMedia(context);
     } else if (media.bytes.isNotEmpty) {

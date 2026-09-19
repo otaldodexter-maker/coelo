@@ -64,6 +64,43 @@ final class EntityImageView extends StatelessWidget {
   }
 }
 
+/// Avatar redondo de uma pessoa (autor de publicação, contato): a foto real
+/// quando existe, senão [fallback] (as iniciais que a tela já tinha). Sem
+/// [personId] (fixtures visuais) é só o fallback.
+final class PersonAvatarView extends StatelessWidget {
+  const PersonAvatarView({
+    required this.personId,
+    required this.radius,
+    required this.fallback,
+    this.principal = true,
+    this.semanticLabel,
+    super.key,
+  });
+
+  final String? personId;
+  final double radius;
+  final Widget fallback;
+  final bool principal;
+  final String? semanticLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final id = personId;
+    if (id == null || id.isEmpty) return fallback;
+    return SizedBox(
+      width: radius * 2,
+      height: radius * 2,
+      child: EntityImageView(
+        entity: EntityKind.person,
+        entityId: id,
+        principal: principal,
+        semanticLabel: semanticLabel,
+        fallback: fallback,
+      ),
+    );
+  }
+}
+
 /// Cabeçalho de página de detalhe: capa (quando houver), foto de perfil e nome.
 /// Sem foto fica o ícone/iniciais e o nome; sem escopo de imagens (mock/testes)
 /// o cabeçalho não existe, porque a página já lista o nome nos campos.

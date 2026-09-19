@@ -107,7 +107,11 @@ final class PrincipalMomentPreviewItem {
     this.canWithdraw = false,
     this.media = const [],
     this.initials,
+    this.authorPersonId,
   });
+
+  /// Pessoa autora (foto real pelo leitor do Principal). Nulo nas fixtures.
+  final String? authorPersonId;
 
   final String author;
   final String context;

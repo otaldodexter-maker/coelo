@@ -8,6 +8,8 @@ import '../../staff_access/domain/staff_access_popup_text.dart';
 import '../../staff_access/presentation/staff_access_denied_listener.dart';
 import '../domain/principal_runtime_context.dart';
 import 'principal_global_navigation.dart';
+import '../../../shared/data/entity_image_repository.dart';
+import '../../../shared/presentation/widgets/entity_image_view.dart';
 
 typedef PrincipalRuntimeContextBuilder =
     Widget Function(BuildContext context, PrincipalRuntimeContext runtimeContext);
@@ -147,9 +149,9 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
     if (_blockedPopupShown.add(chosen.membershipId)) {
       await showPrincipalBlockedContextDialog(context, chosen);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(staffAccessBlockedMessage(chosen.accessPopup))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(staffAccessBlockedMessage(chosen.accessPopup))));
     }
   }
 
@@ -231,90 +233,91 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
       return StaffAccessDeniedListener(
         onDismissed: _onDenied,
         child: Column(
-        children: [
-          PrincipalGlobalHeader(
-            notificationAction: widget.notificationAction,
-            onReportProblem: () => widget.onReportProblem?.call(context),
-            keyPrefix: 'principal-context-header',
-            avatarInitials: viewingAs ? _initials(selected.label) : widget.avatarInitials,
-            avatarImage: viewingAs ? null : widget.avatarImage,
-            avatarBackgroundColor: viewingAs
-                ? scheme.primaryContainer
-                : widget.avatarBackgroundColor,
-            avatarForegroundColor: viewingAs
-                ? scheme.onPrimaryContainer
-                : widget.avatarForegroundColor,
-            contextLabel: viewAsLabel,
-            onOpenMenu: () {
-              final host = Scaffold.maybeOf(context);
-              if (host?.hasDrawer ?? false) {
-                host!.openDrawer();
-              } else {
-                widget.onOpenHome?.call(context);
-              }
-            },
-            onOpenNotifications: () => ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Consulte as notificações pelo sino do Superadmin.')),
-            ),
-            onOpenProfile: () => widget.onOpenProfile?.call(context),
-            onChooseContexts: () async {
-              final restoreLauncher = SuperadminShell.suppressChatLauncher(context);
-              _sheetOpen = true;
-              try {
-                if (widget.multipleBuilder != null) {
-                  final chosen = await showModalBottomSheet<List<PrincipalRuntimeContext>>(
+          children: [
+            PrincipalGlobalHeader(
+              notificationAction: widget.notificationAction,
+              onReportProblem: () => widget.onReportProblem?.call(context),
+              keyPrefix: 'principal-context-header',
+              avatarInitials: viewingAs ? _initials(selected.label) : widget.avatarInitials,
+              avatarImage: viewingAs ? null : widget.avatarImage,
+              avatarBuilder: viewingAs ? (fallback) => _contextImage(selected, fallback) : null,
+              avatarBackgroundColor: viewingAs
+                  ? scheme.primaryContainer
+                  : widget.avatarBackgroundColor,
+              avatarForegroundColor: viewingAs
+                  ? scheme.onPrimaryContainer
+                  : widget.avatarForegroundColor,
+              contextLabel: viewAsLabel,
+              onOpenMenu: () {
+                final host = Scaffold.maybeOf(context);
+                if (host?.hasDrawer ?? false) {
+                  host!.openDrawer();
+                } else {
+                  widget.onOpenHome?.call(context);
+                }
+              },
+              onOpenNotifications: () => ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Consulte as notificações pelo sino do Superadmin.')),
+              ),
+              onOpenProfile: () => widget.onOpenProfile?.call(context),
+              onChooseContexts: () async {
+                final restoreLauncher = SuperadminShell.suppressChatLauncher(context);
+                _sheetOpen = true;
+                try {
+                  if (widget.multipleBuilder != null) {
+                    final chosen = await showModalBottomSheet<List<PrincipalRuntimeContext>>(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Theme.of(context).brightness == Brightness.light
+                          ? CoeloPalette.neutral0
+                          : Theme.of(context).colorScheme.surface,
+                      elevation: 0,
+                      builder: (_) => _neutralContextInteraction(
+                        context,
+                        _MultipleContextSheet(contexts: contexts, selected: selectedContexts),
+                      ),
+                    );
+                    if (chosen != null && chosen.isNotEmpty && mounted) {
+                      final allowed = chosen.where((c) => !c.accessBlocked).toList();
+                      if (allowed.isEmpty) return;
+                      setState(() {
+                        _selectedMembershipIds = allowed.map((c) => c.membershipId).toSet();
+                        _selectedMembershipId = allowed.first.membershipId;
+                      });
+                    }
+                    return;
+                  }
+                  final chosen = await showModalBottomSheet<PrincipalRuntimeContext>(
                     context: context,
-                    isScrollControlled: true,
                     backgroundColor: Theme.of(context).brightness == Brightness.light
                         ? CoeloPalette.neutral0
                         : Theme.of(context).colorScheme.surface,
                     elevation: 0,
+                    showDragHandle: true,
                     builder: (_) => _neutralContextInteraction(
                       context,
-                      _MultipleContextSheet(contexts: contexts, selected: selectedContexts),
+                      _ContextSheet(
+                        contexts: contexts,
+                        selected: selected,
+                        hybrid:
+                            contexts.any((c) => c.isGuardianRole) &&
+                            contexts.any((c) => !c.isGuardianRole),
+                      ),
                     ),
                   );
-                  if (chosen != null && chosen.isNotEmpty && mounted) {
-                    final allowed = chosen.where((c) => !c.accessBlocked).toList();
-                    if (allowed.isEmpty) return;
-                    setState(() {
-                      _selectedMembershipIds = allowed.map((c) => c.membershipId).toSet();
-                      _selectedMembershipId = allowed.first.membershipId;
-                    });
-                  }
-                  return;
+                  if (chosen != null && context.mounted) await _choose(context, chosen);
+                } finally {
+                  _sheetOpen = false;
+                  restoreLauncher?.call();
                 }
-                final chosen = await showModalBottomSheet<PrincipalRuntimeContext>(
-                  context: context,
-                  backgroundColor: Theme.of(context).brightness == Brightness.light
-                      ? CoeloPalette.neutral0
-                      : Theme.of(context).colorScheme.surface,
-                  elevation: 0,
-                  showDragHandle: true,
-                  builder: (_) => _neutralContextInteraction(
-                    context,
-                    _ContextSheet(
-                      contexts: contexts,
-                      selected: selected,
-                      hybrid:
-                          contexts.any((c) => c.isGuardianRole) &&
-                          contexts.any((c) => !c.isGuardianRole),
-                    ),
-                  ),
-                );
-                if (chosen != null && context.mounted) await _choose(context, chosen);
-              } finally {
-                _sheetOpen = false;
-                restoreLauncher?.call();
-              }
-            },
-          ),
-          Expanded(
-            child:
-                widget.multipleBuilder?.call(context, selectedContexts) ??
-                widget.builder!(context, selected),
-          ),
-        ],
+              },
+            ),
+            Expanded(
+              child:
+                  widget.multipleBuilder?.call(context, selectedContexts) ??
+                  widget.builder!(context, selected),
+            ),
+          ],
         ),
       );
     },
@@ -495,7 +498,11 @@ final class _ContextTile extends StatelessWidget {
       selected: false,
       hoverColor: Colors.transparent,
       focusColor: Theme.of(context).colorScheme.primaryContainer,
-      leading: CircleAvatar(child: Text(_initials(item.label))),
+      leading: SizedBox(
+        width: 40,
+        height: 40,
+        child: _contextImage(item, CircleAvatar(child: Text(_initials(item.label)))),
+      ),
       title: Text(item.label),
       subtitle: Text(
         blocked
@@ -514,6 +521,23 @@ final class _ContextTile extends StatelessWidget {
       onTap: () => Navigator.of(context).pop(item),
     );
   }
+}
+
+/// Foto real do contexto (turma > unidade > instituição) pelo leitor do
+/// Principal; as iniciais ficam como fallback.
+Widget _contextImage(PrincipalRuntimeContext item, Widget fallback) {
+  final (EntityKind kind, String id) = switch (item) {
+    PrincipalRuntimeContext(:final groupId?) when groupId.isNotEmpty => (EntityKind.group, groupId),
+    PrincipalRuntimeContext(:final unitId?) when unitId.isNotEmpty => (EntityKind.unit, unitId),
+    _ => (EntityKind.institution, item.institutionId),
+  };
+  return EntityImageView(
+    entity: kind,
+    entityId: id,
+    principal: true,
+    semanticLabel: 'Foto de ${item.label}',
+    fallback: fallback,
+  );
 }
 
 String _initials(String value) {

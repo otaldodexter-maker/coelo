@@ -45,11 +45,15 @@ final class PrincipalNowFeedItem {
     this.coverPosition = 0,
     this.managementVersion,
     this.canRemove = false,
+    this.authorPersonId,
   });
 
   final String publicationId;
   final String author;
   final String authorInitials;
+
+  /// Pessoa autora (foto real pelo leitor do Principal).
+  final String? authorPersonId;
   final String contextLabel;
   final String timeLabel;
   final String caption;

@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 
 import '../domain/principal_now_feed_repository.dart';
 import '../domain/principal_now_preview_data.dart';
+import '../../../shared/presentation/widgets/entity_image_view.dart';
+import '../../../shared/presentation/widgets/media_inline_video.dart';
 
 final class PrincipalNowPreviewPage extends StatefulWidget {
   const PrincipalNowPreviewPage({
@@ -100,6 +102,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
                   )];
               return PrincipalNowPreviewStory(
                 author: item.author,
+                authorPersonId: item.authorPersonId,
                 timeLabel: item.timeLabel,
                 caption: item.caption,
                 contextLabel: item.contextLabel,
@@ -973,16 +976,23 @@ final class _StoryCard extends StatelessWidget {
                           const SizedBox(width: CoeloSpacing.space2),
                         ],
                         if (!enlargedText) ...[
-                          CircleAvatar(
+                          PersonAvatarView(
+                            personId: story.authorPersonId,
                             radius: 17,
-                            backgroundColor: CoeloStatusColors.light.warningContainer,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space1),
-                              child: FittedBox(
-                                child: Text(
-                                  'COELO',
-                                  style: textTheme.labelSmall?.copyWith(
-                                    color: CoeloStatusColors.light.onWarningContainer,
+                            semanticLabel: 'Foto de ${story.author}',
+                            fallback: CircleAvatar(
+                              radius: 17,
+                              backgroundColor: CoeloStatusColors.light.warningContainer,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: CoeloSpacing.space1,
+                                ),
+                                child: FittedBox(
+                                  child: Text(
+                                    'COELO',
+                                    style: textTheme.labelSmall?.copyWith(
+                                      color: CoeloStatusColors.light.onWarningContainer,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1317,6 +1327,16 @@ final class _StoryImage extends StatelessWidget {
     );
     final remoteUrl = story.remoteUrl;
     if (remoteUrl != null && remoteUrl.isNotEmpty) {
+      if (story.mimeType.startsWith('video/')) {
+        return MediaInlineVideo(
+          key: ValueKey('now-video-$remoteUrl'),
+          url: remoteUrl,
+          fit: BoxFit.cover,
+          autoplay: true,
+          semanticLabel: story.caption,
+          unavailable: unavailable,
+        );
+      }
       if (!story.mimeType.startsWith('image/')) return unavailable;
       return _applyCrop(
         Image.network(

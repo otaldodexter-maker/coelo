@@ -10,12 +10,16 @@ sealed class PrincipalHappensFeedItem {
     required this.publishedAt,
     required this.authorName,
     required this.contextLabel,
+    this.authorPersonId,
   });
 
   final String id;
   final DateTime publishedAt;
   final String authorName;
   final String contextLabel;
+
+  /// Pessoa autora (foto pelo leitor do Principal). Nulo em fixtures visuais.
+  final String? authorPersonId;
 }
 
 @immutable
@@ -25,6 +29,7 @@ final class PrincipalHappensPostItem extends PrincipalHappensFeedItem {
     required super.publishedAt,
     required super.authorName,
     required super.contextLabel,
+    super.authorPersonId,
     required this.caption,
     this.media = const [],
     this.managementVersion,
@@ -48,6 +53,7 @@ final class PrincipalHappensCircularItem extends PrincipalHappensFeedItem {
     required super.publishedAt,
     required super.authorName,
     required super.contextLabel,
+    super.authorPersonId,
     required this.summary,
   });
 

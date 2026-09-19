@@ -110,6 +110,7 @@ final class SupabasePrincipalMomentsFeedRepository
 
     return PrincipalMomentPreviewItem(
       author: author,
+      authorPersonId: (row['author_person_id'] as String?)?.trim(),
       context: context,
       time: _relativeTime(publishedAt),
       caption: row['caption'] as String? ?? '',

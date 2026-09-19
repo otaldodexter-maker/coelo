@@ -9,6 +9,9 @@ import '../../principal_shared/presentation/principal_publication_frame.dart';
 import '../../principal_shared/presentation/principal_preview_app_bar.dart';
 import '../application/moments_publication_controller.dart';
 import '../domain/moments_publication.dart';
+import '../../principal_now_publication/domain/now_media_metadata.dart';
+import '../../../shared/data/edge_media_bytes.dart';
+import '../../../shared/presentation/widgets/media_inline_video.dart';
 
 part 'principal_moments_publication_components.dart';
 
@@ -40,13 +43,13 @@ abstract final class MomentsMediaLimits {
   /// `maximumBytes` of the `moments-media` Edge Function.
   static const maxBytes = 25 * 1024 * 1024;
 
-  static const acceptedExtensions = <String>['jpg', 'jpeg', 'png', 'webp'];
+  static const acceptedExtensions = <String>['jpg', 'jpeg', 'png', 'webp', 'mp4'];
 
-  static const acceptedMimeTypes = <String>{'image/jpeg', 'image/png', 'image/webp'};
+  static const acceptedMimeTypes = <String>{'image/jpeg', 'image/png', 'image/webp', 'video/mp4'};
 
-  /// Accepted by the backend but not offered by this composition: `video/mp4`
-  /// requires a measured duration that this selection cannot produce.
-  static const deferredMimeTypes = <String>{'video/mp4'};
+  /// `video/mp4` só entra com a duração lida do próprio arquivo (moov/mvhd), o
+  /// mesmo leitor do Agora; o servidor confere 1 ms..5 min.
+  static const maxVideoDuration = Duration(minutes: 5);
 
   static int get maxMegabytes => maxBytes ~/ (1024 * 1024);
 }
@@ -536,14 +539,24 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
         break;
       }
       if (!MomentsMediaLimits.acceptedMimeTypes.contains(mimeType)) {
-        refusal ??= MomentsMediaLimits.deferredMimeTypes.contains(mimeType)
-            ? 'Vídeo depende da duração medida pela integração autorizada.'
-            : 'Formato não aceito. Use JPG, PNG ou WEBP.';
+        refusal ??= 'Formato não aceito. Use JPG, PNG, WEBP ou MP4.';
         continue;
       }
       if (candidate.bytes.isEmpty || candidate.bytes.lengthInBytes > MomentsMediaLimits.maxBytes) {
         refusal ??= 'Cada arquivo deve ter até ${MomentsMediaLimits.maxMegabytes} MB.';
         continue;
+      }
+      Duration? duration;
+      if (mimeType == 'video/mp4') {
+        duration = readMp4Duration(candidate.bytes);
+        if (duration == null || duration <= Duration.zero) {
+          refusal ??= 'Não foi possível ler a duração do vídeo. Use um MP4 válido.';
+          continue;
+        }
+        if (duration > MomentsMediaLimits.maxVideoDuration) {
+          refusal ??= 'Cada vídeo deve ter até 5 minutos.';
+          continue;
+        }
       }
       _controller.addMedia(
         MomentsMediaDraft.local(
@@ -551,6 +564,7 @@ class _PrincipalMomentsPublicationPageState extends State<PrincipalMomentsPublic
           name: candidate.name,
           mimeType: mimeType,
           bytes: candidate.bytes,
+          durationMilliseconds: duration?.inMilliseconds,
         ),
       );
       accepted += 1;

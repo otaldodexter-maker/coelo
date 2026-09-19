@@ -150,6 +150,7 @@ PrincipalPostPreviewItem _postFromJson(Map<String, dynamic> json) {
     postId: postId == null || postId.isEmpty ? null : postId,
     managementVersion: managementVersion?.toInt(),
     canWithdraw: json['can_withdraw'] == true,
+    authorPersonId: (json['author_person_id'] as String?)?.trim(),
   );
 }
 

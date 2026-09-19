@@ -106,5 +106,6 @@ String _mimeType(String? extension) => switch (extension?.toLowerCase()) {
   'jpg' || 'jpeg' => 'image/jpeg',
   'png' => 'image/png',
   'webp' => 'image/webp',
+  'mp4' => 'video/mp4',
   _ => 'application/octet-stream',
 };

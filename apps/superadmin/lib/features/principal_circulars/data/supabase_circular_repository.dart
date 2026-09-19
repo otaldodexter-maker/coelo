@@ -267,7 +267,9 @@ CircularFailure _failure(Object error) {
     if (error.code == '42501' || error.code == 'PGRST301') {
       return const CircularUnauthorized();
     }
-    if (error.code == '40001' || error.code == 'PT409' || error.message.contains('expected_version_conflict')) {
+    if (error.code == '40001' ||
+        error.code == 'PT409' ||
+        error.message.contains('expected_version_conflict')) {
       return const CircularVersionConflict();
     }
     if (error.code == '23514' || error.code == 'P0001') {

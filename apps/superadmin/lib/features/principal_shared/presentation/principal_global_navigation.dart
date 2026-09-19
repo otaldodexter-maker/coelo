@@ -72,6 +72,7 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
     this.onChooseContexts,
     this.avatarInitials = '?',
     this.avatarImage,
+    this.avatarBuilder,
     this.avatarBackgroundColor,
     this.avatarForegroundColor,
     this.contextLabel,
@@ -87,6 +88,10 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
   final VoidCallback? onChooseContexts;
   final String avatarInitials;
   final ImageProvider? avatarImage;
+
+  /// Envolve o avatar (iniciais/imagem) — usado pelo "ver como" para mostrar a
+  /// foto real do contexto (EntityImageView) com as iniciais como fallback.
+  final Widget Function(Widget fallback)? avatarBuilder;
   final Color? avatarBackgroundColor;
   final Color? avatarForegroundColor;
 
@@ -99,6 +104,9 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
   @override
   Size get preferredSize => const Size.fromHeight(64);
 
+  Widget _avatar(Widget fallback) => avatarBuilder == null
+      ? fallback
+      : SizedBox(width: 36, height: 36, child: avatarBuilder!(fallback));
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -180,12 +188,14 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
                         PopupMenuItem(value: 'profile', child: Text('Abrir perfil')),
                         PopupMenuItem(value: 'contexts', child: Text('Ver como')),
                       ],
-                      icon: CircleAvatar(
-                        radius: 18,
-                        backgroundColor: avatarBackgroundColor,
-                        foregroundColor: avatarForegroundColor,
-                        backgroundImage: avatarImage,
-                        child: avatarImage == null ? Text(avatarInitials) : null,
+                      icon: _avatar(
+                        CircleAvatar(
+                          radius: 18,
+                          backgroundColor: avatarBackgroundColor,
+                          foregroundColor: avatarForegroundColor,
+                          backgroundImage: avatarImage,
+                          child: avatarImage == null ? Text(avatarInitials) : null,
+                        ),
                       ),
                     ),
                   ),
@@ -197,14 +207,16 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
                     key: ValueKey('$keyPrefix-context-avatar'),
                     tooltip: 'Abrir perfil',
                     onPressed: onOpenProfile,
-                    icon: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: avatarBackgroundColor ?? scheme.primaryContainer,
-                      foregroundColor: avatarForegroundColor ?? scheme.onPrimaryContainer,
-                      backgroundImage: avatarImage,
-                      child: avatarImage == null
-                          ? _ClampedTextScale(maxScaleFactor: 1.3, child: Text(avatarInitials))
-                          : null,
+                    icon: _avatar(
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor: avatarBackgroundColor ?? scheme.primaryContainer,
+                        foregroundColor: avatarForegroundColor ?? scheme.onPrimaryContainer,
+                        backgroundImage: avatarImage,
+                        child: avatarImage == null
+                            ? _ClampedTextScale(maxScaleFactor: 1.3, child: Text(avatarInitials))
+                            : null,
+                      ),
                     ),
                   ),
                 ),

@@ -375,7 +375,9 @@ final class _EntityImagesSectionState extends State<EntityImagesSection> {
             has: controller.has(EntityImageKind.floorPlan),
             busy: controller.isBusy(EntityImageKind.floorPlan),
             pickKey: const Key('entity-image-floor-plan-pick'),
-            pickLabel: controller.has(EntityImageKind.floorPlan) ? 'Trocar planta' : 'Enviar planta',
+            pickLabel: controller.has(EntityImageKind.floorPlan)
+                ? 'Trocar planta'
+                : 'Enviar planta',
             onPick: _pickFloorPlan,
             onRemove: () => controller.removeImage(EntityImageKind.floorPlan),
           ),

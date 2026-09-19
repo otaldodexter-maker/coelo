@@ -14,6 +14,8 @@ import '../../principal_circulars/domain/principal_happens_mixed_feed.dart';
 import '../../principal_circulars/presentation/principal_circular_surfaces.dart';
 import '../../principal_for_you/presentation/widgets/coelo_principal_action_card.dart';
 import '../../principal_shared/presentation/principal_global_navigation.dart';
+import '../../../shared/presentation/widgets/entity_image_view.dart';
+import '../../../shared/presentation/widgets/media_inline_video.dart';
 
 const _principalHappensNowCardKey = Key('principal-happens-now-card');
 
@@ -704,6 +706,7 @@ PrincipalPostPreviewItem _postPreview(PrincipalHappensPostItem item) => Principa
   postId: item.id,
   managementVersion: item.managementVersion,
   canWithdraw: item.canWithdraw,
+  authorPersonId: item.authorPersonId,
 );
 
 String _initials(String value) => value
@@ -1159,11 +1162,16 @@ final class _PostCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                CircleAvatar(
+                PersonAvatarView(
+                  personId: post.authorPersonId,
                   radius: 20,
-                  backgroundColor: scheme.primaryContainer,
-                  foregroundColor: scheme.onPrimaryContainer,
-                  child: Text(post.initials, style: Theme.of(context).textTheme.labelSmall),
+                  semanticLabel: 'Foto de ${post.author}',
+                  fallback: CircleAvatar(
+                    radius: 20,
+                    backgroundColor: scheme.primaryContainer,
+                    foregroundColor: scheme.onPrimaryContainer,
+                    child: Text(post.initials, style: Theme.of(context).textTheme.labelSmall),
+                  ),
                 ),
                 const SizedBox(width: CoeloSpacing.space2),
                 Expanded(
@@ -1814,7 +1822,7 @@ final class _AuthorizedMediaState extends State<_AuthorizedMedia> with WidgetsBi
         );
       }
       if (read.mimeType.startsWith('video/')) {
-        return ColoredBox(
+        final unavailable = ColoredBox(
           color: Theme.of(context).colorScheme.surfaceContainerLow,
           child: Center(
             child: Padding(
@@ -1851,6 +1859,14 @@ final class _AuthorizedMediaState extends State<_AuthorizedMedia> with WidgetsBi
               ),
             ),
           ),
+        );
+        // Vídeo autorizado (bytes pela Edge → URL local): toca inline no card.
+        return MediaInlineVideo(
+          key: ValueKey('video-${widget.media.readTicket}'),
+          url: read.signedUrl,
+          fit: widget.fit,
+          semanticLabel: 'Vídeo da comunidade escolar',
+          unavailable: unavailable,
         );
       }
       return Image(

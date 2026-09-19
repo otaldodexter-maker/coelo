@@ -60,12 +60,14 @@ PrincipalHappensFeedItem _item(Map<String, dynamic> row) {
   final publishedAt = _date(row, 'effective_published_at');
   final author = _text(payload, 'author_name');
   final context = _text(payload, 'context_label');
+  final authorPersonId = (payload['author_person_id'] as String?)?.trim();
   return switch (row['item_type']) {
     'post' => PrincipalHappensPostItem(
       id: id,
       publishedAt: publishedAt,
       authorName: author,
       contextLabel: context,
+      authorPersonId: authorPersonId,
       caption: payload['caption'] as String? ?? '',
       media: _postMedia(payload['media']),
       managementVersion: (payload['management_version'] as num?)?.toInt(),
@@ -76,11 +78,13 @@ PrincipalHappensFeedItem _item(Map<String, dynamic> row) {
       publishedAt: publishedAt,
       authorName: author,
       contextLabel: context,
+      authorPersonId: authorPersonId,
       summary: CircularSummary(
         id: id,
         title: _text(payload, 'title'),
         excerpt: payload['excerpt'] as String? ?? '',
         authorName: author,
+        authorPersonId: authorPersonId,
         contextLabel: context,
         publishedAt: publishedAt,
         revisedAt: _optionalDate(payload['revised_at']),

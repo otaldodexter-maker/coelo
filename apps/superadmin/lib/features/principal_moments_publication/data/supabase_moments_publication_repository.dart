@@ -181,7 +181,6 @@ final class SupabaseMomentsPublicationRepository implements MomentsPublicationRe
   }
 }
 
-
 String _draftFingerprint(MomentsDraft draft) {
   final audiences = draft.audiences.map(_audienceWire).toList()..sort();
   return jsonEncode({

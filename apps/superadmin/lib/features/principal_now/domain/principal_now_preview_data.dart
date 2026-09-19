@@ -66,9 +66,13 @@ final class PrincipalNowPreviewStory {
     this.cropY = 0,
     this.coverPosition = 0,
     this.duration = const Duration(seconds: 5),
+    this.authorPersonId,
   }) : assert(assetPath != '' || remoteUrl != null);
 
   final String author;
+
+  /// Pessoa autora (foto real pelo leitor do Principal). Nulo nas fixtures.
+  final String? authorPersonId;
   final String timeLabel;
   final String caption;
   final String contextLabel;

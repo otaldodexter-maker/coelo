@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import '../domain/circular.dart';
 import '../domain/circular_repository.dart';
+import '../../../shared/presentation/widgets/entity_image_view.dart';
 
 enum PrincipalProfileContentTab { happens, moments, circulars, about }
 
@@ -416,10 +417,15 @@ final class _PrincipalCircularFeedCardState extends State<PrincipalCircularFeedC
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  backgroundColor: theme.colorScheme.primaryContainer,
-                  foregroundColor: theme.colorScheme.primary,
-                  child: Text(_initials(item.authorName)),
+                PersonAvatarView(
+                  personId: item.authorPersonId,
+                  radius: 20,
+                  semanticLabel: 'Foto de ${item.authorName}',
+                  fallback: CircleAvatar(
+                    backgroundColor: theme.colorScheme.primaryContainer,
+                    foregroundColor: theme.colorScheme.primary,
+                    child: Text(_initials(item.authorName)),
+                  ),
                 ),
                 const SizedBox(width: CoeloSpacing.space3),
                 Expanded(

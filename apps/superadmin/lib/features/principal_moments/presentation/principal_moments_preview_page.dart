@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 
 import '../domain/principal_moments_feed_repository.dart';
 import '../domain/principal_moments_preview_data.dart';
+import '../../../shared/presentation/widgets/entity_image_view.dart';
+import '../../../shared/presentation/widgets/media_inline_video.dart';
 
 final class PrincipalMomentsPreviewPage extends StatefulWidget {
   const PrincipalMomentsPreviewPage({
@@ -829,14 +831,19 @@ final class _MomentContext extends StatelessWidget {
         children: [
           Row(
             children: [
-              CircleAvatar(
+              PersonAvatarView(
+                personId: moment.authorPersonId,
                 radius: 18,
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                child: Text(
-                  moment.resolvedInitials,
-                  style: textTheme.labelMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontWeight: FontWeight.w800,
+                semanticLabel: 'Foto de ${moment.author}',
+                fallback: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  child: Text(
+                    moment.resolvedInitials,
+                    style: textTheme.labelMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
               ),
@@ -881,10 +888,22 @@ final class _MomentSurface extends StatelessWidget {
     // IMG (decisao do Owner de 10/09/2026): a midia nao pode ser perdida nem
     // cortada; ela cabe inteira sobre o preto em vez de preencher cortando.
     final backdrop = context.coeloOnMediaColors.backdrop;
+    final first = moment.media.first;
+    if (first.mimeType.startsWith('video/')) {
+      return ColoredBox(
+        color: backdrop,
+        child: MediaInlineVideo(
+          key: const Key('principal-moments-media'),
+          url: first.signedUrl,
+          semanticLabel: 'Vídeo do momento',
+          unavailable: ColoredBox(color: backdrop),
+        ),
+      );
+    }
     return ColoredBox(
       color: backdrop,
       child: Image.network(
-        moment.media.first.signedUrl,
+        first.signedUrl,
         key: const Key('principal-moments-media'),
         fit: BoxFit.contain,
         alignment: Alignment.center,
