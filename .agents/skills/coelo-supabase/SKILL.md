@@ -38,3 +38,4 @@ Dump prévio, espelho de ACL e SHA-256 só quando o Owner pedir revisão formal.
 - Busca por dado pessoal: mínimo de caracteres, escopo no servidor, CPF nunca no resultado.
 - Responsável sem membership: leitor reconhece por `guardian_links` + `can_view` (`app_private.now_reader_actor`); escrita continua só de equipe.
 - Identidades QA: `qa-r06-<area>`, `qa-r15-responsavel`; credenciais em `C:\Users\adrie\Documents\Coelo-backups\`, nunca impressas.
+- Acesso contextual (lote 84): `app_private.has_context_permission` e `has_active_institution_membership` ignoram a membership bloqueada por `app_private.staff_access_blocked` (regra/afastamento do vínculo, fuso da unidade, header `x-coelo-surface`); RPC nova que resolva membership de equipe sem passar por elas precisa filtrar também.

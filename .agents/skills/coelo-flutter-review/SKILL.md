@@ -42,3 +42,5 @@ Versão anterior em `docs/archive/skills-20260918/`.
   `CoeloBrazilianPhoneInputFormatter`; data: `CoeloDateTimeField`
   (`pickTime: false` para só data) ou `showCoeloDateRangePicker`, nunca
   `showDatePicker` do Material.
+- Header custom para o servidor (ex.: `x-coelo-surface`) vai só em `Supabase.instance.client.rest.headers`; nunca em `Supabase.initialize(headers:)`, porque as Edge Functions têm `Access-Control-Allow-Headers` fixo e o preflight de todas cai.
+- Acesso contextual (ADR 0035): o cliente só reflete `access_blocked`/`access_popup` de `list_my_principal_contexts`; nunca esconde o vínculo nem decide localmente (`principal_runtime_context_route.dart`).

@@ -9,6 +9,7 @@ Uma linha por item: tela · o que falta · quem pediu · data. Apague a linha qu
 - Instituições · spec 066 ciclo de vida + status; spec 067 Locais com mapa · Owner · 18/09
 - Avisos · spec 069 duplicar/CTA/atualização · Owner · 18/09
 - Principal · spec 068 perfis oficiais · Owner · 18/09
+- Acessos · acesso contextual: a regra seg–sex 08–18 da "QA R15 Educadora Turma" ficou em produção como dado QA (criada pela tela na prova de 19/09; remover pela tela quando não servir mais) · Sessão ACESSO-CONTEXTUAL · 19/09
 - Acessos · acesso contextual: prova da educadora na rota real exige conta de login para uma pessoa de equipe (Owner cria na Auth Admin; "QA R15 Educadora Turma" não tem login); popup/negação provados por pgTAP, widget test e com o espelho interno de qa-r06-principal · Sessão ACESSO-CONTEXTUAL · 19/09
 - Acessos · acesso contextual: superfície declarada pelo cliente (`x-coelo-surface`, largura + user agent na inicialização; não muda ao redimensionar; servidor não verifica); app instalado só declara `installed_app` na Etapa 4 · Sessão ACESSO-CONTEXTUAL · 19/09
 - Acessos · acesso contextual: sem regra padrão por instituição (só por vínculo); afastamento/regra só via UI de quem tem `staff_access.manage` (institution_admin); um admin pode restringir o próprio vínculo (quem está acima corrige); leitores que juntam `institution_memberships` sem passar por `has_context_permission` (chat/feeds legados) ficam para varredura · Sessão ACESSO-CONTEXTUAL · 19/09
