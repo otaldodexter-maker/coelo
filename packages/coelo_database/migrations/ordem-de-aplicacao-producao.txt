@@ -541,3 +541,7 @@
 # segundo vínculo da educadora real na QA R04 Instituicao Sintetica (coordinator, escopo de instituição) em vez da Escola R04
 # Estrutura (draft); a função revoga (inactive + revoked_at) vínculos da pessoa fora das duas instituições. Reaplicada no próprio arquivo.
 20260920040000_qa_e3_educadora_fixture_v2.sql
+# Lote 101 (Sessão ETAPA-3, 20/09/2026): superadmin_people_list expõe suspended_now/suspended_from/suspended_until por item
+# (spec 066 §3, ⋯ Suspender por período / Reativar no diretório de Pessoas). Corpo = definição de produção + três chaves.
+# pgTAP people_list_suspension_v1_test 3/3; ledger 20260920050000 reparado.
+20260920050000_people_list_suspension_v1.sql
