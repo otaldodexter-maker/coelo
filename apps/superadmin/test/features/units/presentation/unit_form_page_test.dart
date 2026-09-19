@@ -10,6 +10,7 @@ import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/units/data/fake_unit_directory_repository.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_directory.dart';
+import 'package:coelo_superadmin/features/units/domain/structure_handle_preview.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_handle_availability.dart';
 import 'package:coelo_superadmin/features/units/presentation/unit_form_navigation.dart';
 import 'package:coelo_superadmin/features/units/presentation/unit_form_page.dart';
@@ -428,7 +429,50 @@ void main() {
 
     expect(result, isNull);
     expect(find.text('Hierarquia'), findsWidgets);
-    expect(find.text('Campo obrigatório.'), findsNWidgets(2));
+    // Só o nome é obrigatório: sem @ escolhido o servidor gera o padrão.
+    expect(find.text('Campo obrigatório.'), findsOneWidget);
+  });
+
+  testWidgets('without a chosen @ the note previews the default and the slug follows the name', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
+    final repository = FakeUnitDirectoryRepository(institutions);
+    UnitFormSaveResult? result;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: UnitFormPage(
+          repository: repository,
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (value) => result = value,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('unit-form-continue')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('unit-name-field')), 'Unidade Jardim');
+    await tester.pump();
+    final institutionSlug = repository.records.first.institution.slug;
+    final expected = previewUnitHandle(name: 'Unidade Jardim', institutionSlug: institutionSlug);
+    final note = tester.widget<Text>(find.byKey(const Key('unit-handle-note'))).data!;
+    expect(note, contains('@$expected'));
+    expect(note, contains('o servidor confirma ao salvar'));
+    expect(find.text('@ da unidade (opcional)'), findsOneWidget);
+
+    await tester.tap(find.text('Revisão').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('unit-form-save')));
+    await tester.pumpAndSettle();
+
+    expect(result, UnitFormSaveResult.created);
+    final saved = repository.records.lastWhere((record) => record.name == 'Unidade Jardim');
+    expect(saved.slug, 'unidadejardim');
   });
 
   testWidgets('plan choices keep hover in the Coelo primary palette without gray overlay', (

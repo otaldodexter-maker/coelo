@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import '../../../app/widgets/superadmin_advanced_color_picker_dialog.dart';
 import '../../../shared/data/entity_image_repository.dart';
 import '../../../shared/presentation/widgets/avatar_crop_dialog.dart';
+import '../../units/domain/structure_handle_preview.dart';
 import '../../../shared/presentation/widgets/entity_images_section.dart';
 import '../../institutions/presentation/widgets/institution_logo_picker_stub.dart'
     if (dart.library.html) '../../institutions/presentation/widgets/institution_logo_picker_web.dart';
@@ -215,7 +216,8 @@ final class _IdentitySection extends StatelessWidget {
         CoeloStatePanel(
           key: const Key('activity-form-images-after-save'),
           title: 'Foto, capa e ícone',
-          message: 'Salve a atividade primeiro; depois, em Editar, adicione a foto de perfil, a capa e o ícone.',
+          message:
+              'Salve a atividade primeiro; depois, em Editar, adicione a foto de perfil, a capa e o ícone.',
           icon: Icons.add_a_photo_outlined,
         ),
       const SizedBox(height: CoeloSpacing.space5),
@@ -237,9 +239,10 @@ final class _IdentitySection extends StatelessWidget {
                 fieldKey: const Key('activity-form-handle'),
                 controller: controller.handleStem,
                 labelText: '@ da atividade',
-                hintText: controller.name.text.trim().isEmpty
-                    ? 'nome-da-atividade'
-                    : controller.name.text.trim(),
+                hintText: switch (activityHandleStemFromName(controller.name.text)) {
+                  '' => 'nome-da-atividade',
+                  final stem => stem,
+                },
                 prefixIcon: Icons.alternate_email_rounded,
                 errorText: controller.handleStemError,
                 maxLength: 64,
@@ -260,7 +263,11 @@ final class _IdentitySection extends StatelessWidget {
                 Text(
                   controller.isEditing
                       ? 'Use "Alterar @" para trocar (uma vez a cada 30 dias); o sufixo hierárquico é do servidor.'
-                      : 'Opcional. O Coelo sugere a partir do nome e aplica o sufixo hierárquico no servidor.',
+                      : 'Opcional. Vazio, o @ nasce do nome e o servidor junta a hierarquia: '
+                            '@${switch (activityHandleStemFromName(controller.name.text)) {
+                              '' => 'nome-da-atividade',
+                              final stem => stem,
+                            }}.nomedainstituicao (ou .nomedaunidade.nomedainstituicao quando a unidade cria).',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               if (controller.isEditing && controller.handleSetter != null) ...[

@@ -119,11 +119,10 @@ void main() {
     expect(form.record!.contactEmail, 'centro@coelo.me');
   });
 
-  test('handle publico vem de public_profile e nunca sai no payload', () async {
-    // create_unit_for_superadmin deriva o handle no servidor (letras e numeros
-    // do slug mais sufixo do id) quando o payload nao traz 'handle', e
-    // update_unit_for_superadmin rejeita a chave 'handle'. O cliente envia so o
-    // slug, como digitado (com hifens), e le o handle final para exibir.
+  test('handle publico vem de public_profile e nao sai no payload de edicao', () async {
+    // update_unit_for_superadmin rejeita a chave 'handle' (a troca passa por
+    // superadmin_structure_handle_set_v1). O cliente envia so o slug, como
+    // digitado (com hifens), e le o handle final para exibir.
     Request? captured;
     final unit = {
       ..._unitRow(),
@@ -160,6 +159,33 @@ void main() {
     final payload = body['p_payload'] as Map<String, dynamic>;
     expect(payload['slug'], 'unidade-centro-r04');
     expect(payload.containsKey('handle'), isFalse);
+  });
+
+  test('na criacao o @ escolhido vai como handle no payload', () async {
+    // create_unit_for_superadmin aceita `handle` (lote 211100); sem ele o
+    // servidor geraria @nomedaunidade.nomedainstituicao a partir do NOME.
+    Request? captured;
+    final client = _client((request) async {
+      if (request.url.path.endsWith('/list_units_for_superadmin')) {
+        return _json({
+          'items': [_unitRow()],
+          'total_count': 1,
+        }, request);
+      }
+      captured = request;
+      return _json(_unitRow(), request);
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseUnitDirectoryRepository(client);
+    final record = (await repository.fetchPage(
+      UnitDirectoryQuery(),
+    )).items.single.record.copyWith(managementVersion: 0, handle: 'centro.casanuvem');
+
+    await repository.upsert(record);
+    expect(captured!.url.path, endsWith('/create_unit_for_superadmin'));
+    final body = jsonDecode(captured!.body) as Map<String, dynamic>;
+    final payload = body['p_payload'] as Map<String, dynamic>;
+    expect(payload['handle'], 'centro.casanuvem');
   });
 
   test('registro sem public_profile fica com handle vazio', () async {

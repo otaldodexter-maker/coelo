@@ -286,6 +286,11 @@ Map<String, Object?> _payload(UnitRecord record, Map<String, String> planIdsByCo
   'institution_id': record.institutionId,
   'name': record.name.trim(),
   'slug': record.slug.trim().toLowerCase(),
+  // Decisao 16: o @ escolhido viaja so na criacao (create_unit_for_superadmin,
+  // lote 211100); update_unit_for_superadmin rejeita a chave e a troca passa
+  // por superadmin_structure_handle_set_v1.
+  if (record.managementVersion == 0 && record.handle.trim().isNotEmpty)
+    'handle': record.handle.trim().toLowerCase(),
   'unit_status': record.status.databaseValue,
   'unit_type_id': record.typeId,
   'plan_override_id': record.planOverride == null ? null : planIdsByCode[record.planOverride!.id],

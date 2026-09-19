@@ -18,6 +18,7 @@ import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart'
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_location_map_preview.dart';
 import '../domain/unit_directory.dart';
+import '../domain/structure_handle_preview.dart';
 import '../domain/unit_handle_availability.dart';
 import 'unit_form_controller.dart';
 import 'unit_form_navigation.dart';
@@ -193,6 +194,12 @@ final class _UnitFormPageState extends State<UnitFormPage> {
     if (widget.checkHandleAvailability != null) {
       _controllers['slug']!.addListener(_scheduleHandleCheck);
     }
+    // A prévia do @ padrão segue o nome enquanto a unidade ainda não existe.
+    if (_original == null) {
+      _controllers['name']!.addListener(() {
+        if (mounted && _controllers['slug']!.text.trim().isEmpty) setState(() {});
+      });
+    }
   }
 
   Timer? _handleCheckTimer;
@@ -307,7 +314,11 @@ final class _UnitFormPageState extends State<UnitFormPage> {
     super.didChangeDependencies();
     final repository = EntityImageScope.maybeOf(context);
     if (_images == null && repository != null) {
-      _images = EntityImagesController(kind: EntityKind.unit, repository: repository, entityId: widget.unitId);
+      _images = EntityImagesController(
+        kind: EntityKind.unit,
+        repository: repository,
+        entityId: widget.unitId,
+      );
     }
   }
 
@@ -362,13 +373,15 @@ final class _UnitFormPageState extends State<UnitFormPage> {
     _formController.setSaveError(null);
     try {
       final type = _typeOptions.firstWhere((option) => option.id == _typeId);
+      // Sem @ escolhido o slug nasce do nome; o servidor gera o @ padrão.
+      final slug = _original?.slug ?? _text('slug').replaceAll('.', '-');
+      final newSlug = slug.isEmpty ? structureHandleSegment(_text('name')) : slug;
       final id =
-          _original?.id ??
-          (_creationId ??= widget.repository.createId(_institution.id, _text('slug')));
+          _original?.id ?? (_creationId ??= widget.repository.createId(_institution.id, newSlug));
       final unit = InstitutionUnit(
         id: id,
         name: _text('name'),
-        slug: _original == null ? _text('slug') : _original!.slug,
+        slug: newSlug,
         status: _status,
         typeId: type.id,
         typeName: type.label,
@@ -694,8 +707,9 @@ final class _UnitFormPageState extends State<UnitFormPage> {
       );
     }
     final text = _original == null
-        ? 'Este é o @ público da unidade. Vazio, o servidor gera '
-              '@nomedaunidade.nomedainstituicao.'
+        ? 'Este é o @ público da unidade, único no sistema. Vazio, nasce '
+              '@${previewUnitHandle(name: _controllers['name']!.text, institutionSlug: _institution.slug)} '
+              '(o servidor confirma ao salvar).'
         : handle.isEmpty
         ? 'O @ público foi atribuído pelo servidor na criação.'
         : '@ público: @$handle · use "Alterar @" para trocar (uma vez a cada 30 dias).';
@@ -911,10 +925,9 @@ final class _UnitFormPageState extends State<UnitFormPage> {
             children: [
               _field(
                 'slug',
-                'Identificador',
+                _original == null ? '@ da unidade (opcional)' : '@ da unidade',
                 Icons.alternate_email_rounded,
                 key: const Key('unit-slug-field'),
-                required: true,
               ),
               const SizedBox(height: CoeloSpacing.space1),
               _handleNote(),

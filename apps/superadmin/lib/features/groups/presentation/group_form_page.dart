@@ -13,6 +13,7 @@ import '../../support/domain/support_ticket.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import '../../units/domain/structure_handle_preview.dart';
 import '../../units/domain/unit_handle_availability.dart';
 import '../../locations/domain/location_catalog_reader.dart';
 import '../../locations/domain/location_selection_source.dart';
@@ -220,6 +221,10 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     _locationSelectionSource = CatalogLocationSelectionSource(widget.locationCatalogReader);
     _status = GroupStatus.active;
     _nameController = TextEditingController();
+    // A prévia do @ padrão segue o nome enquanto a turma ainda não existe.
+    _nameController.addListener(() {
+      if (mounted && !_editing && _handleController.text.trim().isEmpty) setState(() {});
+    });
     _handleController = TextEditingController();
     _handleController.addListener(_scheduleHandleCheck);
     _typeController = TextEditingController();
@@ -448,7 +453,11 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     super.didChangeDependencies();
     final repository = EntityImageScope.maybeOf(context);
     if (_images == null && repository != null) {
-      _images = EntityImagesController(kind: EntityKind.group, repository: repository, entityId: widget.groupId);
+      _images = EntityImagesController(
+        kind: EntityKind.group,
+        repository: repository,
+        entityId: widget.groupId,
+      );
     }
   }
 
@@ -791,7 +800,8 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       // An Error escaping here leaves `_saving` true and the save action
       // permanently disabled, so every failed save must restore an actionable UI.
       if (!mounted) return;
-      final diagnosticCode = const bool.fromEnvironment('COELO_GROUP_SAVE_DIAGNOSTICS') &&
+      final diagnosticCode =
+          const bool.fromEnvironment('COELO_GROUP_SAVE_DIAGNOSTICS') &&
               error is GroupDirectoryUnavailableException
           ? error.diagnosticCode
           : null;
@@ -1177,7 +1187,12 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         ),
       };
     } else if (!_editing) {
-      note = 'Este é o @ público da turma. Vazio, o servidor gera @nomedaturma.nomedaunidade.';
+      // O gatilho groups_assign_handle junta o segmento do nome ao @ da unidade.
+      final unit = _selectedUnit == null ? 'nomedaunidade' : '<@ da unidade>';
+      note =
+          'Este é o @ público da turma, único no sistema. Vazio, nasce '
+          '@${previewGroupHandle(name: _nameController.text, unitHandle: unit)} '
+          '(o servidor confirma ao salvar).';
     } else if ((_original?.handle ?? '').isEmpty) {
       note = 'O @ público foi atribuído pelo servidor na criação.';
     } else {
@@ -1190,7 +1205,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         CoeloFormTextField(
           fieldKey: const Key('group-handle-field'),
           controller: _handleController,
-          labelText: 'Identificador',
+          labelText: _editing ? '@ da turma' : '@ da turma (opcional)',
           prefixIcon: Icons.alternate_email_rounded,
           textInputAction: TextInputAction.next,
           validator: (value) {
@@ -1623,11 +1638,15 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         runSpacing: CoeloSpacing.space2,
         children: [
           FilledButton.icon(
-            key: allowProfile ? const Key('group-add-professional') : const Key('group-search-person'),
+            key: allowProfile
+                ? const Key('group-add-professional')
+                : const Key('group-search-person'),
             onPressed: onAdd,
             icon: const Icon(Icons.person_add_alt_rounded),
             label: Text(
-              allowProfile ? 'Adicionar profissional ou admin' : 'Buscar por @, CPF, e-mail ou celular',
+              allowProfile
+                  ? 'Adicionar profissional ou admin'
+                  : 'Buscar por @, CPF, e-mail ou celular',
             ),
           ),
         ],
