@@ -4,14 +4,16 @@ import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/meal_plan_image_repository.dart';
+import '../../../shared/data/edge_media_bytes.dart';
 
 /// Imagens de Cardapios pelo Media Gateway `meal-plan-media` (owner.r12-38,
-/// spec 063, ADR 0032): prepare -> PUT assinado no R2 -> finalize verificado no
-/// servidor -> leitura por URL assinada curta. O cliente nunca ve bucket nem
-/// chave; a exclusao continua pela RPC revisionada.
+/// spec 063, ADR 0032): prepare -> bytes pela Edge (ela grava no R2 e finaliza
+/// com verificacao) -> leitura inline pela Edge (URL local `blob:`). O cliente
+/// nunca ve bucket, chave nem URL assinada; a exclusao continua pela RPC
+/// revisionada. [mediaClient] fica so por compatibilidade.
 final class SupabaseMealPlanImageRepository implements MealPlanImageRepository {
-  const SupabaseMealPlanImageRepository(this._client, {http.Client? mediaClient})
-    : _mediaClient = mediaClient;
+  // ignore: avoid_unused_constructor_parameters
+  const SupabaseMealPlanImageRepository(this._client, {http.Client? mediaClient});
 
   static const maxImageBytes = 2 * 1024 * 1024;
   static const signedReadTtlSeconds = 300;
@@ -19,7 +21,6 @@ final class SupabaseMealPlanImageRepository implements MealPlanImageRepository {
   static const functionName = 'meal-plan-media';
 
   final SupabaseClient _client;
-  final http.Client? _mediaClient;
 
   @override
   Future<MealPlanImageAsset> upload(MealPlanImageUploadRequest request) async {
@@ -42,13 +43,21 @@ final class SupabaseMealPlanImageRepository implements MealPlanImageRepository {
         'O arquivo nao atende aos limites autorizados para este upload.',
       );
     }
-    await _put(prepared, request.bytes, mimeType);
-    final finalized = await _mediaAction({
-      'action': 'finalize',
-      'request_id': requestId,
-      'alt_text': _nullIfEmpty(request.altText),
-      'replace_asset_id': _nullIfEmpty(request.replaceAssetId),
-    });
+    final Map<String, dynamic> finalized;
+    try {
+      finalized = await uploadBytesThroughEdge(
+        _client,
+        functionName,
+        envelope: {
+          'request_id': requestId,
+          'alt_text': _nullIfEmpty(request.altText),
+          'replace_asset_id': _nullIfEmpty(request.replaceAssetId),
+        },
+        bytes: request.bytes,
+      );
+    } on EdgeMediaException catch (error) {
+      throw _mapEdge(error);
+    }
     final asset = _assetFromJson(finalized);
     if (asset.id != assetId) throw const MealPlanImageUnavailableException();
     return asset;
@@ -56,12 +65,24 @@ final class SupabaseMealPlanImageRepository implements MealPlanImageRepository {
 
   @override
   Future<Uri> createSignedReadUrl(String assetId) async {
-    final descriptor = await _mediaAction({
-      'action': 'read',
-      'asset_id': _required(assetId, 'assetId'),
-    });
-    return _url(descriptor, 'signed_url');
+    // Bytes pela Edge (autorizacao no servidor); a URL devolvida e local.
+    try {
+      final bytes = await readBytesThroughEdge(_client, functionName, {
+        'action': 'read',
+        'asset_id': _required(assetId, 'assetId'),
+      });
+      return Uri.parse(mediaObjectUrl(bytes, sniffMediaMimeType(bytes, fallback: 'image/jpeg')));
+    } on EdgeMediaException catch (error) {
+      throw _mapEdge(error);
+    }
   }
+
+  MealPlanImageException _mapEdge(EdgeMediaException error) => switch (error.status) {
+    401 || 403 => const MealPlanImageUnauthorizedException(),
+    409 => const MealPlanImageConflictException(),
+    422 => MealPlanImageValidationException(_errorMessage({'error': error.code})),
+    _ => const MealPlanImageUnavailableException(),
+  };
 
   @override
   Future<void> delete({
@@ -87,41 +108,6 @@ final class SupabaseMealPlanImageRepository implements MealPlanImageRepository {
       throw _mapPostgrestError(error);
     } on Exception {
       throw const MealPlanImageUnavailableException();
-    }
-  }
-
-  Future<void> _put(Map<String, dynamic> prepared, Uint8List bytes, String mimeType) async {
-    final uri = _url(prepared, 'upload_url');
-    final headers = <String, String>{};
-    final requiredHeaders = prepared['required_headers'];
-    if (requiredHeaders is Map) {
-      for (final entry in requiredHeaders.entries) {
-        final key = entry.key.toString().toLowerCase();
-        if (key == 'authorization' || key == 'apikey' || key == 'cookie') {
-          throw const MealPlanImageUnavailableException();
-        }
-        headers[key] = entry.value.toString();
-      }
-    }
-    if ((headers['content-type'] ?? mimeType) != mimeType) {
-      throw const MealPlanImageUnavailableException();
-    }
-    final client = _mediaClient ?? http.Client();
-    try {
-      final request = http.Request('PUT', uri)
-        ..followRedirects = false
-        ..headers.addAll(headers)
-        ..bodyBytes = bytes;
-      final response = await http.Response.fromStream(await client.send(request));
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw const MealPlanImageUnavailableException();
-      }
-    } on MealPlanImageException {
-      rethrow;
-    } on Exception {
-      throw const MealPlanImageUnavailableException();
-    } finally {
-      if (_mediaClient == null) client.close();
     }
   }
 
@@ -231,14 +217,6 @@ MealPlanImageAsset _assetFromJson(Map<String, dynamic> json) => MealPlanImageAss
   altText: _optionalString(json['alt_text']),
 );
 
-Uri _url(Map<String, dynamic> json, String key) {
-  final value = json[key];
-  final uri = value is String ? Uri.tryParse(value) : null;
-  if (uri == null || !uri.hasScheme || uri.userInfo.isNotEmpty) {
-    throw const MealPlanImageUnavailableException();
-  }
-  return uri;
-}
 
 String _string(Map<String, dynamic> json, String key, {String? fallbackKey}) {
   final value =

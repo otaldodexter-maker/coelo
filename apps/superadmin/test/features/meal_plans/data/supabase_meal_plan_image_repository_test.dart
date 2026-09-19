@@ -3,64 +3,58 @@ import 'dart:typed_data';
 
 import 'package:coelo_superadmin/features/meal_plans/data/supabase_meal_plan_image_repository.dart';
 import 'package:coelo_superadmin/features/meal_plans/domain/meal_plan_image_repository.dart';
+import 'package:coelo_superadmin/shared/data/edge_media_bytes.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
-  test('upload segue prepare -> PUT assinado -> finalize pelo gateway meal-plan-media', () async {
-    // R12-38 / spec 063: nada de Supabase Storage no cliente; bucket e chave
-    // nunca chegam aqui, so a janela PUT assinada e o asset finalizado.
+  test('upload segue prepare -> bytes pela Edge (grava e finaliza no servidor)', () async {
+    // R12-38 / spec 063 + ADR 0032: nada de Supabase Storage nem PUT assinado no
+    // cliente; bucket e chave nunca chegam aqui. O envelope vai no cabeçalho e
+    // os bytes no corpo de um único POST à Edge.
     final actions = <String>[];
-    final putHeaders = <String, String>{};
-    late Uint8List putBody;
+    late Uint8List uploadBody;
+    late Map<String, dynamic> envelope;
     final client = SupabaseClient(
       'https://example.supabase.co',
       'publishable-key',
       httpClient: MockClient((request) async {
         if (request.url.path.endsWith('/functions/v1/meal-plan-media')) {
-          final body = jsonDecode(request.body) as Map<String, dynamic>;
-          actions.add(body['action'] as String);
-          if (body['action'] == 'prepare') {
-            expect(body['resource_kind'], 'meal_plan');
-            expect(body['resource_id'], 'meal-plan-1');
-            expect(body['mime_type'], 'image/png');
-            expect(body['size_bytes'], 8);
+          final raw = request.headers[edgeMediaEnvelopeHeader];
+          if (raw != null) {
+            actions.add('upload');
+            envelope = jsonDecode(utf8.decode(base64Url.decode(raw + '=' * ((4 - raw.length % 4) % 4))))
+                as Map<String, dynamic>;
+            uploadBody = request.bodyBytes;
+            expect(request.headers['content-type'], startsWith('application/octet-stream'));
             return _json({
-              'asset_id': 'asset-1',
-              'storage_provider': 'r2',
-              'upload_url': 'https://signed.example/tenants/x/original.png?sig=1',
-              'required_headers': {'content-type': 'image/png'},
-              'max_bytes': 2097152,
+              'id': 'asset-1',
+              'storage_bucket': 'coelo-media-prod',
+              'storage_path': 'tenants/x/original.png',
+              'mime_type': 'image/png',
+              'size_bytes': 8,
+              'checksum_sha256': 'a' * 64,
+              'revision': 1,
+              'alt_text': 'Capa',
             });
           }
-          expect(body['request_id'], 'intent-1');
-          expect(body['replace_asset_id'], 'asset-0');
-          return _json({
-            'id': 'asset-1',
-            'storage_bucket': 'coelo-media-prod',
-            'storage_path': 'tenants/x/original.png',
-            'mime_type': 'image/png',
-            'size_bytes': 8,
-            'checksum_sha256': 'a' * 64,
-            'revision': 1,
-            'alt_text': 'Capa',
-          });
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
+          actions.add(body['action'] as String);
+          expect(body['action'], 'prepare');
+          expect(body['resource_kind'], 'meal_plan');
+          expect(body['resource_id'], 'meal-plan-1');
+          expect(body['mime_type'], 'image/png');
+          expect(body['size_bytes'], 8);
+          return _json({'asset_id': 'asset-1', 'storage_provider': 'r2', 'max_bytes': 2097152});
         }
         fail('unexpected request ${request.url}');
       }),
     );
     addTearDown(client.dispose);
-    final mediaClient = MockClient((request) async {
-      expect(request.method, 'PUT');
-      expect(request.url.host, 'signed.example');
-      putHeaders.addAll(request.headers);
-      putBody = request.bodyBytes;
-      return Response('', 200, request: request);
-    });
 
-    final asset = await SupabaseMealPlanImageRepository(client, mediaClient: mediaClient).upload(
+    final asset = await SupabaseMealPlanImageRepository(client).upload(
       MealPlanImageUploadRequest(
         resource: const MealPlanImageResource.mealPlan('meal-plan-1'),
         fileName: 'capa.png',
@@ -72,59 +66,53 @@ void main() {
       ),
     );
 
-    expect(actions, ['prepare', 'finalize']);
-    expect(putHeaders['content-type'], 'image/png');
-    expect(putBody, _png());
+    expect(actions, ['prepare', 'upload']);
+    expect(envelope['request_id'], 'intent-1');
+    expect(envelope['replace_asset_id'], 'asset-0');
+    expect(envelope['alt_text'], 'Capa');
+    expect(uploadBody, _png());
     expect(asset.id, 'asset-1');
     expect(asset.bucket, 'coelo-media-prod');
     expect(asset.revision, 1);
   });
 
-  test('leitura devolve a URL assinada curta do gateway', () async {
+  test('leitura devolve os bytes pela Edge como URL local, sem URL assinada', () async {
     final client = SupabaseClient(
       'https://example.supabase.co',
       'publishable-key',
       httpClient: MockClient((request) async {
         final body = jsonDecode(request.body) as Map<String, dynamic>;
-        expect(body['action'], 'read');
-        expect(body['asset_id'], 'asset-1');
-        return _json({
-          'signed_url': 'https://signed.example/read?sig=2',
-          'mime_type': 'image/png',
-          'expires_in': 300,
-        });
+        expect(body, {'action': 'read', 'asset_id': 'asset-1', 'inline': true});
+        return Response.bytes(_png(), 200, headers: {'content-type': 'application/octet-stream'});
       }),
     );
     addTearDown(client.dispose);
 
     final uri = await SupabaseMealPlanImageRepository(client).createSignedReadUrl('asset-1');
-    expect(uri.host, 'signed.example');
+    expect(uri.toString(), startsWith('data:image/png;base64,'));
   });
 
-  test('cabecalho de autorizacao vindo do gateway e recusado antes do PUT', () async {
-    var putCalled = false;
+  test('recusa da Edge no upload vira erro de validacao com a mensagem do contrato', () async {
     final client = SupabaseClient(
       'https://example.supabase.co',
       'publishable-key',
-      httpClient: MockClient(
-        (request) async => _json({
-          'asset_id': 'asset-1',
-          'upload_url': 'https://signed.example/x',
-          'required_headers': {'authorization': 'Bearer leak'},
-        }),
-      ),
+      httpClient: MockClient((request) async {
+        if (request.headers.containsKey(edgeMediaEnvelopeHeader)) {
+          return Response(
+            jsonEncode({'error': 'invalid_image_signature'}),
+            422,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        return _json({'asset_id': 'asset-1', 'storage_provider': 'r2'});
+      }),
     );
     addTearDown(client.dispose);
-    final mediaClient = MockClient((request) async {
-      putCalled = true;
-      return Response('', 200, request: request);
-    });
 
     await expectLater(
-      SupabaseMealPlanImageRepository(client, mediaClient: mediaClient).upload(_request()),
-      throwsA(isA<MealPlanImageUnavailableException>()),
+      SupabaseMealPlanImageRepository(client).upload(_request()),
+      throwsA(isA<MealPlanImageValidationException>()),
     );
-    expect(putCalled, isFalse);
   });
 
   test('falha de transporte no upload vira indisponibilidade', () async {
@@ -137,7 +125,7 @@ void main() {
     );
   });
 
-  test('falha de transporte na URL assinada vira indisponibilidade', () async {
+  test('falha de transporte na leitura vira indisponibilidade', () async {
     final client = _client();
     addTearDown(client.dispose);
 

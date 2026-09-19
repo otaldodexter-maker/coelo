@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:http/http.dart' show ClientException;
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../shared/data/edge_media_bytes.dart';
 import '../domain/chat_repository.dart';
 
 /// Supabase adapter for the internal-identity, RPC-only chat gateway.
@@ -12,10 +14,10 @@ import '../domain/chat_repository.dart';
 /// It never queries a chat table directly. Conversation ids from the client are
 /// passed only to RPCs that recompute the caller's authorised scope.
 final class SupabaseChatRepository implements ChatRepository, ChatAttachmentBatchRepository {
-  const SupabaseChatRepository(this._client, {http.Client? uploadClient})
-    : _uploadClient = uploadClient;
-
-  final http.Client? _uploadClient;
+  /// [uploadClient] fica só por compatibilidade: os bytes vão pela Edge
+  /// (`uploadBytesThroughEdge`), sem PUT direto ao R2.
+  // ignore: avoid_unused_constructor_parameters
+  const SupabaseChatRepository(this._client, {http.Client? uploadClient});
 
   final SupabaseClient _client;
 
@@ -45,37 +47,9 @@ final class SupabaseChatRepository implements ChatRepository, ChatAttachmentBatc
       if (uploadStatus != null && uploadStatus != 'pending') throw const ChatFailureException();
       final expiresAt = _date(prepared, 'expires_at');
       if (!expiresAt.isAfter(DateTime.now().toUtc())) throw const ChatFailureException();
-      final url = _signedUrl(prepared, 'upload_url');
-      final headers = <String, String>{};
-      final requiredHeaders = prepared['required_headers'];
-      if (requiredHeaders is! Map) throw const ChatFailureException();
-      for (final entry in requiredHeaders.entries) {
-        if (entry.key is! String || entry.value is! String) throw const ChatFailureException();
-        final key = (entry.key as String).toLowerCase();
-        if (key == 'authorization' || key == 'apikey' || key == 'cookie') {
-          throw const ChatFailureException();
-        }
-        headers[key] = entry.value as String;
-      }
-      if (headers['content-type'] != command.contentType) throw const ChatFailureException();
-      // This client never receives the authenticated Supabase client's headers.
-      final upload = _uploadClient ?? http.Client();
-      try {
-        final request = http.Request('PUT', url)
-          ..followRedirects = false
-          ..headers.addAll(headers)
-          ..bodyBytes = command.bytes;
-        final response = await http.Response.fromStream(await upload.send(request));
-        if (response.statusCode < 200 || response.statusCode >= 300) {
-          throw const ChatFailureException();
-        }
-      } finally {
-        if (_uploadClient == null) upload.close();
-      }
-      final finalized = await _attachmentAction({
-        'action': 'finalize',
-        'attachment_id': attachmentId,
-      });
+      // Bytes pela Edge (ADR 0032): o bilhete do dono autoriza, a Edge grava no
+      // R2 e finaliza; nenhuma URL assinada é usada pelo navegador.
+      final finalized = await _uploadBytes(attachmentId, command.bytes);
       if (_string(finalized, 'message_id') != messageId ||
           _string(finalized, 'attachment_id') != attachmentId) {
         throw const ChatFailureException();
@@ -143,11 +117,11 @@ final class SupabaseChatRepository implements ChatRepository, ChatAttachmentBatc
           report();
           continue;
         }
-        await _uploadTicket(item, ticket);
-        final finalized = await _attachmentAction({
-          'action': 'finalize',
-          'attachment_id': items[index].attachmentId,
-        });
+        final uploadStatus = ticket['upload_status'];
+        if (uploadStatus != null && uploadStatus != 'pending') throw const ChatFailureException();
+        final expiresAt = _date(ticket, 'expires_at');
+        if (!expiresAt.isAfter(DateTime.now().toUtc())) throw const ChatFailureException();
+        final finalized = await _uploadBytes(items[index].attachmentId!, item.bytes);
         if (_string(finalized, 'message_id') != messageId ||
             _string(finalized, 'attachment_id') != items[index].attachmentId) {
           throw const ChatFailureException();
@@ -183,53 +157,40 @@ final class SupabaseChatRepository implements ChatRepository, ChatAttachmentBatc
     }
   }
 
-  /// PUT assinado de um item: mesmas defesas do envio unitário.
-  Future<void> _uploadTicket(ChatAttachmentUpload item, Map<String, dynamic> ticket) async {
-    final uploadStatus = ticket['upload_status'];
-    if (uploadStatus != null && uploadStatus != 'pending') throw const ChatFailureException();
-    final expiresAt = _date(ticket, 'expires_at');
-    if (!expiresAt.isAfter(DateTime.now().toUtc())) throw const ChatFailureException();
-    final url = _signedUrl(ticket, 'upload_url');
-    final headers = <String, String>{};
-    final requiredHeaders = ticket['required_headers'];
-    if (requiredHeaders is! Map) throw const ChatFailureException();
-    for (final entry in requiredHeaders.entries) {
-      if (entry.key is! String || entry.value is! String) throw const ChatFailureException();
-      final key = (entry.key as String).toLowerCase();
-      if (key == 'authorization' || key == 'apikey' || key == 'cookie') {
-        throw const ChatFailureException();
-      }
-      headers[key] = entry.value as String;
-    }
-    if (headers['content-type'] != item.contentType) throw const ChatFailureException();
-    // This client never receives the authenticated Supabase client's headers.
-    final upload = _uploadClient ?? http.Client();
+  /// Bytes de um anexo pela Edge: envelope `{attachment_id}` no cabeçalho, corpo
+  /// binário; a Edge autoriza pelo bilhete do dono, grava no R2 e finaliza.
+  Future<Map<String, dynamic>> _uploadBytes(String attachmentId, Uint8List bytes) async {
     try {
-      final request = http.Request('PUT', url)
-        ..followRedirects = false
-        ..headers.addAll(headers)
-        ..bodyBytes = item.bytes;
-      final response = await http.Response.fromStream(await upload.send(request));
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw const ChatFailureException();
-      }
-    } finally {
-      if (_uploadClient == null) upload.close();
+      return await uploadBytesThroughEdge(
+        _client,
+        'chat-media',
+        envelope: {'attachment_id': attachmentId},
+        bytes: bytes,
+      );
+    } on EdgeMediaException catch (error) {
+      if (error.isDenied) throw const ChatUnauthorizedException();
+      throw _mapEdgeCode(error.code);
     }
   }
 
   @override
   Future<ChatAttachmentRead> readAttachment(String attachmentId) async {
     try {
-      final startedAt = DateTime.now().toUtc();
-      final data = await _attachmentAction({'action': 'read', 'attachment_id': attachmentId});
-      final seconds = _int(data['expires_in']);
-      if (_string(data, 'attachment_id') != attachmentId || seconds <= 0 || seconds > 300) {
-        throw const ChatFailureException();
+      // Bytes pela Edge (autorização no servidor); a URL é local (`blob:` no
+      // navegador), nunca uma URL assinada do bucket.
+      final Uint8List bytes;
+      try {
+        bytes = await readBytesThroughEdge(_client, 'chat-media', {
+          'action': 'read',
+          'attachment_id': attachmentId,
+        });
+      } on EdgeMediaException catch (error) {
+        if (error.isDenied) throw const ChatUnauthorizedException();
+        throw _mapEdgeCode(error.code);
       }
       return ChatAttachmentRead(
-        url: _signedUrl(data, 'signed_url'),
-        expiresAt: startedAt.add(Duration(seconds: seconds)),
+        url: Uri.parse(mediaObjectUrl(bytes, sniffMediaMimeType(bytes))),
+        expiresAt: DateTime.now().toUtc().add(const Duration(days: 1)),
       );
     } catch (error) {
       throw _mapError(error);
@@ -243,11 +204,18 @@ final class SupabaseChatRepository implements ChatRepository, ChatAttachmentBatc
       return Map<String, dynamic>.from(response.data as Map);
     } on FunctionException catch (error) {
       final details = error.details;
-      final code = details is Map ? details['error'] : null;
-      if (code == 'chat_read_only') throw const ChatConflictException(ChatConflictReason.readOnly);
-      if (code == 'chat_attachment_limit') throw const ChatAttachmentLimitException();
+      if (error.status == 401 || error.status == 403) throw const ChatUnauthorizedException();
+      throw _mapEdgeCode(details is Map ? details['error'] : null);
+    }
+  }
+
+  /// Código de erro da Edge chat-media → exceção do contrato do chat.
+  Exception _mapEdgeCode(Object? code) {
+    {
+      if (code == 'chat_read_only') return const ChatConflictException(ChatConflictReason.readOnly);
+      if (code == 'chat_attachment_limit') return const ChatAttachmentLimitException();
       if (code == 'chat_attachment_invalid' || code == 'invalid_request') {
-        throw const ChatAttachmentInvalidException();
+        return const ChatAttachmentInvalidException();
       }
       if (const {
         'sai_auth_required',
@@ -260,10 +228,9 @@ final class SupabaseChatRepository implements ChatRepository, ChatAttachmentBatc
         'chat_not_found',
         'chat_attachment_not_found',
       }.contains(code)) {
-        throw const ChatUnauthorizedException();
+        return const ChatUnauthorizedException();
       }
-      if (error.status == 401 || error.status == 403) throw const ChatUnauthorizedException();
-      throw const ChatFailureException();
+      return const ChatFailureException();
     }
   }
 
@@ -672,12 +639,4 @@ DateTime _date(Map<String, dynamic> json, String key) {
   final value = json[key];
   if (value is String) return DateTime.parse(value);
   throw const ChatFailureException();
-}
-
-Uri _signedUrl(Map<String, dynamic> data, String key) {
-  final url = Uri.tryParse(_string(data, key));
-  if (url == null || url.scheme != 'https' || url.host.isEmpty || url.userInfo.isNotEmpty) {
-    throw const ChatFailureException();
-  }
-  return url;
 }

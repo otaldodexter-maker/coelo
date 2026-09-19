@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
@@ -8,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../domain/child_safety.dart';
 import '../domain/child_safety_contract.dart';
 import 'child_safety_response_decoder.dart';
+import '../../../shared/data/edge_media_bytes.dart';
 
 final class SupabaseChildSafetyRepository
     implements
@@ -15,11 +17,12 @@ final class SupabaseChildSafetyRepository
         ChildSafetyMutationSupport,
         ChildSafetyPersonSearchSupport,
         ChildSafetyPersonWithoutAccountSupport {
-  const SupabaseChildSafetyRepository(this._client, {http.Client? mediaClient})
-    : _mediaClient = mediaClient;
+  /// [mediaClient] fica só por compatibilidade: o documento sobe pela Edge
+  /// (`uploadBytesThroughEdge`), sem PUT direto ao R2.
+  // ignore: avoid_unused_constructor_parameters
+  const SupabaseChildSafetyRepository(this._client, {http.Client? mediaClient});
 
   final SupabaseClient _client;
-  final http.Client? _mediaClient;
 
   /// O contrato de escrita foi qualificado em producao (child_safety_request_
   /// authorization, edit_pending, decide e change_lifecycle; decisao pelo
@@ -103,42 +106,22 @@ final class SupabaseChildSafetyRepository
       'size_bytes': bytes.length,
     });
     final documentId = prepared['document_id'];
-    final uploadUrl = prepared['upload_url'];
-    final requiredHeaders = prepared['required_headers'];
-    final uri = uploadUrl is String ? Uri.tryParse(uploadUrl) : null;
-    if (documentId is! String || uri == null || !uri.hasScheme || uri.userInfo.isNotEmpty) {
-      throw const ChildSafetyUnavailableException();
-    }
-    final headers = <String, String>{};
-    if (requiredHeaders is Map) {
-      for (final entry in requiredHeaders.entries) {
-        final key = entry.key.toString().toLowerCase();
-        if (key == 'authorization' || key == 'apikey' || key == 'cookie') {
-          throw const ChildSafetyUnavailableException();
-        }
-        headers[key] = entry.value.toString();
-      }
-    }
-    final client = _mediaClient ?? http.Client();
+    if (documentId is! String) throw const ChildSafetyUnavailableException();
+    // Bytes pela Edge (ADR 0032): o bilhete do dono autoriza, a Edge grava no
+    // R2 e finaliza com o checksum medido; nenhuma URL assinada no navegador.
+    final Map<String, dynamic> finalized;
     try {
-      final request = http.Request('PUT', uri)
-        ..followRedirects = false
-        ..headers.addAll(headers)
-        ..bodyBytes = bytes;
-      final response = await http.Response.fromStream(await client.send(request));
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw const ChildSafetyUnavailableException();
-      }
-    } on ClientException {
-      throw const ChildSafetyUnavailableException();
-    } finally {
-      if (_mediaClient == null) client.close();
+      finalized = await uploadBytesThroughEdge(
+        _client,
+        'child-safety-media',
+        envelope: {'document_id': documentId, 'checksum_sha256': sha256.convert(bytes).toString()},
+        bytes: Uint8List.fromList(bytes),
+      );
+    } on EdgeMediaException catch (error) {
+      throw error.isDenied
+          ? const ChildSafetyUnauthorizedException()
+          : const ChildSafetyUnavailableException();
     }
-    final finalized = await _mediaAction({
-      'action': 'finalize',
-      'document_id': documentId,
-      'checksum_sha256': sha256.convert(bytes).toString(),
-    });
     final status = finalized['status'];
     if (finalized['document_id'] != documentId || status is! String) {
       throw const ChildSafetyUnavailableException();

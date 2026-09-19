@@ -71,6 +71,27 @@ final class CircularMediaUploadCoordinator {
     _validate(file);
     final saved = await controller.save();
     final requestId = file.uploadRequestId;
+    final displayOrder = controller.draft.blocks
+        .whereType<CircularMediaBlock>()
+        .expand((block) => block.assetIds)
+        .length;
+    if (repository case final CircularMediaBytesUploader uploader) {
+      // Bytes pela Edge: um POST binário prepara, grava e finaliza no servidor.
+      final uploaded = await uploader.uploadBytes(
+        requestId: requestId,
+        finalizeRequestId: _uuid(),
+        institutionId: controller.scope.institutionId,
+        circularId: saved.id,
+        name: file.name,
+        mimeType: file.mimeType,
+        bytes: file.bytes,
+        displayOrder: displayOrder,
+      );
+      final blockId = controller.addMediaAsset(uploaded.assetId, afterBlockId: afterBlockId);
+      if (blockId == null) throw const CircularInvalid('media_limit');
+      await controller.save();
+      return blockId;
+    }
     final intent = await repository.prepare(
       requestId: requestId,
       institutionId: controller.scope.institutionId,
@@ -106,10 +127,7 @@ final class CircularMediaUploadCoordinator {
       name: file.name,
       mimeType: file.mimeType,
       byteSize: file.bytes.length,
-      displayOrder: controller.draft.blocks
-          .whereType<CircularMediaBlock>()
-          .expand((block) => block.assetIds)
-          .length,
+      displayOrder: displayOrder,
     );
     final blockId = controller.addMediaAsset(intent.assetId, afterBlockId: afterBlockId);
     if (blockId == null) throw const CircularInvalid('media_limit');

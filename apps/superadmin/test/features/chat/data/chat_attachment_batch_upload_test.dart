@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:coelo_superadmin/features/chat/data/supabase_chat_repository.dart';
 import 'package:coelo_superadmin/features/chat/domain/chat_repository.dart';
+import 'package:coelo_superadmin/shared/data/edge_media_bytes.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
@@ -30,7 +31,7 @@ void main() {
   String expiry() => DateTime.now().toUtc().add(const Duration(minutes: 5)).toIso8601String();
 
   test(
-    'batch uses one prepare with items, then signed PUT and finalize per item in order',
+    'batch uses one prepare with items, then one binary upload through the Edge per item in order',
     () async {
       final actions = <String>[];
       var finalizeCount = 0;
@@ -39,7 +40,7 @@ void main() {
         'publishable-key',
         httpClient: MockClient((request) async {
           expect(request.url.path, '/functions/v1/chat-media');
-          final body = jsonDecode(request.body) as Map<String, dynamic>;
+          final body = _body(request);
           actions.add('${body['action']}:${body['attachment_id'] ?? ''}');
           if (body['action'] == 'prepare') {
             expect(body, {
@@ -87,7 +88,9 @@ void main() {
               ],
             });
           }
-          expect(body['action'], 'finalize');
+          expect(body['action'], 'upload');
+          expect(request.headers['content-type'], startsWith('application/octet-stream'));
+          expect(request.bodyBytes, body['attachment_id'] == 'attachment-a' ? png : pdf);
           finalizeCount++;
           return _json({
             'message_id': 'message-batch',
@@ -98,26 +101,14 @@ void main() {
         }),
       );
       addTearDown(client.dispose);
-      final upload = MockClient((request) async {
-        actions.add('PUT:${request.url.pathSegments.last}');
-        expect(request.method, 'PUT');
-        expect(request.headers.containsKey('authorization'), false);
-        return Response('', 200);
-      });
       final progress = <String>[];
-      final result = await SupabaseChatRepository(client, uploadClient: upload)
+      final result = await SupabaseChatRepository(client)
           .uploadAttachmentBatch(
             batch(),
             onProgress: (snapshot) =>
                 progress.add(snapshot.items.map((i) => i.state.name).join(',')),
           );
-      expect(actions, [
-        'prepare:',
-        'PUT:a',
-        'finalize:attachment-a',
-        'PUT:b',
-        'finalize:attachment-b',
-      ]);
+      expect(actions, ['prepare:', 'upload:attachment-a', 'upload:attachment-b']);
       expect(result.messageId, 'message-batch');
       expect(result.isPublished, isTrue);
       expect(result.items.map((i) => i.attachmentId), ['attachment-a', 'attachment-b']);
@@ -127,14 +118,14 @@ void main() {
   );
 
   test(
-    'a failed PUT marks only that item failed, keeps going and leaves the message unpublished',
+    'a failed Edge upload marks only that item failed, keeps going and leaves the message unpublished',
     () async {
       final actions = <String>[];
       final client = SupabaseClient(
         'https://example.supabase.co',
         'publishable-key',
         httpClient: MockClient((request) async {
-          final body = jsonDecode(request.body) as Map<String, dynamic>;
+          final body = _body(request);
           actions.add('${body['action']}:${body['attachment_id'] ?? ''}');
           if (body['action'] == 'prepare') {
             return _json({
@@ -160,6 +151,13 @@ void main() {
               ],
             });
           }
+          if (body['attachment_id'] == 'attachment-a') {
+            return Response(
+              jsonEncode({'error': 'uploaded_attachment_mismatch'}),
+              422,
+              headers: {'content-type': 'application/json'},
+            );
+          }
           return _json({
             'message_id': 'message-batch',
             'attachment_id': body['attachment_id'],
@@ -169,14 +167,8 @@ void main() {
         }),
       );
       addTearDown(client.dispose);
-      final upload = MockClient(
-        (request) async => Response('', request.url.pathSegments.last == 'a' ? 500 : 200),
-      );
-      final result = await SupabaseChatRepository(
-        client,
-        uploadClient: upload,
-      ).uploadAttachmentBatch(batch());
-      expect(actions, ['prepare:', 'finalize:attachment-b']);
+      final result = await SupabaseChatRepository(client).uploadAttachmentBatch(batch());
+      expect(actions, ['prepare:', 'upload:attachment-a', 'upload:attachment-b']);
       expect(result.isPublished, isFalse);
       expect(result.items[0].state, ChatAttachmentBatchItemState.failed);
       expect(result.items[0].error, isA<ChatFailureException>());
@@ -250,7 +242,7 @@ void main() {
       'https://example.supabase.co',
       'publishable-key',
       httpClient: MockClient((request) async {
-        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        final body = _body(request);
         actions.add(body['action'] as String);
         if (body['action'] == 'prepare') {
           return _json({
@@ -288,19 +280,18 @@ void main() {
       }),
     );
     addTearDown(client.dispose);
-    final puts = <String>[];
-    final upload = MockClient((request) async {
-      puts.add(request.url.pathSegments.last);
-      return Response('', 200);
-    });
-    final result = await SupabaseChatRepository(
-      client,
-      uploadClient: upload,
-    ).uploadAttachmentBatch(batch());
-    expect(actions, ['prepare', 'finalize']);
-    expect(puts, ['b']);
+    final result = await SupabaseChatRepository(client).uploadAttachmentBatch(batch());
+    expect(actions, ['prepare', 'upload'], reason: 'só o item pendente sobe');
     expect(result.isPublished, isTrue);
   });
+}
+
+/// Corpo lógico do pedido: o JSON, ou o envelope do upload binário com `action: upload`.
+Map<String, dynamic> _body(Request request) {
+  final raw = request.headers[edgeMediaEnvelopeHeader];
+  if (raw == null) return jsonDecode(request.body) as Map<String, dynamic>;
+  final padded = raw + '=' * ((4 - raw.length % 4) % 4);
+  return {...jsonDecode(utf8.decode(base64Url.decode(padded))) as Map<String, dynamic>, 'action': 'upload'};
 }
 
 Response _json(Map<String, Object?> body) =>

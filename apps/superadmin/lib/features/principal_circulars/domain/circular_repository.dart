@@ -264,6 +264,22 @@ abstract interface class CircularMediaRepository {
   Future<void> remove(String assetId);
 }
 
+/// Bytes pela Edge (ADR 0032): quem implementa envia o arquivo num único POST
+/// binário e a Edge prepara, grava e finaliza; o navegador nunca fala com o
+/// R2. O coordenador prefere este caminho quando o repositório o oferece.
+abstract interface class CircularMediaBytesUploader {
+  Future<CircularMediaUploadIntent> uploadBytes({
+    required String requestId,
+    required String finalizeRequestId,
+    required String institutionId,
+    required String circularId,
+    required String name,
+    required String mimeType,
+    required Uint8List bytes,
+    required int displayOrder,
+  });
+}
+
 /// Server authorized, expiring read of one Circular attachment. The [url] is a
 /// transient credential: it must never be logged, persisted or shown as text.
 @immutable

@@ -87,6 +87,11 @@ Future<FunctionResponse> _invoke(
       details is Map && details['error'] is String ? details['error'] as String : failure,
       status: error.status,
     );
+  } on EdgeMediaException {
+    rethrow;
+  } on Exception {
+    // Falha de transporte (rede, decodificação): sem status, vira indisponibilidade.
+    throw EdgeMediaException(failure);
   }
 }
 
@@ -98,14 +103,16 @@ String mediaObjectUrl(Uint8List bytes, String mimeType) =>
 /// MIME real pelos primeiros bytes (as mesmas assinaturas que a Edge confere);
 /// [fallback] quando não reconhece.
 String sniffMediaMimeType(Uint8List bytes, {String fallback = 'application/octet-stream'}) {
-  if (bytes.length < 12) return fallback;
-  String text(int start, int end) => String.fromCharCodes(bytes.sublist(start, end));
-  if (bytes[0] == 0xFF && bytes[1] == 0xD8) return 'image/jpeg';
-  if (bytes[0] == 0x89 && text(1, 4) == 'PNG') return 'image/png';
+  String text(int start, int end) =>
+      bytes.length < end ? '' : String.fromCharCodes(bytes.sublist(start, end));
+  if (bytes.length >= 2 && bytes[0] == 0xFF && bytes[1] == 0xD8) return 'image/jpeg';
+  if (bytes.length >= 4 && bytes[0] == 0x89 && text(1, 4) == 'PNG') return 'image/png';
   if (text(0, 4) == 'RIFF' && text(8, 12) == 'WEBP') return 'image/webp';
   if (text(0, 4) == 'RIFF' && text(8, 12) == 'WAVE') return 'audio/wav';
   if (text(4, 8) == 'ftyp') return fallback.startsWith('audio/') ? fallback : 'video/mp4';
   if (text(0, 5) == '%PDF-') return 'application/pdf';
-  if (text(0, 3) == 'ID3' || (bytes[0] == 0xFF && (bytes[1] & 0xE0) == 0xE0)) return 'audio/mpeg';
+  if (text(0, 3) == 'ID3' || (bytes.length >= 2 && bytes[0] == 0xFF && (bytes[1] & 0xE0) == 0xE0)) {
+    return 'audio/mpeg';
+  }
   return fallback;
 }

@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../shared/data/edge_media_bytes.dart';
 import '../domain/circular.dart';
 import '../domain/circular_repository.dart';
 
@@ -60,10 +63,54 @@ final class SupabaseCircularResponseRepository implements CircularResponseReposi
   }
 }
 
-final class SupabaseCircularMediaRepository implements CircularMediaRepository {
+final class SupabaseCircularMediaRepository
+    implements CircularMediaRepository, CircularMediaBytesUploader {
   const SupabaseCircularMediaRepository(this._client);
 
   final SupabaseClient _client;
+
+  @override
+  Future<CircularMediaUploadIntent> uploadBytes({
+    required String requestId,
+    required String finalizeRequestId,
+    required String institutionId,
+    required String circularId,
+    required String name,
+    required String mimeType,
+    required Uint8List bytes,
+    required int displayOrder,
+  }) async {
+    // Upload binário pela Edge (ADR 0032): ela prepara (idempotente pelo
+    // request_id), grava e finaliza; o navegador nunca fala com o R2.
+    final Map<String, dynamic> data;
+    try {
+      data = await uploadBytesThroughEdge(
+        _client,
+        'circular-media',
+        envelope: {
+          'request_id': requestId,
+          'finalize_request_id': finalizeRequestId,
+          'institution_id': institutionId,
+          'circular_id': circularId,
+          'name': name,
+          'mime_type': mimeType,
+          'size_bytes': bytes.length,
+          'display_order': displayOrder,
+        },
+        bytes: bytes,
+      );
+    } on EdgeMediaException catch (error) {
+      if (error.isDenied) throw const CircularUnauthorized();
+      throw error.status == null ? const CircularUnavailable() : CircularInvalid(error.code);
+    }
+    return CircularMediaUploadIntent(
+      assetId: _text(data, 'asset_id'),
+      uploadUrl: null,
+      requiredHeaders: const {},
+      expiresAt: DateTime.now().toUtc(),
+      storageProvider: 'edge',
+    );
+  }
 
   @override
   Future<CircularMediaUploadIntent> prepare({
@@ -132,21 +179,26 @@ final class SupabaseCircularMediaRepository implements CircularMediaRepository {
 
   @override
   Future<CircularMediaReadTicket> resolveRead(String assetId) async {
-    final data = await _invoke({'action': 'read', 'asset_id': assetId});
-    final uri = Uri.tryParse(_text(data, 'signed_url'));
-    if (uri == null || uri.scheme != 'https') throw const CircularUnavailable();
-    final seconds = data['expires_in'];
-    final name = data['name']?.toString().trim();
-    final byteSize = data['size_bytes'];
+    // Bytes pela Edge (autorização no servidor); a "URL" é local (`blob:` no
+    // navegador), nunca uma URL assinada do bucket.
+    final Uint8List bytes;
+    try {
+      bytes = await readBytesThroughEdge(_client, 'circular-media', {
+        'action': 'read',
+        'asset_id': assetId,
+      });
+    } on EdgeMediaException catch (error) {
+      if (error.isDenied) throw const CircularUnauthorized();
+      throw const CircularUnavailable();
+    }
+    final mimeType = sniffMediaMimeType(bytes);
+    if (mimeType == 'application/octet-stream') throw const CircularUnavailable();
     return CircularMediaReadTicket(
       assetId: assetId,
-      url: uri,
-      mimeType: _text(data, 'mime_type'),
-      expiresAt: DateTime.now().toUtc().add(
-        Duration(seconds: seconds is num && seconds > 0 ? seconds.toInt() : 60),
-      ),
-      name: name == null || name.isEmpty ? null : name,
-      byteSize: byteSize is num && byteSize >= 0 ? byteSize.toInt() : null,
+      url: Uri.parse(mediaObjectUrl(bytes, mimeType)),
+      mimeType: mimeType,
+      expiresAt: DateTime.now().toUtc().add(const Duration(days: 1)),
+      byteSize: bytes.length,
     );
   }
 
@@ -195,7 +247,9 @@ CircularFailure _mapFailure(Object error) {
     if (error.code == '42501' || error.code == 'PGRST301') {
       return const CircularUnauthorized();
     }
-    if (error.code == '40001' || error.code == 'PT409' || error.message.contains('expected_version_conflict')) {
+    if (error.code == '40001' ||
+        error.code == 'PT409' ||
+        error.message.contains('expected_version_conflict')) {
       return const CircularVersionConflict();
     }
     return CircularInvalid(error.message);
