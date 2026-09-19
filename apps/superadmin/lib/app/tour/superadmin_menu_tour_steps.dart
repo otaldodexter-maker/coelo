@@ -150,6 +150,21 @@ const profilesTourStep = CoeloTourStep(
   text: 'Modelos de acesso por módulo, tela e ação. Um perfil define o que cada pessoa vê e faz.',
 );
 
+/// Passo 16a — Acessos › Acesso de funcionários (Etapa 3 F7, ADR 0035).
+const staffAccessTourStep = CoeloTourStep(
+  anchorId: 'staff-access',
+  title: 'Acesso de funcionários',
+  text:
+      'Horário, vigência e superfícies por vínculo profissional. A restrição vale no servidor; o popup só avisa.',
+);
+
+/// Passo 16b — Acessos › Afastamentos (Etapa 3 F7, ADR 0035).
+const staffLeavesTourStep = CoeloTourStep(
+  anchorId: 'staff-leaves',
+  title: 'Afastamentos',
+  text: 'Períodos em que o funcionário não entra no app por aquele vínculo. Prevalece sobre o horário.',
+);
+
 /// Passo 17 — Saúde e Cuidado.
 const healthCareTourStep = CoeloTourStep(
   anchorId: 'health-care',
@@ -396,6 +411,8 @@ const superadminMenuTourSteps = <CoeloTourStep>[
   safetyTourStep,
   internalUsersTourStep,
   profilesTourStep,
+  staffAccessTourStep,
+  staffLeavesTourStep,
   healthCareTourStep,
   healthCareProfilesTourStep,
   healthMedicationPlansTourStep,

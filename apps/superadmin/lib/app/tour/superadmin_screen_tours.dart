@@ -21,6 +21,8 @@ import 'screens/people_tour.dart';
 import 'screens/safety_tour.dart';
 import 'screens/internal_users_tour.dart';
 import 'screens/profiles_tour.dart';
+import 'screens/staff_access_tour.dart';
+import 'screens/staff_leaves_tour.dart';
 import 'screens/health_care_profiles_tour.dart';
 import 'screens/health_medication_plans_tour.dart';
 import 'screens/meal_plans_tour.dart';
@@ -69,6 +71,8 @@ const superadminScreenTourList = <SuperadminScreenTour>[
   safetyScreenTour,
   internalUsersScreenTour,
   profilesScreenTour,
+  staffAccessScreenTour,
+  staffLeavesScreenTour,
   healthCareProfilesScreenTour,
   healthMedicationPlansScreenTour,
   mealPlansScreenTour,

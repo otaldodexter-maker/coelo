@@ -136,6 +136,21 @@ final coeloSuperadminNavigation = <CoeloNavigationNode>[
     _screen('safety', 'Segurança da criança', Icons.shield_outlined, const []),
     _screen('internal-users', 'Usuários internos', Icons.badge_outlined, const []),
     _screen('profiles', 'Perfis e permissões', Icons.admin_panel_settings_outlined, const []),
+    // Etapa 3 F7 (ADR 0035): acesso contextual de funcionarios.
+    _screen(
+      'staff-access',
+      'Acesso de funcionários',
+      Icons.schedule_outlined,
+      const [],
+      keywords: const ['horário', 'vigência', 'superfícies', 'popup', 'bloqueio'],
+    ),
+    _screen(
+      'staff-leaves',
+      'Afastamentos',
+      Icons.event_busy_outlined,
+      const [],
+      keywords: const ['licença', 'férias', 'afastado'],
+    ),
   ]),
   _screen('health-care', 'Saúde e Cuidado', Icons.health_and_safety_outlined, [
     _screen('health-care-profiles', 'Perfis de cuidado', Icons.child_care_outlined, const []),

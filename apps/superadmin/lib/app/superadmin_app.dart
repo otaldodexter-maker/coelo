@@ -72,6 +72,7 @@ import '../features/safety/application/child_safety_controller.dart';
 import '../features/safety/domain/child_safety_contract.dart';
 import '../features/access_profiles/domain/access_profile.dart';
 import '../features/platform_users/domain/platform_user.dart';
+import '../features/staff_access/domain/staff_access.dart';
 import '../features/groups/domain/group_directory.dart';
 import '../features/groups/domain/group_location_create.dart';
 import '../features/health_care/domain/health_care_repository.dart';
@@ -83,6 +84,7 @@ import 'router/superadmin_router.dart';
 import 'theme/superadmin_theme_mode_scope.dart';
 import '../features/principal_circulars/domain/circular_repository.dart';
 import '../features/profile_about/domain/profile_about_repository.dart';
+import '../shared/data/entity_image_repository.dart';
 import 'tour/superadmin_tour_store.dart';
 
 const _instantPageTransitions = PageTransitionsTheme(
@@ -156,6 +158,7 @@ class SuperadminApp extends StatefulWidget {
     this.groupLocationCreateEnabled = false,
     this.accessProfileRepository = const UnavailableAccessProfileRepository(),
     this.platformUserRepository,
+    this.staffAccessRepository = const UnavailableStaffAccessRepository(),
     this.importRepository = const UnavailableImportRepository(),
     this.planCatalogRepository = const UnavailablePlanCatalogRepository(),
     this.agendaRepository,
@@ -199,6 +202,7 @@ class SuperadminApp extends StatefulWidget {
     this.nowPublicationRepository,
     this.userPreferencesRepository,
     this.accountProfileRepository = const UnavailableAccountProfileRepository(),
+    this.entityImageRepository,
     this.accountSessionsRepository,
     this.supportRepository,
     super.key,
@@ -242,6 +246,7 @@ class SuperadminApp extends StatefulWidget {
   final bool groupLocationCreateEnabled;
   final AccessProfileRepository accessProfileRepository;
   final PlatformUserRepository? platformUserRepository;
+  final StaffAccessRepository staffAccessRepository;
   final ImportRepository importRepository;
   final PlanCatalogRepository planCatalogRepository;
   final AgendaRepository? agendaRepository;
@@ -285,6 +290,9 @@ class SuperadminApp extends StatefulWidget {
   final NowPublicationRepository? nowPublicationRepository;
   final UserPreferencesRepository? userPreferencesRepository;
   final AccountProfileRepository accountProfileRepository;
+
+  /// Fotos de perfil/capa/ícone das entidades (produção); sem ele a seção some.
+  final EntityImageRepository? entityImageRepository;
   final AccountSessionsRepository? accountSessionsRepository;
   final SupportRepository? supportRepository;
 
@@ -348,6 +356,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       enableGroupLocationCreate: widget.groupLocationCreateEnabled,
       accessProfileRepository: widget.accessProfileRepository,
       platformUserRepository: widget.platformUserRepository,
+      staffAccessRepository: widget.staffAccessRepository,
       importRepository: widget.importRepository,
       planCatalogRepository: widget.planCatalogRepository,
       agendaRepository: widget.agendaRepository,
@@ -459,6 +468,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
           : const AnimationStyle(duration: Duration(milliseconds: 420), curve: Curves.easeInOut),
       builder: (context, child) {
         final inherited = MediaQuery.of(context);
+        final images = widget.entityImageRepository;
         return SuperadminThemeModeScope(
           mode: _preferencesController.preferences.themeMode,
           onChanged: _setThemeMode,
@@ -467,7 +477,9 @@ class _SuperadminAppState extends State<SuperadminApp> {
               disableAnimations:
                   inherited.disableAnimations || _preferencesController.preferences.reduceMotion,
             ),
-            child: child ?? const SizedBox.shrink(),
+            child: images == null
+                ? child ?? const SizedBox.shrink()
+                : EntityImageScope(repository: images, child: child ?? const SizedBox.shrink()),
           ),
         );
       },

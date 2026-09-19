@@ -98,6 +98,8 @@ import '../../features/access_profiles/data/supabase_access_profile_repository.d
 import '../../features/access_profiles/domain/access_profile.dart';
 import '../../features/platform_users/data/supabase_platform_user_repository.dart';
 import '../../features/platform_users/domain/platform_user.dart';
+import '../../features/staff_access/data/supabase_staff_access_repository.dart';
+import '../../features/staff_access/domain/staff_access.dart';
 import '../../features/units/data/unavailable_unit_composition.dart';
 import '../../features/units/data/supabase_unit_backend_commands_gateway.dart';
 import '../../features/units/domain/unit_backend_commands.dart';
@@ -149,6 +151,7 @@ final class SuperadminAuthScope {
     this.personIdentityRepository = const UnavailablePersonIdentityRepository(),
     required this.accessProfileRepository,
     this.platformUserRepository,
+    this.staffAccessRepository = const UnavailableStaffAccessRepository(),
     required this.groupDirectoryRepository,
     this.groupDetailRepository = const UnavailableGroupDetailRepository(),
     this.unitDetailRepository = const UnavailableUnitDetailRepository(),
@@ -217,6 +220,9 @@ final class SuperadminAuthScope {
   final PersonIdentityRepository personIdentityRepository;
   final AccessProfileRepository accessProfileRepository;
   final PlatformUserRepository? platformUserRepository;
+
+  /// Etapa 3 F7 (ADR 0035): acesso contextual de funcionarios (lote 84).
+  final StaffAccessRepository staffAccessRepository;
   final GroupDirectoryRepository groupDirectoryRepository;
   final GroupDetailRepository groupDetailRepository;
   final UnitDetailRepository unitDetailRepository;
@@ -434,6 +440,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
           : const UnavailablePersonIdentityRepository(),
       accessProfileRepository: SupabaseAccessProfileRepository(client),
       platformUserRepository: platformUsers,
+      staffAccessRepository: SupabaseStaffAccessRepository(client),
       // As 13 RPCs de Unidades foram conferidas em pg_proc e versionadas em
       // 20260910160000, e o diretorio de Turmas reaproveita duas delas. Os dois
       // diretorios saem de Unavailable e passam a ler producao de verdade.

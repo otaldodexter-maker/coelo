@@ -188,6 +188,12 @@ import '../../features/plans/domain/plan_catalog_repository.dart';
 import '../../features/plans/presentation/plan_directory_page.dart';
 import '../../features/plans/presentation/plan_form_page.dart';
 import '../../features/platform_users/data/fake_platform_user_repository.dart';
+import '../../features/staff_access/data/fake_staff_access_repository.dart';
+import '../../features/staff_access/domain/staff_access.dart';
+import '../../features/staff_access/presentation/staff_access_directory_page.dart';
+import '../../features/staff_access/presentation/staff_access_form_page.dart';
+import '../../features/staff_access/presentation/staff_leave_directory_page.dart';
+import '../../features/staff_access/presentation/staff_leave_form_page.dart';
 import '../../features/platform_users/domain/platform_user.dart';
 import '../../features/platform_users/presentation/platform_user_directory_page.dart';
 import '../../features/platform_users/presentation/platform_user_detail_page.dart';
@@ -521,6 +527,7 @@ GoRouter createSuperadminRouter({
   bool enableGroupLocationCreate = false,
   AccessProfileRepository accessProfileRepository = const UnavailableAccessProfileRepository(),
   PlatformUserRepository? platformUserRepository,
+  StaffAccessRepository staffAccessRepository = const UnavailableStaffAccessRepository(),
   ResetPasswordAction resetPassword = unavailableResetPassword,
   String catalogUrl = const String.fromEnvironment(
     'COELO_CATALOG_URL',
@@ -831,6 +838,9 @@ GoRouter createSuperadminRouter({
 
   final peoplePreviewRepository = DevelopmentPersonDirectoryRepository();
   FakePlatformUserRepository? platformUserPreviewRepository;
+  FakeStaffAccessRepository? staffAccessPreviewRepository;
+  FakeStaffAccessRepository previewStaffAccess() =>
+      staffAccessPreviewRepository ??= FakeStaffAccessRepository();
   FakePlatformUserRepository previewPlatformUsers() => platformUserPreviewRepository ??=
       FakePlatformUserRepository.content(catalog: accessHealthFixtures);
   String? successMessage(Object? extra) {
@@ -3780,6 +3790,130 @@ GoRouter createSuperadminRouter({
                   _navigateFromPersistentShell(context, destination),
             ),
           ),
+          // Etapa 3 F7 (ADR 0035): acesso contextual de funcionarios. A rota
+          // abre quando o repositorio existe; o servidor exige
+          // staff_access.manage no escopo do vinculo em cada RPC.
+          GoRoute(
+            path: SuperadminRoutes.staffAccess,
+            name: SuperadminRoutes.staffAccessName,
+            builder: (context, state) => StaffAccessDirectoryPage(
+              key: ValueKey('staff-access-${session.authorizationInvalidationRevision}'),
+              repository: staffAccessRepository,
+              logout: logout,
+              successMessage: state.extra as String?,
+              onOpen: (membershipId) => context.goNamed(
+                SuperadminRoutes.staffAccessEditName,
+                pathParameters: {'membershipId': membershipId},
+              ),
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+              onBugReportSubmitted: productionSupportController?.submitReportToBackend,
+              onConversationsOpen: () => context.goNamed(
+                SuperadminRoutes.conversationsName,
+                queryParameters: const {'from': 'staff-access'},
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.staffAccessEdit,
+            name: SuperadminRoutes.staffAccessEditName,
+            builder: (context, state) {
+              final membershipId = state.pathParameters['membershipId']!;
+              return StaffAccessFormPage(
+                key: ValueKey('staff-access-edit-$membershipId'),
+                repository: staffAccessRepository,
+                membershipId: membershipId,
+                logout: logout,
+                onCancel: () => context.goNamed(SuperadminRoutes.staffAccessName),
+                onSaved: (item) => context.goNamed(
+                  SuperadminRoutes.staffAccessName,
+                  extra: 'Acesso de ${item.personName} salvo.',
+                ),
+                onOpenLeaves: () => context.goNamed(SuperadminRoutes.staffLeavesName),
+                onCreateLeave: (id) => context.goNamed(
+                  SuperadminRoutes.staffLeaveCreateName,
+                  queryParameters: {'membership': id},
+                ),
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
+              );
+            },
+          ),
+          GoRoute(
+            path: SuperadminRoutes.staffLeaves,
+            name: SuperadminRoutes.staffLeavesName,
+            builder: (context, state) => StaffLeaveDirectoryPage(
+              key: ValueKey('staff-leaves-${session.authorizationInvalidationRevision}'),
+              repository: staffAccessRepository,
+              logout: logout,
+              successMessage: state.extra as String?,
+              onCreate: () => context.goNamed(SuperadminRoutes.staffLeaveCreateName),
+              onOpen: (leave) => context.goNamed(
+                SuperadminRoutes.staffLeaveEditName,
+                pathParameters: {'leaveId': leave.id},
+                extra: leave,
+              ),
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+              onBugReportSubmitted: productionSupportController?.submitReportToBackend,
+              onConversationsOpen: () => context.goNamed(
+                SuperadminRoutes.conversationsName,
+                queryParameters: const {'from': 'staff-leaves'},
+              ),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.staffLeaveCreate,
+            name: SuperadminRoutes.staffLeaveCreateName,
+            builder: (context, state) => StaffLeaveFormPage(
+              key: const ValueKey('staff-leave-create'),
+              repository: staffAccessRepository,
+              initialMembershipId: state.uri.queryParameters['membership'],
+              logout: logout,
+              onCancel: () => context.goNamed(SuperadminRoutes.staffLeavesName),
+              onSaved: (_) => context.goNamed(
+                SuperadminRoutes.staffLeavesName,
+                extra: 'Afastamento registrado.',
+              ),
+              onDestinationSelected: (destination) =>
+                  _navigateFromPersistentShell(context, destination),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.staffLeaveEdit,
+            name: SuperadminRoutes.staffLeaveEditName,
+            builder: (context, state) {
+              final leave = state.extra is StaffLeave ? state.extra as StaffLeave : null;
+              if (leave == null) {
+                // Sem o afastamento em memoria (reload), volta ao diretorio.
+                return StaffLeaveDirectoryPage(
+                  repository: staffAccessRepository,
+                  logout: logout,
+                  onCreate: () => context.goNamed(SuperadminRoutes.staffLeaveCreateName),
+                  onOpen: (item) => context.goNamed(
+                    SuperadminRoutes.staffLeaveEditName,
+                    pathParameters: {'leaveId': item.id},
+                    extra: item,
+                  ),
+                  onDestinationSelected: (destination) =>
+                      _navigateFromPersistentShell(context, destination),
+                );
+              }
+              return StaffLeaveFormPage(
+                key: ValueKey('staff-leave-edit-${leave.id}'),
+                repository: staffAccessRepository,
+                leave: leave,
+                logout: logout,
+                onCancel: () => context.goNamed(SuperadminRoutes.staffLeavesName),
+                onSaved: (saved) => context.goNamed(
+                  SuperadminRoutes.staffLeavesName,
+                  extra: saved == null ? 'Afastamento removido.' : 'Afastamento salvo.',
+                ),
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
+              );
+            },
+          ),
           GoRoute(
             path: SuperadminRoutes.internalUsers,
             name: SuperadminRoutes.internalUsersName,
@@ -5508,6 +5642,108 @@ GoRouter createSuperadminRouter({
             ),
           ),
           GoRoute(
+            path: SuperadminRoutes.devStaffAccess,
+            name: SuperadminRoutes.devStaffAccessName,
+            builder: (context, state) => StaffAccessDirectoryPage(
+              repository: previewStaffAccess(),
+              logout: _previewLogout,
+              successMessage: state.extra as String?,
+              onOpen: (membershipId) => context.goNamed(
+                SuperadminRoutes.devStaffAccessEditName,
+                pathParameters: {'membershipId': membershipId},
+              ),
+              onDestinationSelected: (destination) =>
+                  _navigateFromDevelopmentShell(context, destination),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devStaffAccessEdit,
+            name: SuperadminRoutes.devStaffAccessEditName,
+            builder: (context, state) => StaffAccessFormPage(
+              repository: previewStaffAccess(),
+              membershipId: state.pathParameters['membershipId']!,
+              logout: _previewLogout,
+              onCancel: () => context.goNamed(SuperadminRoutes.devStaffAccessName),
+              onSaved: (item) => context.goNamed(
+                SuperadminRoutes.devStaffAccessName,
+                extra: 'Acesso de ${item.personName} salvo.',
+              ),
+              onOpenLeaves: () => context.goNamed(SuperadminRoutes.devStaffLeavesName),
+              onCreateLeave: (id) => context.goNamed(
+                SuperadminRoutes.devStaffLeaveCreateName,
+                queryParameters: {'membership': id},
+              ),
+              onDestinationSelected: (destination) =>
+                  _navigateFromDevelopmentShell(context, destination),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devStaffLeaves,
+            name: SuperadminRoutes.devStaffLeavesName,
+            builder: (context, state) => StaffLeaveDirectoryPage(
+              repository: previewStaffAccess(),
+              logout: _previewLogout,
+              successMessage: state.extra as String?,
+              onCreate: () => context.goNamed(SuperadminRoutes.devStaffLeaveCreateName),
+              onOpen: (leave) => context.goNamed(
+                SuperadminRoutes.devStaffLeaveEditName,
+                pathParameters: {'leaveId': leave.id},
+                extra: leave,
+              ),
+              onDestinationSelected: (destination) =>
+                  _navigateFromDevelopmentShell(context, destination),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devStaffLeaveCreate,
+            name: SuperadminRoutes.devStaffLeaveCreateName,
+            builder: (context, state) => StaffLeaveFormPage(
+              repository: previewStaffAccess(),
+              initialMembershipId: state.uri.queryParameters['membership'],
+              logout: _previewLogout,
+              onCancel: () => context.goNamed(SuperadminRoutes.devStaffLeavesName),
+              onSaved: (_) => context.goNamed(
+                SuperadminRoutes.devStaffLeavesName,
+                extra: 'Afastamento registrado.',
+              ),
+              onDestinationSelected: (destination) =>
+                  _navigateFromDevelopmentShell(context, destination),
+            ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.devStaffLeaveEdit,
+            name: SuperadminRoutes.devStaffLeaveEditName,
+            builder: (context, state) {
+              final leave = state.extra is StaffLeave ? state.extra as StaffLeave : null;
+              if (leave == null) {
+                return StaffLeaveDirectoryPage(
+                  repository: previewStaffAccess(),
+                  logout: _previewLogout,
+                  onCreate: () => context.goNamed(SuperadminRoutes.devStaffLeaveCreateName),
+                  onOpen: (item) => context.goNamed(
+                    SuperadminRoutes.devStaffLeaveEditName,
+                    pathParameters: {'leaveId': item.id},
+                    extra: item,
+                  ),
+                  onDestinationSelected: (destination) =>
+                      _navigateFromDevelopmentShell(context, destination),
+                );
+              }
+              return StaffLeaveFormPage(
+                repository: previewStaffAccess(),
+                leave: leave,
+                logout: _previewLogout,
+                onCancel: () => context.goNamed(SuperadminRoutes.devStaffLeavesName),
+                onSaved: (saved) => context.goNamed(
+                  SuperadminRoutes.devStaffLeavesName,
+                  extra: saved == null ? 'Afastamento removido.' : 'Afastamento salvo.',
+                ),
+                onDestinationSelected: (destination) =>
+                    _navigateFromDevelopmentShell(context, destination),
+              );
+            },
+          ),
+          GoRoute(
             path: SuperadminRoutes.devInternalUsers,
             name: SuperadminRoutes.devInternalUsersName,
             builder: (context, state) => PlatformUserDirectoryPage(
@@ -6746,6 +6982,10 @@ void _navigateFromAccount(
       context.goNamed(SuperadminRoutes.profileModelsName);
     case 'internal-users':
       context.goNamed(SuperadminRoutes.internalUsersName);
+    case 'staff-access':
+      context.goNamed(SuperadminRoutes.staffAccessName);
+    case 'staff-leaves':
+      context.goNamed(SuperadminRoutes.staffLeavesName);
     case 'internal-user-create':
       context.goNamed(SuperadminRoutes.internalUserCreateName);
     case 'health-care-profiles':
@@ -7001,6 +7241,12 @@ String _destinationForLocation(String location) {
   if (location.startsWith('/internal-users')) {
     return 'internal-users';
   }
+  if (location.startsWith('/staff-access')) {
+    return 'staff-access';
+  }
+  if (location.startsWith('/staff-leaves')) {
+    return 'staff-leaves';
+  }
   if (location.startsWith('/plans/new')) {
     return 'plan-create';
   }
@@ -7160,6 +7406,10 @@ void _navigateFromPersistentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.profilesName);
     case 'internal-users':
       context.goNamed(SuperadminRoutes.internalUsersName);
+    case 'staff-access':
+      context.goNamed(SuperadminRoutes.staffAccessName);
+    case 'staff-leaves':
+      context.goNamed(SuperadminRoutes.staffLeavesName);
     case 'internal-user-create':
       context.goNamed(SuperadminRoutes.internalUserCreateName);
     case 'profile-create':
@@ -7299,6 +7549,10 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.devCatalogName);
     case 'internal-users':
       context.goNamed(SuperadminRoutes.devInternalUsersName);
+    case 'staff-access':
+      context.goNamed(SuperadminRoutes.devStaffAccessName);
+    case 'staff-leaves':
+      context.goNamed(SuperadminRoutes.devStaffLeavesName);
     case 'internal-user-create':
       context.goNamed(SuperadminRoutes.devInternalUserCreateName);
     case 'support':

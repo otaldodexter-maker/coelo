@@ -103,6 +103,8 @@ void main() {
       'Segurança da criança',
       'Usuários internos',
       'Perfis e permissões',
+      'Acesso de funcionários',
+      'Afastamentos',
       'Saúde e Cuidado',
       'Perfis de cuidado',
       'Planos de medicação',

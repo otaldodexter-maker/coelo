@@ -175,6 +175,17 @@ abstract final class SuperadminRoutes {
   static const safetyCreateName = 'safety-create';
   static const safetyEdit = '/safety/children/:childId/authorizations/:authorizationId/edit';
   static const safetyEditName = 'safety-edit';
+  // Etapa 3 F7 (ADR 0035): acesso contextual de funcionarios.
+  static const staffAccess = '/staff-access';
+  static const staffAccessName = 'staff-access';
+  static const staffAccessEdit = '/staff-access/:membershipId';
+  static const staffAccessEditName = 'staff-access-edit';
+  static const staffLeaves = '/staff-leaves';
+  static const staffLeavesName = 'staff-leaves';
+  static const staffLeaveCreate = '/staff-leaves/new';
+  static const staffLeaveCreateName = 'staff-leave-create';
+  static const staffLeaveEdit = '/staff-leaves/:leaveId';
+  static const staffLeaveEditName = 'staff-leave-edit';
   static const internalUsers = '/internal-users';
   static const internalUsersName = 'internal-users';
   static const internalUserCreate = '/internal-users/new';
@@ -415,6 +426,16 @@ abstract final class SuperadminRoutes {
   static const devCircularEditName = 'dev-circular-edit';
   static const devAudit = '/dev/audit';
   static const devAuditName = 'dev-audit';
+  static const devStaffAccess = '/dev/staff-access';
+  static const devStaffAccessName = 'dev-staff-access';
+  static const devStaffAccessEdit = '/dev/staff-access/:membershipId';
+  static const devStaffAccessEditName = 'dev-staff-access-edit';
+  static const devStaffLeaves = '/dev/staff-leaves';
+  static const devStaffLeavesName = 'dev-staff-leaves';
+  static const devStaffLeaveCreate = '/dev/staff-leaves/new';
+  static const devStaffLeaveCreateName = 'dev-staff-leave-create';
+  static const devStaffLeaveEdit = '/dev/staff-leaves/:leaveId';
+  static const devStaffLeaveEditName = 'dev-staff-leave-edit';
   static const devInternalUsers = '/dev/internal-users';
   static const devInternalUsersName = 'dev-internal-users';
   static const devInternalUserCreate = '/dev/internal-users/new';
