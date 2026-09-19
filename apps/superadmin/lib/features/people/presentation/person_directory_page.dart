@@ -11,8 +11,10 @@ import '../../../app/shell/superadmin_shell.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
 import '../domain/person_directory.dart';
+import '../domain/person_suspension.dart';
 import 'person_file_actions.dart';
 import 'person_directory_view_model.dart';
+import 'person_suspension_menu.dart';
 import '../../../shared/data/entity_image_repository.dart';
 import '../../../shared/presentation/widgets/entity_image_view.dart';
 
@@ -28,6 +30,7 @@ final class PersonDirectoryPage extends StatefulWidget {
     this.onConversationsOpen,
     this.onImport,
     this.onExport,
+    this.suspension,
     this.successMessage,
     super.key,
   });
@@ -44,6 +47,9 @@ final class PersonDirectoryPage extends StatefulWidget {
   final VoidCallback? onConversationsOpen;
   final VoidCallback? onImport;
   final PersonExportAction? onExport;
+
+  /// Suspensão por período (spec 066 §3); sem ela o ⋯ do card não aparece.
+  final PersonSuspensionCommands? suspension;
   final String? successMessage;
 
   @override
@@ -51,6 +57,21 @@ final class PersonDirectoryPage extends StatefulWidget {
 }
 
 final class _PersonDirectoryPageState extends State<PersonDirectoryPage> {
+  Widget _suspensionMenu(PersonDirectoryItem item) => item.isEditable
+      ? PersonSuspensionMenu(
+          item: item,
+          canEdit: widget.onEdit != null,
+          onSelected: (action) => runPersonSuspension(
+            context,
+            commands: widget.suspension!,
+            item: item,
+            action: action,
+            onEdit: widget.onEdit,
+            reload: _viewModel.load,
+          ),
+        )
+      : const SizedBox.shrink();
+
   late PersonDirectoryViewModel _viewModel;
   late final TextEditingController _searchController;
   late final SuperadminActivityController _activityController;
@@ -120,6 +141,7 @@ final class _PersonDirectoryPageState extends State<PersonDirectoryPage> {
           onExport: widget.onExport,
           onCreate: widget.onCreate,
           onEdit: widget.onOpen ?? widget.onEdit,
+          menuBuilder: widget.suspension == null ? null : _suspensionMenu,
           onFooterHeightChanged: (height) {
             if ((_paginationFooterHeight - height).abs() < .5) return;
             setState(() => _paginationFooterHeight = height);
@@ -141,6 +163,7 @@ final class _PersonDirectoryContent extends StatelessWidget {
     required this.onCreate,
     required this.onEdit,
     required this.onFooterHeightChanged,
+    this.menuBuilder,
   });
 
   final PersonDirectoryViewModel viewModel;
@@ -150,6 +173,7 @@ final class _PersonDirectoryContent extends StatelessWidget {
   final VoidCallback? onCreate;
   final ValueChanged<String>? onEdit;
   final ValueChanged<double> onFooterHeightChanged;
+  final Widget Function(PersonDirectoryItem item)? menuBuilder;
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
@@ -250,7 +274,10 @@ final class _PersonDirectoryContent extends StatelessWidget {
                 tileKey: const Key('create-person-card'),
                 bannerKey: const Key('create-person-banner'),
               ),
-        cards: [for (final item in page.items) _PersonCard(item: item, onEdit: onEdit)],
+        cards: [
+          for (final item in page.items)
+            _PersonCard(item: item, onEdit: onEdit, menu: menuBuilder?.call(item)),
+        ],
         table: _PersonTableRows(
           items: page.items,
           onEdit: onEdit,
@@ -436,9 +463,12 @@ void clearPeopleFilters(
 }
 
 final class _PersonCard extends StatelessWidget {
-  const _PersonCard({required this.item, required this.onEdit});
+  const _PersonCard({required this.item, required this.onEdit, this.menu});
   final PersonDirectoryItem item;
   final ValueChanged<String>? onEdit;
+
+  /// ⋯ de suspensão (spec 066 §3); nulo sem comandos ou para pessoa técnica.
+  final Widget? menu;
 
   @override
   Widget build(BuildContext context) {
@@ -534,8 +564,31 @@ final class _PersonCard extends StatelessWidget {
                 ),
                 const SizedBox(width: CoeloSpacing.space2),
                 _PersonStatusIndicator(item: item),
+                if (menu case final menu?) ...[const SizedBox(width: CoeloSpacing.space1), menu],
               ],
             ),
+            if (personSuspensionLabel(item) case final suspension?) ...[
+              const SizedBox(height: CoeloSpacing.space2),
+              Row(
+                children: [
+                  Icon(
+                    Icons.pause_circle_outline_rounded,
+                    size: CoeloSize.iconSm,
+                    color: colors.error,
+                  ),
+                  const SizedBox(width: CoeloSpacing.space1),
+                  Expanded(
+                    child: Text(
+                      suspension,
+                      key: Key('person-suspension-label-${item.id}'),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.error),
+                    ),
+                  ),
+                ],
+              ),
+            ],
             const SizedBox(height: CoeloSpacing.space4),
             const Divider(height: 1),
             const SizedBox(height: CoeloSpacing.space4),
@@ -669,8 +722,7 @@ final class _PersonStatusIndicatorState extends State<_PersonStatusIndicator> {
 (Color, Color) _personStatusColors(BuildContext context, PersonStatus status) {
   final theme = Theme.of(context);
   final colors = theme.colorScheme;
-  final statusColors =
-      context.coeloStatusColors;
+  final statusColors = context.coeloStatusColors;
   return switch (status) {
     PersonStatus.active => (statusColors.successContainer, statusColors.onSuccessContainer),
     PersonStatus.inactive => (statusColors.errorContainer, statusColors.onErrorContainer),

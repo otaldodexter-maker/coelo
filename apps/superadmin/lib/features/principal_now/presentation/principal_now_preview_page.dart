@@ -377,6 +377,7 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
           ),
           FilledButton(
             key: const Key('principal-now-remove-confirm'),
+            style: coeloDestructiveFilledButtonStyle(dialogContext),
             onPressed: () => Navigator.of(dialogContext).pop(true),
             child: const Text('Remover'),
           ),

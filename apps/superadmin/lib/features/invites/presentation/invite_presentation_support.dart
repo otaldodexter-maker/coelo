@@ -72,9 +72,9 @@ Future<bool> showInviteRevokeConfirmation(
   BuildContext context, {
   required String recipientMasked,
   ValueChanged<DialogRoute<bool>>? onRouteCreated,
+  ValueChanged<DialogRoute<bool>>? onRouteClosed,
   bool Function()? isContextCurrent,
 }) async {
-  final colors = Theme.of(context).colorScheme;
   final navigator = Navigator.of(context, rootNavigator: true);
   final route = superadminDialogRoute<bool>(
     context,
@@ -94,17 +94,18 @@ Future<bool> showInviteRevokeConfirmation(
             ),
             primaryAction: FilledButton(
               key: const Key('invite-revoke-confirm'),
-              style: FilledButton.styleFrom(
-                backgroundColor: colors.error,
-                foregroundColor: colors.onError,
-              ),
+              style: coeloDestructiveFilledButtonStyle(dialogContext),
               onPressed: () => Navigator.of(dialogContext).pop(true),
               child: const Text('Revogar convite'),
             ),
           ),
   );
   onRouteCreated?.call(route);
-  return await navigator.push(route) ?? false;
+  try {
+    return await navigator.push(route) ?? false;
+  } finally {
+    onRouteClosed?.call(route);
+  }
 }
 
 String formatInviteDate(DateTime value) {

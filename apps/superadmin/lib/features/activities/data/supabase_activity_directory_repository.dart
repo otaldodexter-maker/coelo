@@ -1,15 +1,46 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../shared/data/entity_lifecycle.dart';
 import '../domain/activity_directory.dart';
 
 /// Directory and editor reads use the nominal internal v2 contract; no legacy
 /// fallback is used. `fetchById` projects `superadmin_activity_detail_v2` and
 /// leaves in a declared default whatever that RPC does not expose.
 final class SupabaseActivityDirectoryRepository
-    implements ActivityDirectoryRepository, ActivityTemplateDirectoryReader {
+    implements
+        ActivityDirectoryRepository,
+        ActivityTemplateDirectoryReader,
+        EntityLifecycleCommands {
   const SupabaseActivityDirectoryRepository(this._client);
 
   final SupabaseClient _client;
+
+  // spec 066 (lote 98): ciclo de vida da atividade pelo repositório do diretório.
+  @override
+  Future<EntityLifecycleResult> changeStatus(
+    String entityId, {
+    required int expectedVersion,
+    required bool active,
+    required String requestId,
+    String? reason,
+  }) => SupabaseEntityLifecycleCommands(_client, entity: 'activity').changeStatus(
+    entityId,
+    expectedVersion: expectedVersion,
+    active: active,
+    requestId: requestId,
+    reason: reason,
+  );
+
+  @override
+  Future<EntityLifecycleResult> delete(
+    String entityId, {
+    required int expectedVersion,
+    required String requestId,
+    required String reason,
+  }) => SupabaseEntityLifecycleCommands(
+    _client,
+    entity: 'activity',
+  ).delete(entityId, expectedVersion: expectedVersion, requestId: requestId, reason: reason);
 
   @override
   Future<ActivityDirectoryResult> fetchPage(ActivityDirectoryQuery query) async {

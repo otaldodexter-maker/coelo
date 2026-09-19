@@ -209,6 +209,7 @@ import '../../features/people/data/supabase_person_directory_repository.dart';
 import '../dev_menu/development_person_directory_repository.dart';
 import '../dev_menu/development_person_identity_repository.dart';
 import '../../features/people/domain/person_directory.dart' hide PersonDirectoryPage;
+import '../../features/people/domain/person_suspension.dart';
 import '../../features/people/domain/person_detail_reader.dart';
 import '../../features/people/domain/person_handle.dart';
 import '../../features/people/presentation/person_detail_page.dart';
@@ -2633,6 +2634,11 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.activitiesName,
             builder: (context, state) => ActivityDirectoryPage(
               repository: activityDirectoryRepository,
+              lifecycle:
+                  hasStructureMutationCapability() &&
+                      activityDirectoryRepository is EntityLifecycleCommands
+                  ? activityDirectoryRepository as EntityLifecycleCommands
+                  : null,
               logout: logout,
               onCreate: hasStructureMutationCapability()
                   ? () => context.goNamed(SuperadminRoutes.activityCreateName)
@@ -3751,6 +3757,11 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.peopleName,
             builder: (context, state) => PersonDirectoryPage(
               repository: personDirectoryRepository,
+              suspension:
+                  hasAuthoritativeMutationCapability(SuperadminRoutes.personEdit) &&
+                      personDirectoryRepository is PersonSuspensionCommands
+                  ? personDirectoryRepository as PersonSuspensionCommands
+                  : null,
               logout: logout,
               successMessage: state.extra as String?,
               onCreate: hasAuthoritativeMutationCapability(SuperadminRoutes.personCreate)

@@ -233,6 +233,9 @@ final class PersonDirectoryItem {
     this.stateCode,
     this.municipalityId,
     this.neighborhoodId,
+    this.suspendedNow = false,
+    this.suspendedFrom,
+    this.suspendedUntil,
     required this.updatedAt,
   });
 
@@ -261,9 +264,15 @@ final class PersonDirectoryItem {
       platformMembershipSummary: json['platform_membership_summary'] as String?,
       guardianLinksSummary: json['guardian_links_summary'] as String?,
       maskedContact: null,
+      suspendedNow: json['suspended_now'] as bool? ?? false,
+      suspendedFrom: _parseInstant(json['suspended_from']),
+      suspendedUntil: _parseInstant(json['suspended_until']),
       updatedAt: DateTime.parse(json['updated_at'] as String).toUtc(),
     );
   }
+
+  static DateTime? _parseInstant(Object? value) =>
+      value is String && value.isNotEmpty ? DateTime.tryParse(value)?.toUtc() : null;
 
   final String id;
   final String tenantId;
@@ -285,6 +294,12 @@ final class PersonDirectoryItem {
   final String? stateCode;
   final String? municipalityId;
   final String? neighborhoodId;
+
+  /// Suspensão por período (spec 066 §3, lote 98/101): a conta não resolve
+  /// enquanto `suspendedNow`; `suspendedUntil` nulo = até reativar.
+  final bool suspendedNow;
+  final DateTime? suspendedFrom;
+  final DateTime? suspendedUntil;
   final DateTime updatedAt;
 
   bool get isEditable => type != PersonType.service;
@@ -377,6 +392,9 @@ final class PersonDirectoryItem {
     stateCode: stateCode,
     municipalityId: municipalityId,
     neighborhoodId: neighborhoodId,
+    suspendedNow: suspendedNow,
+    suspendedFrom: suspendedFrom,
+    suspendedUntil: suspendedUntil,
     updatedAt: updatedAt ?? this.updatedAt,
   );
 }

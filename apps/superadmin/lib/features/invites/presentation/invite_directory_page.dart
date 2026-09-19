@@ -280,33 +280,15 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage>
     );
   }
 
-  Future<bool> _showRevokeConfirmation(String recipientMasked) async {
-    final colors = Theme.of(context).colorScheme;
-    return await showOwnedDialog<bool>(
-          builder: (dialogContext) => CoeloAdminDialogShell(
-            dialogKey: const Key('invite-revoke-dialog'),
-            closeButtonKey: const Key('invite-revoke-dialog-close'),
-            title: 'Revogar convite?',
-            body: Text(
-              'O convite para $recipientMasked deixará de poder ser aceito. '
-              'Esta ação será registrada na auditoria.',
-            ),
-            secondaryAction: OutlinedButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Cancelar'),
-            ),
-            primaryAction: FilledButton(
-              key: const Key('invite-revoke-confirm'),
-              style: FilledButton.styleFrom(
-                backgroundColor: colors.error,
-                foregroundColor: colors.onError,
-              ),
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('Revogar convite'),
-            ),
-          ),
-        ) ??
-        false;
+  Future<bool> _showRevokeConfirmation(String recipientMasked) {
+    final generation = ownedRoutesGeneration;
+    return showInviteRevokeConfirmation(
+      context,
+      recipientMasked: recipientMasked,
+      onRouteCreated: ownRoute,
+      onRouteClosed: disownRoute,
+      isContextCurrent: () => isOwnedRouteCurrent(generation),
+    );
   }
 
   void _feedback(String message, {bool error = false}) {

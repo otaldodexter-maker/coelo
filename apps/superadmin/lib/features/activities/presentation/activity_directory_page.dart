@@ -3,6 +3,9 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../../shared/data/entity_lifecycle.dart';
+import '../../../shared/presentation/widgets/entity_lifecycle_menu.dart';
+import '../../../shared/presentation/widgets/entity_lifecycle_runner.dart';
 import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
@@ -113,6 +116,7 @@ final class ActivityDirectoryPage extends StatefulWidget {
     required this.onView,
     this.onCreate,
     this.onEdit,
+    this.lifecycle,
     this.onExportRequested,
     this.onImportRequested,
     this.onCreateFromTemplate,
@@ -130,6 +134,9 @@ final class ActivityDirectoryPage extends StatefulWidget {
   final ValueChanged<String> onView;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onEdit;
+
+  /// Comandos de ciclo de vida (spec 066, lote 98); sem eles o ⋯ não aparece.
+  final EntityLifecycleCommands? lifecycle;
   final ActivityDirectoryExporter? onExportRequested;
   final ActivityDirectoryImportRequested? onImportRequested;
   final ActivityTemplateStarter? onCreateFromTemplate;
@@ -145,6 +152,31 @@ final class ActivityDirectoryPage extends StatefulWidget {
 }
 
 final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
+  Widget _lifecycleMenu(ActivityDirectoryItem item) => EntityLifecycleMenu(
+    keyPrefix: 'activity',
+    entityId: item.id,
+    entityLabel: 'atividade',
+    state: switch (item.status) {
+      ActivityStatus.active => EntityLifecycleState.active,
+      ActivityStatus.inactive => EntityLifecycleState.inactive,
+      ActivityStatus.archived => EntityLifecycleState.archived,
+      _ => EntityLifecycleState.other,
+    },
+    canEdit: widget.onEdit != null,
+    onSelected: (action) => runEntityLifecycle(
+      context,
+      commands: widget.lifecycle!,
+      keyPrefix: 'activity',
+      entityLabel: 'atividade',
+      entityId: item.id,
+      entityName: item.name,
+      managementVersion: item.managementVersion,
+      action: action,
+      onEdit: widget.onEdit,
+      reload: _viewModel.load,
+    ),
+  );
+
   late ActivityDirectoryViewModel _viewModel;
   late final SuperadminActivityController _activityController;
   late final TextEditingController _searchController;
@@ -218,6 +250,7 @@ final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
       onCreate: widget.onCreate,
       onView: widget.onView,
       onEdit: widget.onEdit,
+      menuBuilder: widget.lifecycle == null ? null : _lifecycleMenu,
       onExportRequested: widget.onExportRequested,
       onImportRequested: widget.onImportRequested,
       repository: widget.repository,
@@ -246,6 +279,7 @@ final class _ActivityDirectoryContent extends StatefulWidget {
     required this.onCreate,
     required this.onView,
     required this.onEdit,
+    this.menuBuilder,
     required this.onExportRequested,
     required this.onImportRequested,
     required this.repository,
@@ -264,6 +298,7 @@ final class _ActivityDirectoryContent extends StatefulWidget {
   final ValueChanged<CoeloAdminDirectoryDisplay> onDisplayChanged;
   final ValueChanged<ActivityDirectoryTableView> onTableViewChanged;
   final VoidCallback? onCreate;
+  final Widget Function(ActivityDirectoryItem item)? menuBuilder;
   final ValueChanged<String> onView;
   final ValueChanged<String>? onEdit;
   final ActivityDirectoryExporter? onExportRequested;
@@ -732,7 +767,12 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
             ),
       cards: [
         for (final item in viewModel.visibleItems)
-          _ActivityCard(item: item, onPressed: () => onView(item.id), opensEdit: opensEdit),
+          _ActivityCard(
+            item: item,
+            onPressed: () => onView(item.id),
+            opensEdit: opensEdit,
+            menu: widget.menuBuilder?.call(item),
+          ),
       ],
       table: switch (widget.tableView) {
         ActivityDirectoryTableView.grouped => _ActivityTableRows(
@@ -1571,11 +1611,19 @@ final class _ActivityTemplateCopyDialogState extends State<_ActivityTemplateCopy
 }
 
 final class _ActivityCard extends StatelessWidget {
-  const _ActivityCard({required this.item, required this.onPressed, required this.opensEdit});
+  const _ActivityCard({
+    required this.item,
+    required this.onPressed,
+    required this.opensEdit,
+    this.menu,
+  });
 
   final ActivityDirectoryItem item;
   final VoidCallback onPressed;
   final bool opensEdit;
+
+  /// ⋯ de ciclo de vida (spec 066); nulo sem comandos.
+  final Widget? menu;
 
   @override
   Widget build(BuildContext context) {
@@ -1597,7 +1645,7 @@ final class _ActivityCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _ActivityCardHeader(item: item, colors: colors),
+              _ActivityCardHeader(item: item, colors: colors, menu: menu),
               const SizedBox(height: CoeloSpacing.space4),
               const Divider(height: 1),
               const SizedBox(height: CoeloSpacing.space4),
@@ -1635,10 +1683,11 @@ final class _ActivityCard extends StatelessWidget {
 }
 
 final class _ActivityCardHeader extends StatelessWidget {
-  const _ActivityCardHeader({required this.item, required this.colors});
+  const _ActivityCardHeader({required this.item, required this.colors, this.menu});
 
   final ActivityDirectoryItem item;
   final ColorScheme colors;
+  final Widget? menu;
 
   @override
   Widget build(BuildContext context) {
@@ -1687,6 +1736,7 @@ final class _ActivityCardHeader extends StatelessWidget {
         Expanded(child: identity),
         const SizedBox(width: CoeloSpacing.space2),
         _ActivityExpandableStatusIndicator(itemId: item.id, status: item.status),
+        if (menu case final menu?) ...[const SizedBox(width: CoeloSpacing.space1), menu],
       ],
     );
   }
@@ -1971,8 +2021,7 @@ final class _ActivityStatusChip extends StatelessWidget {
 
 (Color, Color) _activityStatusColors(BuildContext context, ActivityStatus status) {
   final theme = Theme.of(context);
-  final statusColors =
-      context.coeloStatusColors;
+  final statusColors = context.coeloStatusColors;
   return switch (status) {
     ActivityStatus.active => (statusColors.successContainer, statusColors.onSuccessContainer),
     ActivityStatus.suspended => (statusColors.errorContainer, statusColors.onErrorContainer),

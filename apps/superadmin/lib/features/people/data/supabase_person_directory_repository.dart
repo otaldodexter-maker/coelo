@@ -1,9 +1,13 @@
+import 'package:http/http.dart' show ClientException;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../shared/data/entity_lifecycle.dart';
 import '../domain/person_directory.dart';
 import '../domain/person_detail_v2.dart';
+import '../domain/person_suspension.dart';
 
-final class SupabasePersonDirectoryRepository implements PersonDirectoryRepository {
+final class SupabasePersonDirectoryRepository
+    implements PersonDirectoryRepository, PersonSuspensionCommands {
   const SupabasePersonDirectoryRepository(
     this._client, {
     this.segmentFilterAvailable = false,
@@ -11,6 +15,86 @@ final class SupabasePersonDirectoryRepository implements PersonDirectoryReposito
   });
 
   final SupabaseClient _client;
+
+  // spec 066 §3 (lote 98): suspensão por período pelo repositório do diretório.
+  @override
+  Future<PersonSuspensionResult> suspend(
+    String personId, {
+    required String requestId,
+    required String reason,
+    DateTime? from,
+    DateTime? until,
+  }) => _suspensionCall('superadmin_person_suspend_v1', personId, {
+    'p_request_id': requestId,
+    'p_person_id': personId,
+    'p_from': (from ?? DateTime.now()).toUtc().toIso8601String(),
+    'p_until': until?.toUtc().toIso8601String(),
+    'p_reason': reason,
+  });
+
+  @override
+  Future<PersonSuspensionResult> reactivate(
+    String personId, {
+    required String requestId,
+    String? reason,
+  }) => _suspensionCall('superadmin_person_reactivate_v1', personId, {
+    'p_request_id': requestId,
+    'p_person_id': personId,
+    'p_reason': reason,
+  });
+
+  Future<PersonSuspensionResult> _suspensionCall(
+    String rpc,
+    String personId,
+    Map<String, Object?> params,
+  ) async {
+    final Object? raw;
+    try {
+      raw = await _client.rpc<Object?>(rpc, params: params);
+    } on PostgrestException catch (error) {
+      if (const {'42501', 'PGRST301', 'PGRST302'}.contains(error.code)) {
+        throw const EntityLifecycleUnauthorizedException();
+      }
+      throw const EntityLifecycleUnavailableException();
+    } on ClientException {
+      throw const EntityLifecycleUnavailableException();
+    }
+    final envelope = raw is Map ? Map<String, dynamic>.from(raw) : const <String, dynamic>{};
+    if (envelope['ok'] == true) {
+      final data = envelope['data'] is Map
+          ? Map<String, dynamic>.from(envelope['data'] as Map)
+          : const <String, dynamic>{};
+      DateTime? instant(Object? value) =>
+          value is String && value.isNotEmpty ? DateTime.tryParse(value)?.toUtc() : null;
+      return PersonSuspensionResult(
+        personId: data['person_id']?.toString() ?? personId,
+        suspendedNow: data['suspended_now'] == true,
+        suspendedFrom: instant(data['suspended_from']),
+        suspendedUntil: instant(data['suspended_until']),
+      );
+    }
+    final error = envelope['error'] is Map
+        ? Map<String, dynamic>.from(envelope['error'] as Map)
+        : const <String, dynamic>{};
+    switch (error['code']?.toString()) {
+      case 'SAI_CONCURRENT_CHANGE':
+        throw const EntityLifecycleConflictException();
+      case 'SAI_INVALID_ARGUMENT':
+        throw EntityLifecycleValidationException(
+          error['message']?.toString() ?? 'Revise os dados enviados.',
+        );
+      case 'SAI_PERMISSION_DENIED':
+      case 'SAI_MFA_REQUIRED':
+      case 'SAI_AUTH_REQUIRED':
+      case 'SAI_SESSION_INVALID':
+      case 'SAI_INTERNAL_CONTEXT_DENIED':
+      case 'SAI_MEMBERSHIP_SUSPENDED':
+      case 'SAI_MEMBERSHIP_REVOKED':
+        throw const EntityLifecycleUnauthorizedException();
+      default:
+        throw const EntityLifecycleUnavailableException();
+    }
+  }
 
   /// Liga `p_segment` (abas no servidor) quando 20260911170400 estiver em
   /// producao; antes disso a RPC de 12 parametros nao aceita o argumento.
