@@ -514,3 +514,10 @@
 # pgTAP official_profiles_v1_test 18/18 e notices_duplicate_cta_target_v1_test 34/34 no espelho; ledgers reparados.
 20260920002500_official_profiles_follow_origin_v1.sql
 20260920003000_official_profiles_v1.sql
+# Lote 96 (Sessão ETAPA-3, 20/09/2026): Locais spec 067 (mapa por imagem). public.location_map_markers (pontos e áreas em
+# coordenadas relativas 0..1 sobre a planta da instituição/unidade, vínculo opcional a activity_locations, visibilidade por público,
+# RLS deny); superadmin_location_map_get_v1 (dono, endereço do cadastro — unidade herda o da instituição —, marcadores, locais),
+# superadmin_location_map_marker_save_v1 / _remove_v1 (idempotentes por request via superadmin_internal_lifecycle_receipts,
+# PT409/SAI_CONCURRENT_CHANGE, auditoria locations.update, escopo por instituição). A planta em si é entity image 'floor_plan'
+# (pedido à sessão de mídia). pgTAP location_map_markers_v1_test 24/24 no espelho; ledger 20260920010000 reparado.
+20260920010000_location_map_markers_v1.sql
