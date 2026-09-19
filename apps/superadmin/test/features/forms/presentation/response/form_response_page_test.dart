@@ -5,6 +5,7 @@ import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_superadmin/features/forms/data/forms_anonymous_edit_secret_store.dart';
 import 'package:coelo_superadmin/features/forms/presentation/response/form_response_page.dart';
 import 'package:coelo_superadmin/features/forms/presentation/response/forms_gallery_answer_field.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -1431,7 +1432,9 @@ void main() {
         case FormItemKind.date:
           await tester.tap(find.text('Selecionar data'));
           await tester.pumpAndSettle();
-          await tester.tap(find.text('OK'));
+          await tester.tap(find.text('Hoje'));
+          await tester.pump();
+          await tester.tap(find.byKey(const ValueKey('coelo-date-range-apply')));
         default:
           throw StateError('Unsupported test case');
       }
@@ -1760,14 +1763,16 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Selecionar data'));
     await tester.pumpAndSettle();
-    expect(find.byType(DatePickerDialog), findsOneWidget);
+    expect(find.byType(CoeloDateRangePicker), findsOneWidget);
     await tester.pumpWidget(
       MaterialApp(
         home: FormResponsePage(api: second, occurrenceId: 'occurrence-2'),
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('OK'));
+    await tester.tap(find.text('Hoje'));
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('coelo-date-range-apply')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('form-response-save-draft')));
     await tester.pumpAndSettle();
@@ -2391,10 +2396,10 @@ void main() {
         : {'item-1': FormAnswer.date(itemId: 'item-1', value: answer)},
   );
 
-  Future<DatePickerDialog> openPicker(WidgetTester tester) async {
+  Future<CoeloDateRangePicker> openPicker(WidgetTester tester) async {
     await tester.tap(find.widgetWithIcon(OutlinedButton, Icons.calendar_today_outlined));
     await tester.pumpAndSettle();
-    return tester.widget<DatePickerDialog>(find.byType(DatePickerDialog));
+    return tester.widget<CoeloDateRangePicker>(find.byType(CoeloDateRangePicker));
   }
 
   testWidgets('the date picker offers only the authored range', (tester) async {
@@ -2402,7 +2407,7 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await open(tester, dateApi(min: DateTime.utc(2026, 3, 1), max: DateTime.utc(2026, 9, 30)));
     final picker = await openPicker(tester);
-    // showDatePicker normaliza para data local sem hora, entao comparo os
+    // O seletor normaliza para data local sem hora, entao comparo os
     // componentes em vez do DateTime exato.
     expect((picker.firstDate.year, picker.firstDate.month, picker.firstDate.day), (2026, 3, 1));
     expect((picker.lastDate.year, picker.lastDate.month, picker.lastDate.day), (2026, 9, 30));
@@ -2423,14 +2428,13 @@ void main() {
     );
     final picker = await openPicker(tester);
     expect(tester.takeException(), isNull);
-    expect(picker.initialDate, isNotNull);
-    expect(picker.initialDate!.isBefore(picker.firstDate), isFalse);
-    expect(picker.initialDate!.isAfter(picker.lastDate), isFalse);
+    expect(picker.value, isNotNull);
+    expect(picker.value!.start.isBefore(picker.firstDate), isFalse);
+    expect(picker.value!.start.isAfter(picker.lastDate), isFalse);
   });
 
   // O editor ja recusa intervalo de datas invertido, entao formulario criado
-  // aqui nao tem esse estado. Dado legado pode ter. showDatePicker afirma que
-  // a data final nao e anterior a inicial, entao abrir o seletor estouraria.
+  // aqui nao tem esse estado. Dado legado pode ter, e nenhuma data serviria.
   testWidgets('an inconsistent authored date range says so instead of crashing', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1000, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -2439,7 +2443,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
-    expect(find.byType(DatePickerDialog), findsNothing);
+    expect(find.byType(CoeloDateRangePicker), findsNothing);
     expect(
       find.text('Esta pergunta tem um intervalo de datas inválido e não pode ser respondida.'),
       findsWidgets,

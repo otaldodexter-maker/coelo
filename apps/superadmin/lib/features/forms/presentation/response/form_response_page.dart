@@ -1184,28 +1184,33 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     final last = item.config.maxDate ?? DateTime(now.year + 20);
     if (first.isAfter(last)) {
       // O editor recusa intervalo invertido, mas dado legado pode ter. Sem esta
-      // guarda showDatePicker estoura na propria afirmacao dele, e mesmo sem
-      // estourar nao existe data que o servidor fosse aceitar.
+      // guarda o seletor abre um intervalo impossível, e mesmo assim nao
+      // existe data que o servidor fosse aceitar.
       setState(
         () => _message =
             'Esta pergunta tem um intervalo de datas inválido e não pode ser respondida.',
       );
       return;
     }
-    final stored = (_answers[item.id]?.value as FormDateValue?)?.value ?? now;
-    // A stored answer can predate a range declared later. showDatePicker
-    // asserts the initial date is inside the range, so clamp instead of crash.
-    final initial = stored.isBefore(first)
+    final stored = (_answers[item.id]?.value as FormDateValue?)?.value;
+    // A stored answer can predate a range declared later: clamp instead of
+    // opening the picker on a day it cannot select. Without a stored answer the
+    // picker opens empty, so dismissing it never invents a date.
+    final initial = stored == null
+        ? null
+        : stored.isBefore(first)
         ? first
         : stored.isAfter(last)
         ? last
         : stored;
-    final selected = await showDatePicker(
+    final range = await showCoeloDateRangePicker(
       context: context,
-      initialDate: initial,
+      value: initial == null ? null : DateTimeRange(start: initial, end: initial),
       firstDate: first,
       lastDate: last,
+      selectionMode: CoeloDateSelectionMode.single,
     );
+    final selected = range == null ? null : DateUtils.dateOnly(range.start);
     if (selected != null && _isCurrent(generation)) {
       setState(() => _setAnswer(item, FormAnswer.date(itemId: item.id, value: selected)));
     }
