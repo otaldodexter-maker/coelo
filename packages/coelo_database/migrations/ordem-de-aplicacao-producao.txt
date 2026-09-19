@@ -553,3 +553,15 @@
 # Lote 101 (Sessão CODE-REVIEW r4, 20/09/2026): opções de instituição do formulário de atividades (superadmin_activity_template_options,
 # superadmin_activity_filter_options_v2) trazem `handle` (= slug) para a prévia do @ bater com o lote 100. pgTAP activity_options_institution_handle_v1_test 3/3.
 20260920033000_activity_options_institution_handle_v1.sql
+# Lote 99 (Sessão MÍDIA-E2E-2, 20/09/2026): planta baixa (spec 067) como imagem de entidade — image_kind 'floor_plan' em
+# entity_image_assets para institution/unit (JPEG/PNG/WebP até 5 MB, sem SVG) em superadmin_entity_image_prepare_v1 e nas constraints;
+# leitura/remoção/lote/Principal já cobrem o tipo. Edge entity-media publicada com o tipo. pgTAP media_entity_images_floor_plan_v1_test
+# 14/14 no espelho; ledger 20260920070000 reparado.
+20260920070000_media_entity_images_floor_plan_v1.sql
+# Lote 103 (Sessão MÍDIA-E2E-2, 20/09/2026): leitor de família em Momentos/Acontece/Circulares (spec 070 estendida):
+# app_private.family_reader_actor + moments_reader_actor/happens_reader_actor/circular_reader_actor (equipe = permissão + membership;
+# senão guardian_links + can_view via now_viewer_role_class; staff_access_assert só depois que equipe e família falharam).
+# list_visible_moments / list_visible_happens_posts / list_visible_now_publications ganham author_person_id no fim (drop+create, grants
+# refeitos); list_visible_happens_feed e get_visible_circular projetam author_person_id; authorize_moments_media_read e
+# authorize_circular_media_read aceitam o responsável. pgTAP media_feeds_guardian_reader_author_v1_test 26/26; ledger 20260920071000 reparado.
+20260920071000_media_feeds_guardian_reader_author_v1.sql
