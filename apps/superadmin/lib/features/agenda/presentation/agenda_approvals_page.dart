@@ -2,6 +2,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import '../../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 
 import '../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_placeholder_file_actions.dart';
@@ -176,16 +177,8 @@ final class _AgendaApprovalsPageState extends State<AgendaApprovalsPage> {
         local == widget._localFixtures &&
         widget._available;
     if (!local && store?.requestsRead != AgendaReadStatus.ready) return;
-    final route = DialogRoute<void>(
-      context: context,
-      themes: InheritedTheme.capture(
-        from: context,
-        to: Navigator.of(context, rootNavigator: true).context,
-      ),
-      barrierColor:
-          DialogTheme.of(context).barrierColor ??
-          Theme.of(context).colorScheme.scrim.withValues(alpha: 0.54),
-      traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
+    final route = superadminDialogRoute<void>(
+      context,
       builder: (dialogContext) => _ApprovalDecisionDialog(
         item: item,
         onDecide: (status, reason) async {

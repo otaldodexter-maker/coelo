@@ -3,6 +3,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import '../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 import 'package:flutter/services.dart';
 import '../../app/activity/superadmin_activity.dart';
 import '../../app/shell/superadmin_notice.dart';
@@ -1755,18 +1756,7 @@ final class _AssessmentClosingDetailPageState extends State<AssessmentClosingDet
 
   Future<T?> _decision<T>(WidgetBuilder builder) async {
     if (_decisionRoute != null || _controller.saving) return null;
-    final route = DialogRoute<T>(
-      context: context,
-      builder: builder,
-      themes: InheritedTheme.capture(
-        from: context,
-        to: Navigator.of(context, rootNavigator: true).context,
-      ),
-      barrierColor:
-          DialogTheme.of(context).barrierColor ??
-          Theme.of(context).colorScheme.scrim.withValues(alpha: 0.54),
-      traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
-    );
+    final route = superadminDialogRoute<T>(context, builder: builder);
     _decisionRoute = route;
     try {
       return await Navigator.of(context, rootNavigator: true).push<T>(route);

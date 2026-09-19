@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import '../../../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,7 @@ final class FormsEditorPage extends StatefulWidget {
   State<FormsEditorPage> createState() => _FormsEditorPageState();
 }
 
-final class _FormsEditorPageState extends State<FormsEditorPage> {
+final class _FormsEditorPageState extends State<FormsEditorPage> with SuperadminOwnedDialogs {
   late final TextEditingController _title;
   late final TextEditingController _context;
   final _catalogSearch = TextEditingController();
@@ -72,7 +73,6 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   var _loading = false;
   var _saving = false;
   var _contextGeneration = 0;
-  final _ownedOverlays = <(NavigatorState, Route<dynamic>)>{};
 
   var _selectedSection = 0;
   String? _expandedQuestionId;
@@ -343,7 +343,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     _draftChanged = false;
     _confirmingDiscard = false;
     _observedDraft = null;
-    _dismissOwnedOverlays();
+    dismissOwnedRoutes();
     _editorContext = null;
     _authoringEditor = null;
     _authoringDenied = false;
@@ -386,7 +386,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   void dispose() {
     _contextGeneration++;
     _autosaveTimer?.cancel();
-    _dismissOwnedOverlays();
+    dismissOwnedRoutes();
     _title
       ..removeListener(_markChanged)
       ..dispose();
@@ -849,39 +849,6 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     );
   }
 
-  Future<T?> _showOwnedDialog<T>({
-    required WidgetBuilder builder,
-    Color? barrierColor,
-    bool barrierDismissible = true,
-  }) async {
-    final generation = _contextGeneration;
-    final navigator = Navigator.of(context, rootNavigator: true);
-    final route = DialogRoute<T>(
-      context: context,
-      themes: InheritedTheme.capture(from: context, to: navigator.context),
-      builder: (context) =>
-          _isCurrentContext(generation) ? builder(context) : const SizedBox.shrink(),
-      barrierColor: barrierColor,
-      barrierDismissible: barrierDismissible,
-    );
-    final entry = (navigator, route as Route<dynamic>);
-    _ownedOverlays.add(entry);
-    try {
-      final result = await navigator.push<T>(route);
-      await route.completed;
-      return result;
-    } finally {
-      _ownedOverlays.remove(entry);
-    }
-  }
-
-  void _dismissOwnedOverlays() {
-    for (final (navigator, route) in _ownedOverlays.toList(growable: false)) {
-      if (route.isActive) navigator.removeRoute(route);
-    }
-    _ownedOverlays.clear();
-  }
-
   Future<void> _togglePreview() async {
     final canShowBeside =
         MediaQuery.sizeOf(context).width >= 1280 &&
@@ -890,7 +857,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       setState(() => _previewVisible = !_previewVisible);
       return;
     }
-    await _showOwnedDialog<void>(
+    await showOwnedDialog<void>(
       barrierColor: context.coeloScrim,
       builder: (context) => CoeloAdminDialogShell(
         title: 'Prévia do formulário',
@@ -907,7 +874,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   Future<void> _showQuestionCatalog() async {
     final generation = _contextGeneration;
     _catalogSearch.clear();
-    await _showOwnedDialog<void>(
+    await showOwnedDialog<void>(
       barrierColor: context.coeloScrim,
       builder: (dialogContext) {
         var query = '';
@@ -1081,7 +1048,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   Future<void> _confirmDeleteSection() async {
     final generation = _contextGeneration;
     if (_sections.length <= 1) return;
-    final delete = await _showOwnedDialog<bool>(
+    final delete = await showOwnedDialog<bool>(
       barrierColor: context.coeloScrim,
       builder: (context) => CoeloAdminDialogShell(
         title: 'Excluir seção?',
@@ -1202,7 +1169,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     _autosaveTimer?.cancel();
     setState(() => _editingQuestionImages = true);
     try {
-      await _showOwnedDialog<void>(
+      await showOwnedDialog<void>(
         barrierDismissible: false,
         builder: (dialogContext) => StatefulBuilder(
           builder: (context, update) => PopScope(
@@ -1472,7 +1439,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     final generation = _contextGeneration;
     final questions = siblings ?? _section.questions;
     final question = questions[index];
-    final delete = await _showOwnedDialog<bool>(
+    final delete = await showOwnedDialog<bool>(
       barrierColor: context.coeloScrim,
       builder: (context) => CoeloAdminDialogShell(
         title: 'Excluir pergunta?',
@@ -1508,7 +1475,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         if (sectionIndex != _selectedSection) sectionIndex: _sections[sectionIndex].title,
     };
     var destination = _sections.indexWhere((section) => section != _section);
-    final moved = await _showOwnedDialog<bool>(
+    final moved = await showOwnedDialog<bool>(
       barrierColor: context.coeloScrim,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => CoeloAdminDialogShell(
@@ -1955,7 +1922,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       setState(() => _feedback = scheduleIssue);
       return;
     }
-    final intent = await _showOwnedDialog<_FormsPublishIntent>(
+    final intent = await showOwnedDialog<_FormsPublishIntent>(
       barrierColor: context.coeloScrim,
       builder: (_) => _FormsPublishDialog(allowSchedule: widget.development),
     );
@@ -2013,7 +1980,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     _autosaveTimer?.cancel();
     _confirmingDiscard = true;
     final generation = _contextGeneration;
-    final cancel = await _showOwnedDialog<bool>(
+    final cancel = await showOwnedDialog<bool>(
       barrierColor: context.coeloScrim,
       builder: (context) => CoeloAdminDialogShell(
         title: 'Descartar alterações locais?',

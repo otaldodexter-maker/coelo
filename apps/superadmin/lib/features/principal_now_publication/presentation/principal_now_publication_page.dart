@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter/material.dart';
 
+import '../../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 import '../../principal_shared/presentation/principal_publication_frame.dart';
 import '../../principal_shared/presentation/principal_preview_app_bar.dart';
 import '../application/now_publication_controller.dart';
@@ -61,12 +62,11 @@ final class PrincipalNowPublicationPage extends StatefulWidget {
   State<PrincipalNowPublicationPage> createState() => _PrincipalNowPublicationPageState();
 }
 
-final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicationPage> {
+final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicationPage>
+    with SuperadminOwnedDialogs {
   late NowPublicationController controller;
   late final TextEditingController captionController;
   var _pickerGeneration = 0;
-  var _overlayGeneration = 0;
-  final _ownedOverlays = <(NavigatorState, Route<dynamic>)>{};
 
   @override
   void initState() {
@@ -88,7 +88,7 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
       return;
     }
     _pickerGeneration += 1;
-    _dismissOwnedOverlays();
+    dismissOwnedRoutes();
     controller.removeListener(_synchronizeLoadedDraft);
     controller.dispose();
     captionController.value = TextEditingValue.empty;
@@ -100,7 +100,7 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
   void _synchronizeLoadedDraft() {
     if (controller.state.phase == NowPublicationPhase.unauthorized) {
       _pickerGeneration += 1;
-      _dismissOwnedOverlays();
+      dismissOwnedRoutes();
     }
     final caption = controller.state.draft.caption;
     if (captionController.text != caption) {
@@ -114,66 +114,28 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
   @override
   void dispose() {
     _pickerGeneration += 1;
-    _dismissOwnedOverlays();
+    dismissOwnedRoutes();
     controller.removeListener(_synchronizeLoadedDraft);
     captionController.dispose();
     controller.dispose();
     super.dispose();
   }
 
-  Future<T?> _showOwnedDialog<T>({required WidgetBuilder builder}) async {
-    final generation = _overlayGeneration;
-    final navigator = Navigator.of(context, rootNavigator: true);
-    final route = DialogRoute<T>(
-      context: context,
-      builder: (context) =>
-          mounted && generation == _overlayGeneration ? builder(context) : const SizedBox.shrink(),
-    );
-    final entry = (navigator, route as Route<dynamic>);
-    _ownedOverlays.add(entry);
-    try {
-      final result = await navigator.push<T>(route);
-      await route.completed;
-      return result;
-    } finally {
-      _ownedOverlays.remove(entry);
-    }
-  }
-
   Future<T?> _showOwnedBottomSheet<T>({
     required WidgetBuilder builder,
     required Color backgroundColor,
-  }) async {
-    final generation = _overlayGeneration;
+  }) {
+    final generation = ownedRoutesGeneration;
     final navigator = Navigator.of(context);
     final route = ModalBottomSheetRoute<T>(
       builder: (context) =>
-          mounted && generation == _overlayGeneration ? builder(context) : const SizedBox.shrink(),
+          isOwnedRouteCurrent(generation) ? builder(context) : const SizedBox.shrink(),
       capturedThemes: InheritedTheme.capture(from: context, to: navigator.context),
       backgroundColor: backgroundColor,
       showDragHandle: true,
       isScrollControlled: true,
     );
-    final entry = (navigator, route as Route<dynamic>);
-    _ownedOverlays.add(entry);
-    try {
-      final result = await navigator.push<T>(route);
-      await route.completed;
-      return result;
-    } finally {
-      _ownedOverlays.remove(entry);
-    }
-  }
-
-  void _dismissOwnedOverlays() {
-    _overlayGeneration += 1;
-    final overlays = _ownedOverlays.toList(growable: false);
-    _ownedOverlays.clear();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      for (final (navigator, route) in overlays) {
-        if (route.isActive) navigator.removeRoute(route);
-      }
-    });
+    return pushOwnedRoute(navigator, route);
   }
 
   bool _isCurrentOverlay(
@@ -183,7 +145,7 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
   ) =>
       mounted &&
       overlayContext.mounted &&
-      generation == _overlayGeneration &&
+      generation == ownedRoutesGeneration &&
       identical(requestedController, controller) &&
       ModalRoute.of(overlayContext)?.isCurrent == true;
 
@@ -418,9 +380,9 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
 
   Future<void> _showTextEditor() async {
     final requestedController = controller;
-    final generation = _overlayGeneration;
+    final generation = ownedRoutesGeneration;
     final text = TextEditingController(text: requestedController.state.draft.overlayText);
-    await _showOwnedDialog<void>(
+    await showOwnedDialog<void>(
       builder: (context) => _NowDialog(
         title: 'Texto sobre a mídia',
         onClose: () => _closeOverlay(context, generation, requestedController),
@@ -478,7 +440,7 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
     required ValueChanged<double> onChanged,
   }) async {
     final requestedController = controller;
-    final generation = _overlayGeneration;
+    final generation = ownedRoutesGeneration;
     final current = ValueNotifier(value);
     await _showOwnedBottomSheet<void>(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -519,8 +481,8 @@ final class _PrincipalNowPublicationPageState extends State<PrincipalNowPublicat
 
   Future<void> _showAudioRights() async {
     final requestedController = controller;
-    final generation = _overlayGeneration;
-    await _showOwnedDialog<void>(
+    final generation = ownedRoutesGeneration;
+    await showOwnedDialog<void>(
       builder: (context) => _NowDialog(
         title: 'Usar áudio próprio',
         onClose: () => _closeOverlay(context, generation, requestedController),

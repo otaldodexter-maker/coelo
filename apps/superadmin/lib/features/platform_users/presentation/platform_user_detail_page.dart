@@ -10,6 +10,7 @@ import '../../auth/domain/logout_action.dart';
 import '../../people/domain/person_handle.dart';
 import '../../people/presentation/person_handle_section.dart';
 import '../domain/platform_user.dart';
+import '../../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 
 enum _InternalUserAction {
   resendInvitation,
@@ -51,13 +52,13 @@ final class PlatformUserDetailPage extends StatefulWidget {
   State<PlatformUserDetailPage> createState() => _PlatformUserDetailPageState();
 }
 
-final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
+final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage>
+    with SuperadminOwnedDialogs {
   PlatformUserRecord? _loadedRecord;
   bool _loading = false;
   Object? _loadError;
   int _loadGeneration = 0;
   bool _actionPending = false;
-  final Set<DialogRoute<bool>> _ownedDialogs = {};
 
   bool _isCurrent(int generation) => mounted && generation == _loadGeneration;
   PlatformUserRecord? get _record => widget.repository is PlatformUserRemoteLoader
@@ -83,7 +84,7 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
       return;
     }
     _loadGeneration++;
-    _dismissOwnedDialogs();
+    dismissOwnedRoutes();
     _actionPending = false;
     _loadedRecord = null;
     _loadError = null;
@@ -94,7 +95,7 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
   @override
   void dispose() {
     _loadGeneration++;
-    _dismissOwnedDialogs();
+    dismissOwnedRoutes();
     _loadedRecord = null;
     super.dispose();
   }
@@ -494,7 +495,7 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
           action == _InternalUserAction.revokeInvitation ||
           action == _InternalUserAction.suspend ||
           action == _InternalUserAction.revoke;
-      final confirmed = await _showConfirmation(
+      final confirmed = await showOwnedDialog<bool>(
         builder: (dialogContext) => CoeloAdminDialogShell(
           title: _actionLabel(action),
           body: Text(
@@ -562,29 +563,6 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
     } finally {
       if (_isCurrent(generation)) setState(() => _actionPending = false);
     }
-  }
-
-  Future<bool?> _showConfirmation({required WidgetBuilder builder}) async {
-    final navigator = Navigator.of(context, rootNavigator: true);
-    final route = DialogRoute<bool>(context: context, builder: builder);
-    _ownedDialogs.add(route);
-    try {
-      unawaited(navigator.push<bool>(route));
-      return await route.completed;
-    } finally {
-      _ownedDialogs.remove(route);
-    }
-  }
-
-  void _dismissOwnedDialogs() {
-    final routes = _ownedDialogs.toList(growable: false);
-    _ownedDialogs.clear();
-    if (routes.isEmpty) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      for (final route in routes) {
-        if (route.isActive) route.navigator?.removeRoute(route);
-      }
-    });
   }
 
   Widget _notice(IconData icon, String title, String message) {

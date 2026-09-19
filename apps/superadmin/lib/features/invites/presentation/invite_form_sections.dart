@@ -2,7 +2,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_section.dart';
+import '../../../shared/presentation/widgets/superadmin_form_section.dart';
 
 import '../domain/platform_invite.dart';
 import 'invite_presentation_support.dart';

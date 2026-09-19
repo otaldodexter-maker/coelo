@@ -1,5 +1,6 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import '../../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 import 'package:flutter/services.dart';
 
 import '../domain/circular.dart';
@@ -658,11 +659,8 @@ Future<void> _openCircularPreview(
     if (read) onRead();
   }
 
-  route = DialogRoute<void>(
-    context: context,
-    themes: InheritedTheme.capture(from: context, to: navigator.context),
-    animationStyle: MediaQuery.disableAnimationsOf(context) ? AnimationStyle.noAnimation : null,
-    traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
+  route = superadminDialogRoute<void>(
+    context,
     barrierColor: context.coeloScrim,
     builder: (dialogContext) => isContextCurrent?.call() == false
         ? const SizedBox.shrink()

@@ -1,6 +1,7 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
+import '../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 import 'package:flutter/services.dart';
 
 Future<Color?> showSuperadminAdvancedColorPicker(
@@ -10,8 +11,8 @@ Future<Color?> showSuperadminAdvancedColorPicker(
   void Function(NavigatorState navigator, Route<dynamic> route)? onRouteCreated,
 }) async {
   final navigator = Navigator.of(context, rootNavigator: true);
-  final route = DialogRoute<Color>(
-    context: context,
+  final route = superadminDialogRoute<Color>(
+    context,
     builder: (context) =>
         _SuperadminAdvancedColorPickerDialog(initialColor: initialColor, title: title),
   );

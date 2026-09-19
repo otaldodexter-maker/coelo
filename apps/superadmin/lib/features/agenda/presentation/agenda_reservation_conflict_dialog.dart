@@ -1,6 +1,7 @@
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import '../../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 
 Future<String?> showAgendaReservationConflictOverrideDialog(BuildContext context) => Navigator.of(
   context,
@@ -8,16 +9,8 @@ Future<String?> showAgendaReservationConflictOverrideDialog(BuildContext context
 ).push<String>(createAgendaReservationConflictOverrideRoute(context));
 
 DialogRoute<String> createAgendaReservationConflictOverrideRoute(BuildContext context) =>
-    DialogRoute<String>(
-      context: context,
-      themes: InheritedTheme.capture(
-        from: context,
-        to: Navigator.of(context, rootNavigator: true).context,
-      ),
-      barrierColor:
-          DialogTheme.of(context).barrierColor ??
-          Theme.of(context).colorScheme.scrim.withValues(alpha: 0.54),
-      traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
+    superadminDialogRoute<String>(
+      context,
       builder: (_) => const _AgendaReservationConflictOverrideDialog(),
     );
 

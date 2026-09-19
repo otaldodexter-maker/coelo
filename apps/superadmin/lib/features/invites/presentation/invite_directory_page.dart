@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:coelo_tokens/coelo_tokens.dart';
+import '../../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +34,8 @@ final class InviteDirectoryPage extends StatefulWidget {
   State<InviteDirectoryPage> createState() => _InviteDirectoryPageState();
 }
 
-final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
+final class _InviteDirectoryPageState extends State<InviteDirectoryPage>
+    with SuperadminOwnedDialogs {
   final _searchController = TextEditingController();
   final Set<InviteStatus> _statuses = {};
   final Set<InviteChannel> _channels = {};
@@ -43,7 +44,6 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
   String? _busyInviteId;
   bool _actionInProgress = false;
   final Map<String, String> _actionRequestIds = {};
-  final Set<_OwnedInviteOverlay> _ownedOverlays = {};
   var _page = 1;
   var _pageSize = 8;
   var _requestEpoch = 0;
@@ -71,7 +71,7 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
     final repositoryChanged = !identical(oldWidget.repository, widget.repository);
     if (repositoryChanged || oldWidget.allowCommands != widget.allowCommands) {
       _commandGeneration++;
-      _dismissOwnedOverlays();
+      dismissOwnedRoutes();
       _busyInviteId = null;
       _actionInProgress = false;
       _actionRequestIds.clear();
@@ -93,7 +93,7 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
     _searchDebounce?.cancel();
     _requestEpoch++;
     _commandGeneration++;
-    _dismissOwnedOverlays();
+    dismissOwnedRoutes();
     _searchController.dispose();
     super.dispose();
   }
@@ -117,7 +117,7 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
     } on InviteUnauthorizedException catch (error) {
       if (mounted && epoch == _requestEpoch) {
         _commandGeneration++;
-        _dismissOwnedOverlays();
+        dismissOwnedRoutes();
         setState(() {
           _snapshot = InviteDirectorySnapshot.unauthorized(error);
           _busyInviteId = null;
@@ -255,7 +255,7 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
     required InviteRepository repository,
   }) async {
     if (!_isCurrentCommand(generation, repository)) return;
-    await _showOwnedDialog<void>(
+    await showOwnedDialog<void>(
       builder: (dialogContext) => CoeloAdminDialogShell(
         title: 'Novo link do convite',
         body: SelectableText(link.toString(), key: const Key('invite-resend-link')),
@@ -282,7 +282,7 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
 
   Future<bool> _showRevokeConfirmation(String recipientMasked) async {
     final colors = Theme.of(context).colorScheme;
-    return await _showOwnedDialog<bool>(
+    return await showOwnedDialog<bool>(
           builder: (dialogContext) => CoeloAdminDialogShell(
             dialogKey: const Key('invite-revoke-dialog'),
             closeButtonKey: const Key('invite-revoke-dialog-close'),
@@ -307,30 +307,6 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
           ),
         ) ??
         false;
-  }
-
-  Future<T?> _showOwnedDialog<T>({required WidgetBuilder builder}) async {
-    final navigator = Navigator.of(context, rootNavigator: true);
-    final route = DialogRoute<T>(
-      context: context,
-      barrierColor: context.coeloScrim,
-      builder: builder,
-    );
-    final owned = _OwnedInviteOverlay(navigator, route);
-    _ownedOverlays.add(owned);
-    try {
-      unawaited(navigator.push<T>(route));
-      return await route.completed;
-    } finally {
-      _ownedOverlays.remove(owned);
-    }
-  }
-
-  void _dismissOwnedOverlays() {
-    for (final owned in _ownedOverlays.toList(growable: false)) {
-      if (owned.route.isActive) owned.navigator.removeRoute(owned.route);
-    }
-    _ownedOverlays.clear();
   }
 
   void _feedback(String message, {bool error = false}) {
@@ -509,11 +485,4 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
     _page = value;
     unawaited(_load());
   }
-}
-
-final class _OwnedInviteOverlay {
-  const _OwnedInviteOverlay(this.navigator, this.route);
-
-  final NavigatorState navigator;
-  final Route<dynamic> route;
 }

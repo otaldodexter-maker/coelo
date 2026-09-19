@@ -6,7 +6,7 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_section.dart';
+import '../../../shared/presentation/widgets/superadmin_form_section.dart';
 
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';

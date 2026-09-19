@@ -15,6 +15,7 @@ import '../../auth/domain/logout_action.dart';
 import '../../institutions/presentation/widgets/institution_logo_picker.dart';
 import '../../../shared/presentation/widgets/avatar_crop_dialog.dart';
 import '../domain/platform_user.dart';
+import '../../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 import '../../../shared/data/entity_image_repository.dart';
 import '../../../shared/presentation/widgets/entity_images_section.dart';
 
@@ -48,7 +49,8 @@ final class PlatformUserFormPage extends StatefulWidget {
   State<PlatformUserFormPage> createState() => _PlatformUserFormPageState();
 }
 
-final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
+final class _PlatformUserFormPageState extends State<PlatformUserFormPage>
+    with SuperadminOwnedDialogs {
   final _formKey = GlobalKey<FormState>();
   final _firstName = TextEditingController();
   final _lastName = TextEditingController();
@@ -85,7 +87,6 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   double _footerHeight = 0;
   int _contextRevision = 0;
   bool _confirmingCancel = false;
-  final Set<DialogRoute<dynamic>> _ownedDialogs = {};
 
   bool _isCurrent(int revision) => mounted && revision == _contextRevision;
 
@@ -155,7 +156,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
         oldWidget.internalUserId != widget.internalUserId ||
         oldWidget.capability != widget.capability) {
       _contextRevision++;
-      _dismissOwnedDialogs();
+      dismissOwnedRoutes();
       _confirmingCancel = false;
       for (final controller in _textControllers) {
         controller.clear();
@@ -339,7 +340,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     _images?.dispose();
     _contextRevision++;
     _confirmedCompletion = null;
-    _dismissOwnedDialogs();
+    dismissOwnedRoutes();
     for (final controller in _textControllers) {
       controller.dispose();
     }
@@ -452,7 +453,9 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
         if (_images case final images? when images.hasPending) {
           final PlatformUserRepository repository = widget.repository;
           final personId = repository is PlatformUserServicePersonResolver
-              ? await (repository as PlatformUserServicePersonResolver).servicePersonId(result.record.id)
+              ? await (repository as PlatformUserServicePersonResolver).servicePersonId(
+                  result.record.id,
+                )
               : null;
           if (personId != null) await images.attach(personId);
           if (!_isCurrent(revision)) return;
@@ -821,7 +824,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     final revision = _contextRevision;
     final file = await pickInstitutionLogo();
     if (file == null || !mounted || !_isCurrent(revision)) return;
-    final adjusted = await _showOwnedDialog<AvatarCropResult>(
+    final adjusted = await showOwnedDialog<AvatarCropResult>(
       barrierColor: context.coeloScrim,
       builder: (context) => AvatarCropDialog(bytes: file.bytes),
     );
@@ -1237,7 +1240,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     }
     _confirmingCancel = true;
     try {
-      final discard = await _showOwnedDialog<bool>(
+      final discard = await showOwnedDialog<bool>(
         builder: (context) => CoeloAdminDialogShell(
           title: 'Descartar alterações?',
           body: const Text('O rascunho local será descartado.'),
@@ -1255,33 +1258,6 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     } finally {
       if (_isCurrent(revision)) _confirmingCancel = false;
     }
-  }
-
-  Future<T?> _showOwnedDialog<T>({required WidgetBuilder builder, Color? barrierColor}) async {
-    final navigator = Navigator.of(context, rootNavigator: true);
-    final route = DialogRoute<T>(
-      context: context,
-      builder: builder,
-      barrierColor: barrierColor ?? context.coeloScrim,
-    );
-    _ownedDialogs.add(route);
-    try {
-      unawaited(navigator.push<T>(route));
-      return await route.completed;
-    } finally {
-      _ownedDialogs.remove(route);
-    }
-  }
-
-  void _dismissOwnedDialogs() {
-    final routes = _ownedDialogs.toList(growable: false);
-    _ownedDialogs.clear();
-    if (routes.isEmpty) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      for (final route in routes) {
-        if (route.isActive) route.navigator?.removeRoute(route);
-      }
-    });
   }
 }
 

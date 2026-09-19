@@ -6,6 +6,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import '../../../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../../../../app/shell/superadmin_shell.dart';
@@ -350,8 +351,8 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         command.validate();
         uploads.add(command);
       }
-      final route = DialogRoute<String>(
-        context: context,
+      final route = superadminDialogRoute<String>(
+        context,
         barrierDismissible: false,
         builder: (_) => repository is ChatAttachmentBatchRepository
             ? SuperadminChatBatchUploadDialog(

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
+import '../../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
@@ -83,7 +84,8 @@ final class NoticeDirectoryPage extends StatefulWidget {
   State<NoticeDirectoryPage> createState() => _NoticeDirectoryPageState();
 }
 
-final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
+final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage>
+    with SuperadminOwnedDialogs {
   final _search = TextEditingController();
   _NoticeStatusFilter _statusFilter = _NoticeStatusFilter.all;
   _CommunicationTypeFilter _typeFilter = _CommunicationTypeFilter.all;
@@ -92,7 +94,6 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   int _loadGeneration = 0;
   int _commandGeneration = 0;
   final Map<String, String> _actionRequestIds = {};
-  final Set<(NavigatorState, Route<dynamic>)> _ownedOverlays = {};
   int _page = 1;
   int _pageSize = 8;
   bool? _compactPagination;
@@ -118,7 +119,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     super.didUpdateWidget(oldWidget);
     if (identical(oldWidget.repository, widget.repository)) return;
     _searchDebounce?.cancel();
-    _dismissOwnedOverlays();
+    dismissOwnedRoutes();
     _loadGeneration++;
     _commandGeneration++;
     _search.clear();
@@ -143,7 +144,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   @override
   void dispose() {
     _searchDebounce?.cancel();
-    _dismissOwnedOverlays();
+    dismissOwnedRoutes();
     _loadGeneration++;
     _commandGeneration++;
     _search.dispose();
@@ -642,7 +643,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
       switch (action) {
         case _NoticeCardAction.preview:
           _actionRequestIds.remove(requestKey);
-          await _showOwnedDialog<void>(
+          await showOwnedDialog<void>(
             barrierColor: context.coeloScrim,
             builder: (_) => NoticePreviewDialog(notice: notice),
           );
@@ -786,7 +787,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
 
   Future<String?> _requestCancellationReason() async {
     final controller = TextEditingController();
-    final result = await _showOwnedDialog<String>(
+    final result = await showOwnedDialog<String>(
       barrierColor: context.coeloScrim,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) {
@@ -840,27 +841,6 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
     );
     controller.dispose();
     return result;
-  }
-
-  Future<T?> _showOwnedDialog<T>({required WidgetBuilder builder, Color? barrierColor}) async {
-    final navigator = Navigator.of(context, rootNavigator: true);
-    final route = DialogRoute<T>(context: context, builder: builder, barrierColor: barrierColor);
-    final entry = (navigator, route as Route<dynamic>);
-    _ownedOverlays.add(entry);
-    try {
-      final result = await navigator.push<T>(route);
-      await route.completed;
-      return result;
-    } finally {
-      _ownedOverlays.remove(entry);
-    }
-  }
-
-  void _dismissOwnedOverlays() {
-    for (final (navigator, route) in _ownedOverlays.toList(growable: false)) {
-      if (route.isActive) navigator.removeRoute(route);
-    }
-    _ownedOverlays.clear();
   }
 
   Future<void> _load({required bool reset}) async {

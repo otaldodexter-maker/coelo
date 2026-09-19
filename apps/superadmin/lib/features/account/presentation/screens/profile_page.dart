@@ -9,6 +9,7 @@ import '../../../../app/widgets/superadmin_advanced_color_picker_dialog.dart';
 import '../../../../shared/presentation/widgets/avatar_crop_dialog.dart';
 import '../../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../../shared/presentation/widgets/superadmin_form_frame.dart';
+import '../../../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../domain/account_profile.dart';
 import '../account_controller.dart';
@@ -29,7 +30,7 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends State<ProfilePage> with SuperadminOwnedDialogs {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _firstName;
   late final TextEditingController _lastName;
@@ -43,7 +44,6 @@ class _ProfilePageState extends State<ProfilePage> {
   var _hydratedProfileRevision = -1;
   var _updatingDraft = false;
   var _asyncGeneration = 0;
-  final _ownedOverlays = <(NavigatorState, Route<dynamic>)>{};
 
   @override
   void initState() {
@@ -64,7 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
     super.didUpdateWidget(oldWidget);
     if (identical(oldWidget.controller, widget.controller)) return;
     _asyncGeneration += 1;
-    _dismissOwnedOverlays();
+    dismissOwnedRoutes();
     _clearDraft();
     _hydrateConfirmedState(widget.controller.state);
   }
@@ -168,7 +168,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void dispose() {
     _asyncGeneration += 1;
-    _dismissOwnedOverlays();
+    dismissOwnedRoutes();
     for (final field in [_firstName, _lastName, _email, _mobilePhone, _initials]) {
       field.removeListener(_onDraftChanged);
     }
@@ -200,7 +200,7 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() => _imageError = 'Não foi possível ler esta imagem.');
       return;
     }
-    final adjusted = await _showOwnedDialog<AvatarCropResult>(
+    final adjusted = await showOwnedDialog<AvatarCropResult>(
       barrierColor: context.coeloScrim,
       builder: (context) => AvatarCropDialog(bytes: bytes),
     );
@@ -221,41 +221,17 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _chooseColor() async {
     final generation = _asyncGeneration;
-    (NavigatorState, Route<dynamic>)? entry;
+    Route<dynamic>? owned;
     final selected = await showSuperadminAdvancedColorPicker(
       context,
       initialColor: _avatar!.backgroundColor,
       title: 'Cor da sigla',
-      onRouteCreated: (navigator, route) {
-        entry = (navigator, route);
-        _ownedOverlays.add(entry!);
-      },
+      onRouteCreated: (_, route) => ownRoute(owned = route),
     );
-    if (entry case final owned?) _ownedOverlays.remove(owned);
+    if (owned case final route?) disownRoute(route);
     if (selected != null && mounted && generation == _asyncGeneration) {
       setState(() => _avatar = _avatar!.copyWith(backgroundColor: selected));
     }
-  }
-
-  Future<T?> _showOwnedDialog<T>({required WidgetBuilder builder, Color? barrierColor}) async {
-    final navigator = Navigator.of(context, rootNavigator: true);
-    final route = DialogRoute<T>(context: context, builder: builder, barrierColor: barrierColor);
-    final entry = (navigator, route as Route<dynamic>);
-    _ownedOverlays.add(entry);
-    try {
-      final result = await navigator.push<T>(route);
-      await route.completed;
-      return result;
-    } finally {
-      _ownedOverlays.remove(entry);
-    }
-  }
-
-  void _dismissOwnedOverlays() {
-    for (final (navigator, route) in _ownedOverlays.toList(growable: false)) {
-      if (route.isActive) navigator.removeRoute(route);
-    }
-    _ownedOverlays.clear();
   }
 
   Future<void> _save() async {

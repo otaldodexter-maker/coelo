@@ -1,6 +1,7 @@
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import '../../../../shared/presentation/widgets/superadmin_owned_dialogs.dart';
 
 import '../../domain/chat_repository.dart';
 import '../../../../core/platform/open_download.dart';
@@ -148,15 +149,8 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
     final session = widget.mediaSession!;
     final generation = ++_openingGeneration;
     final navigator = Navigator.of(context);
-    final route = DialogRoute<void>(
-      context: context,
-      animationStyle: MediaQuery.disableAnimationsOf(context) ? AnimationStyle.noAnimation : null,
-      themes: InheritedTheme.capture(from: context, to: navigator.context),
-      barrierColor:
-          DialogTheme.of(context).barrierColor ??
-          Theme.of(context).dialogTheme.barrierColor ??
-          Colors.black54,
-      traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
+    final route = superadminDialogRoute<void>(
+      context,
       builder: (_) => !mounted || generation != _openingGeneration
           ? const SizedBox.shrink()
           : bindingRepository != null

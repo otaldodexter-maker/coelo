@@ -3,7 +3,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_section.dart';
+import '../../../shared/presentation/widgets/superadmin_form_section.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
 import 'health_care_responsive_surface.dart';
@@ -640,10 +640,7 @@ final class _AllergyEditorCard extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(
-                'Registro ${index + 1}',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              child: Text('Registro ${index + 1}', style: Theme.of(context).textTheme.titleMedium),
             ),
             IconButton(
               key: Key('health-care-profile-remove-allergy-$index'),
