@@ -52,7 +52,7 @@ importação/exportação geral (ADR 0031; só Formulários exporta).
 | Notificações | central in-app (sino) entregue no Superadmin; **push não existe** | — |
 | Offline-tolerant | pontos de cache/fila no Superadmin (12 arquivos); sem prova formal | — |
 | Analytics events | tabela preparada (1 migration); sem consumo | — |
-| Tour / home com IA | placeholders; nada funcional | ADR 0035 |
+| Tour / home com IA | tour do menu (48 passos, 18/09) e tour por tela (42 telas, 265 passos) + tour completo (menu → telas, retoma após reload) entregues em `dev` em 19/09; home com IA segue placeholder | ADR 0035; `tour-telas-rascunho-20260918.md` |
 | Reserva R16 | 14 Owner items, 19 H, 17 dívidas; D2/D4/D5/D6/D7 em execução pela Sessão RESERVA | `R16-levantamento-…` |
 
 **Leitura:** o Superadmin cumpre o PRD do Superadmin **e** absorveu a operação
@@ -75,7 +75,7 @@ com dependência externa (domínio, provedor, loja, decisão de produto).
 | F5 | Specs em rascunho: 064 perfil transversal / Principal sem membership (OQ-044/048), 068 perfis oficiais (OQ-032; **PRD Superadmin diz MVP**) | backlog | M cada, após aprovação | D8 |
 | F6 | Deploy público: host `superadmin.coelo.me`, allowlist de Auth, CORS dos buckets R2, SMTP próprio + prova do reset | ADR 0035/0044 | M + externo (DNS, Cloudflare, SMTP) | decisão de host |
 | F7 | Acesso contextual de funcionários (2 telas + servidor + auditoria) | ADR 0035 | G | spec nova; 6 decisões do Owner (backlog) |
-| F8 | Tour funcional | ADR 0035 | M | roteiro |
+| F8 | Tour funcional — **entregue** (menu 18/09; por tela e completo 19/09, Sessão TOUR-TELAS) | ADR 0035 | — | — |
 | F9 | Home com IA sobre o app | ADR 0035 | G + custo de provedor | fonte/limites/custo |
 | F10 | `apps/admin` em admin.coelo.me com adaptação de papel | ADR 0035 / PRD | G | F6; decisão do que sai do Superadmin |
 | F11 | `apps/principal` em app.coelo.me (hoje hospedado) | ADR 0035 / PRD | G | F6; spec 064 |

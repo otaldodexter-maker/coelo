@@ -1,14 +1,20 @@
 ---
 title: "Tour por tela — rascunho de texto para revisão do Owner"
 source: "apps/superadmin/lib/app/navigation/superadmin_navigation.dart (destinos roteados em 18/09/2026); páginas em apps/superadmin/lib/features/*; tour-menu-rascunho-20260918.md (formato); decisions/0045"
-status: "draft-for-owner-review"
+status: "approved"
 lifecycle: "future"
 generated_at: "2026-09-18"
-updated_at: "2026-09-18"
+updated_at: "2026-09-19"
 audience: "owner"
 ---
 
 # Tour por tela — rascunho
+
+Aprovado pelo Owner em 18/09 (todos os lotes; telas de criar/publicar entram
+no tour completo). Fonte executável: `apps/superadmin/lib/app/tour/screens/`,
+gerada deste arquivo; ajustes de texto feitos aqui foram levados ao Dart. Onde a
+tela não tinha o elemento do rascunho, o passo foi ajustado ao que existe
+(anotado nas tabelas pelas âncoras).
 
 Mesmo conceito do tour do menu: um balão por elemento, apontando o que a tela
 tem, com uma frase do que cada coisa faz. Botões **Próximo**, **Voltar**, **Pular

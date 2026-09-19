@@ -551,9 +551,12 @@ final class _CoeloTourBalloon extends StatelessWidget {
       },
       child: Focus(
         focusNode: focusNode,
+        // explicitChildNodes: sem isso o rótulo do balão fundiria os botões
+        // num único nó e leitores de tela não alcançariam "Próximo".
         child: Semantics(
           container: true,
           liveRegion: true,
+          explicitChildNodes: true,
           label: '${step.title}. $counter.',
           child: Material(
             key: const Key('coelo-tour-balloon'),

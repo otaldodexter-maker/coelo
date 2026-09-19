@@ -10,6 +10,7 @@ Uma linha por item: tela · o que falta · quem pediu · data. Apague a linha qu
 - Avisos · spec 069 duplicar/CTA/atualização · Owner · 18/09
 - Principal · spec 068 perfis oficiais · Owner · 18/09
 - Acessos · acesso contextual de funcionários (horários, vigência, afastamentos, popups) · Owner · ADR 0035
-- Tour · por tela (após o do menu) · Owner · 18/09
+- Tour · textos dos 42 roteiros são propostas (rascunho `tour-telas-rascunho-20260918.md`, fonte executável em `apps/superadmin/lib/app/tour/screens/`): Owner revisa olhando a tela · Owner · 19/09
+- Tour · Planos (dev-only) sem tour por decisão; telas de editar/detalhe (`/…/:id`) e Permissões da Agenda não são destinos do menu e ficam sem tour · Sessão TOUR-TELAS · 19/09
 - Fim da Etapa 3 · dez nomes para "Para você" + três instituições fictícias · Owner · 18/09
 - Etapa 4 · publicação (host, Auth, CORS, SMTP), apps/admin, apps/principal + spec 064, push preparado, analytics, IA · Owner · ADR 0045

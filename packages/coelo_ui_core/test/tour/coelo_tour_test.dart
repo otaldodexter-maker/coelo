@@ -230,4 +230,84 @@ void main() {
     expect(balloon.overlaps(anchor), isFalse);
     expect(balloon.left, greaterThan(anchor.right));
   });
+
+  testWidgets('os botões do balão são nós de semântica próprios (não fundidos no rótulo)', (
+    tester,
+  ) async {
+    final registry = CoeloTourAnchorRegistry();
+    _resize(tester, const Size(1200, 800));
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(_host(registry: registry));
+    await _start(tester);
+
+    final next = tester.getSemantics(find.byKey(const Key('coelo-tour-next')));
+    expect(next.label, 'Próximo');
+    expect(next.flagsCollection.isButton, isTrue);
+    final skip = tester.getSemantics(find.byKey(const Key('coelo-tour-skip')));
+    expect(skip.label, 'Pular tour');
+    expect(skip.flagsCollection.isButton, isTrue);
+    handle.dispose();
+  });
+
+  testWidgets('segmento: contador com deslocamento, Próximo no último passo e Voltar no primeiro', (
+    tester,
+  ) async {
+    final registry = CoeloTourAnchorRegistry();
+    _resize(tester, const Size(1200, 800));
+    CoeloTourOutcome? outcome;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: CoeloTourScope(
+          registry: registry,
+          child: Scaffold(
+            body: Builder(
+              builder: (context) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CoeloTourAnchor(id: 'a', child: const Text('Item A')),
+                  CoeloTourAnchor(id: 'b', child: const Text('Item B')),
+                  FilledButton(
+                    key: const Key('start'),
+                    onPressed: () async {
+                      outcome = await showCoeloTour(
+                        context,
+                        steps: const [
+                          CoeloTourStep(anchorId: 'a', title: 'A', text: 'x'),
+                          CoeloTourStep(anchorId: 'b', title: 'B', text: 'x'),
+                        ],
+                        registry: registry,
+                        segment: const CoeloTourSegment(
+                          counterOffset: 10,
+                          counterTotal: 20,
+                          continuesAfter: true,
+                          allowBackFromFirst: true,
+                        ),
+                      );
+                    },
+                    child: const Text('Iniciar'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await _start(tester);
+    expect(find.text('11 de 20'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('coelo-tour-next')));
+    await tester.pumpAndSettle();
+    expect(find.text('12 de 20'), findsOneWidget);
+    // Último passo de um segmento intermediário continua com "Próximo".
+    expect(find.text('Próximo'), findsOneWidget);
+    expect(find.text('Concluir'), findsNothing);
+    await tester.tap(find.byKey(const Key('coelo-tour-back')));
+    await tester.pumpAndSettle();
+    // "Voltar" no primeiro passo devolve `back`.
+    await tester.tap(find.byKey(const Key('coelo-tour-back')));
+    await tester.pumpAndSettle();
+    expect(outcome, CoeloTourOutcome.back);
+    expect(find.byKey(const Key('coelo-tour-balloon')), findsNothing);
+  });
 }
