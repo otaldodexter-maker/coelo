@@ -101,7 +101,8 @@ void main() {
         'institutions': [
           {
             'institution_id': '11111111-1111-4111-8111-111111111111',
-            'institution_name': 'Casa Nuvem',
+            'institution_name': 'Casa Nuvem Ação',
+            'institution_slug': 'casa-nuvem-acao',
             'institution_type': {'id': 'type-1', 'label': 'Escola'},
             'effective_plan': {'id': 'plan-1', 'code': 'essential', 'label': 'Essencial'},
           },
@@ -114,7 +115,9 @@ void main() {
       client,
     ).loadForm(unitId: '22222222-2222-4222-8222-222222222222');
 
-    expect(form.institutions.single.publicName, 'Casa Nuvem');
+    expect(form.institutions.single.publicName, 'Casa Nuvem Ação');
+    // Lote 108: o @ da instituicao vem do servidor (nao derivado do nome).
+    expect(form.institutions.single.slug, 'casa-nuvem-acao');
     expect(form.record!.city, 'Salvador');
     expect(form.record!.contactEmail, 'centro@coelo.me');
   });

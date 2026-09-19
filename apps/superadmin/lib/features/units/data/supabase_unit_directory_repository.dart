@@ -185,6 +185,7 @@ final class SupabaseUnitDirectoryRepository implements UnitDirectoryRepository {
 InstitutionRecord _institution(Map<String, dynamic> row) {
   final type = _mapOrEmpty(row['institution_type']);
   final plan = _mapOrEmpty(row['effective_plan']);
+  final slug = (row['institution_slug'] as String? ?? '').trim();
   return InstitutionRecord.fromDirectoryItem(
     InstitutionDirectoryItem(
       id: _string(row, 'institution_id'),
@@ -202,7 +203,9 @@ InstitutionRecord _institution(Map<String, dynamic> row) {
       unitsCount: 0,
       groupsCount: 0,
     ),
-  ).copyWith(units: const []);
+    // Lote 108: o @ da instituicao vem do servidor; a previa do @ da unidade
+    // nao pode nascer do nome publico (acento some e a previa diverge).
+  ).copyWith(units: const [], slug: slug.isEmpty ? null : slug);
 }
 
 UnitRecord _record(Map<String, dynamic> row, {InstitutionRecord? fallbackInstitution}) {

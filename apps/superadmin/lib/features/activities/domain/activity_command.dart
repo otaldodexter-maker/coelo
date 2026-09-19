@@ -8,6 +8,17 @@ enum ActivityCommandIntent { saveDraft, publish }
 
 enum ActivityIdentityKind { initials, icon, image }
 
+/// Sigla enviada ao servidor: a digitada ou, vazia, as iniciais do nome
+/// (create_v2 exige 1–2 letras mesmo com ícone/foto; rota real 20/09: sem
+/// sigla o rascunho nunca saía e a tela culpava a conexão).
+String activityInitialsFor({required String typed, required String name}) {
+  final trimmed = typed.trim();
+  if (trimmed.isNotEmpty) return trimmed;
+  final words = name.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty);
+  final letters = words.take(2).map((w) => w[0]).join().toUpperCase();
+  return letters.isEmpty ? 'AT' : letters;
+}
+
 enum ActivityCommandExportFormat { csv, xlsx }
 
 enum ActivityProfessionalAccessLevel {

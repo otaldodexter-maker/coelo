@@ -580,3 +580,6 @@
 # no Superadmin, list_visible_happens_feed = contexto (lote 103, renomeado _context_v1) ∪ posts oficiais; perfil no Principal traz posts.
 # pgTAP official_posts_v1_test 13/13.
 20260920100000_official_posts_v1.sql
+# Lote 108 (Sessão CODE-REVIEW r4, 20/09/2026): get_unit_form_for_superadmin devolve institution_slug nas opções de instituição,
+# para a prévia do @ da unidade usar o @ real (antes o cliente derivava do nome: "Colégio" → "colgio"). pgTAP unit_form_institution_slug_v1_test 3/3.
+20260920110000_unit_form_institution_slug_v1.sql
