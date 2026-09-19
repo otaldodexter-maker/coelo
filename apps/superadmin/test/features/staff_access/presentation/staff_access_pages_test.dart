@@ -1,6 +1,8 @@
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/staff_access/data/fake_staff_access_repository.dart';
 import 'package:coelo_superadmin/features/staff_access/domain/staff_access.dart';
+import 'package:coelo_superadmin/features/staff_access/domain/staff_access_popup_text.dart';
+import 'package:coelo_superadmin/features/staff_access/domain/staff_access_surface_detector.dart';
 import 'package:coelo_superadmin/features/staff_access/presentation/staff_access_directory_page.dart';
 import 'package:coelo_superadmin/features/staff_access/presentation/staff_access_form_page.dart';
 import 'package:coelo_superadmin/features/staff_access/presentation/staff_leave_directory_page.dart';
@@ -359,6 +361,34 @@ void main() {
       expect(text, contains('Seg 08:00–18:00'));
       expect(text, contains('Sex 22:00–02:00'));
       expect(text, contains('de 01/10/2026 até 10/10/2026'));
+      expect(staffAccessBlockedMessage(null), 'Este contexto não está disponível agora.');
+      expect(
+        staffAccessBlockedMessage({'kind': 'leave', 'leave_from': '2026-10-01', 'leave_until': '2026-10-03'}),
+        'Você está afastado do app entre 01/10/2026 e 03/10/2026.',
+      );
+      expect(
+        staffAccessBlockedMessage({
+          'kind': 'schedule',
+          'windows': [
+            {'weekday': 1, 'start': '08:00', 'end': '18:00'},
+          ],
+        }),
+        'Horário permitido: Seg 08:00–18:00.',
+      );
+    });
+  });
+
+  group('superfície declarada (x-coelo-surface)', () {
+    test('largura e user agent decidem web, mobile_web, tablet_web; fora do web, app instalado', () {
+      const desktop = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/128';
+      const phone = 'Mozilla/5.0 (Linux; Android 14; Pixel) Mobile Chrome/128';
+      const ipad = 'Mozilla/5.0 (iPad; CPU OS 17_0) Safari';
+      expect(detectStaffAccessSurface(logicalWidth: 1440, userAgent: desktop, isWeb: true), 'web');
+      expect(detectStaffAccessSurface(logicalWidth: 390, userAgent: phone, isWeb: true), 'mobile_web');
+      expect(detectStaffAccessSurface(logicalWidth: 500, userAgent: desktop, isWeb: true), 'mobile_web');
+      expect(detectStaffAccessSurface(logicalWidth: 1024, userAgent: ipad, isWeb: true), 'tablet_web');
+      expect(detectStaffAccessSurface(logicalWidth: 800, userAgent: phone, isWeb: true), 'tablet_web');
+      expect(detectStaffAccessSurface(logicalWidth: 390, userAgent: '', isWeb: false), 'installed_app');
     });
   });
 }

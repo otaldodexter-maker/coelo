@@ -11,6 +11,7 @@ import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/staff_access.dart';
+import '../domain/staff_access_popup_text.dart';
 import 'staff_access_presentation.dart';
 
 enum _Section { membership, surfaces, schedule, validity, popup }
@@ -499,34 +500,6 @@ final class _StaffAccessFormPageState extends State<StaffAccessFormPage> {
       ),
     ],
   );
-}
-
-/// Texto do popup (também usado pelo Principal ao entrar num contexto bloqueado).
-String staffAccessPopupPreview({
-  required List<StaffAccessWindow> windows,
-  DateTime? validFrom,
-  DateTime? validUntil,
-  required bool enabled,
-}) {
-  if (!enabled) return 'Este contexto não está disponível agora.';
-  final parts = <String>[];
-  if (windows.isNotEmpty) {
-    final byDay = <int, List<StaffAccessWindow>>{};
-    for (final w in windows) {
-      byDay.putIfAbsent(w.weekday, () => []).add(w);
-    }
-    final days = byDay.keys.toList()..sort();
-    parts.add(
-      'Horário permitido: ${days.map((d) => '${StaffAccessWindow.weekdayShortLabels[d]} ${byDay[d]!.map((w) => '${w.start}–${w.end}').join(', ')}').join('; ')}.',
-    );
-  }
-  if (validFrom != null || validUntil != null) {
-    parts.add(
-      'Vigência: ${validFrom == null ? 'até' : 'de ${staffAccessDateLabel(validFrom)}'}${validUntil == null ? '' : validFrom == null ? ' ${staffAccessDateLabel(validUntil)}' : ' até ${staffAccessDateLabel(validUntil)}'}.',
-    );
-  }
-  if (parts.isEmpty) return 'Este contexto não está disponível agora.';
-  return parts.join(' ');
 }
 
 /// Grade dias × janelas com adicionar/remover. Uma linha por dia da semana.

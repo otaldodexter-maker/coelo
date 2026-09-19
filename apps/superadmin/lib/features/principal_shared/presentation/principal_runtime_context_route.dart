@@ -3,6 +3,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
+import '../../staff_access/domain/staff_access_popup_text.dart';
 import '../domain/principal_runtime_context.dart';
 import 'principal_global_navigation.dart';
 
@@ -53,12 +54,47 @@ final class PrincipalRuntimeContextRoute extends StatefulWidget {
 String? _selectedMembershipId;
 Set<String> _selectedMembershipIds = {};
 
+/// ADR 0035 (decisão 5): o popup do contexto bloqueado aparece uma vez por
+/// sessão por contexto; depois vale a mensagem curta no seletor.
+final Set<String> _blockedPopupShown = {};
+
 /// Limpa a preferência de "ver como" da sessão (só para testes de widget).
 @visibleForTesting
 void resetPrincipalContextSelectionForTests() {
   _selectedMembershipId = null;
   _selectedMembershipIds = {};
+  _blockedPopupShown.clear();
 }
+
+/// Popup do contexto bloqueado: texto fixo do servidor (horário, vigência ou
+/// afastamento quando o administrador ligou o popup; senão a mensagem
+/// genérica), sem dados do contexto, com "Trocar contexto". Nunca decide
+/// localmente: só reflete `access_blocked` do servidor.
+Future<void> showPrincipalBlockedContextDialog(
+  BuildContext context,
+  PrincipalRuntimeContext blocked,
+) => showDialog<void>(
+  context: context,
+  builder: (dialogContext) => AlertDialog(
+    key: const Key('principal-context-blocked-dialog'),
+    surfaceTintColor: Colors.transparent,
+    title: Text(blocked.label),
+    content: Text(
+      staffAccessBlockedMessage(blocked.accessPopup),
+      key: const Key('principal-context-blocked-message'),
+    ),
+    actions: [
+      SizedBox(
+        width: double.infinity,
+        child: FilledButton(
+          key: const Key('principal-context-blocked-switch'),
+          onPressed: () => Navigator.of(dialogContext).pop(),
+          child: const Text('Trocar contexto'),
+        ),
+      ),
+    ],
+  ),
+);
 
 final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeContextRoute> {
   late Future<List<PrincipalRuntimeContext>> _load;
@@ -81,6 +117,22 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
 
   void _select(PrincipalRuntimeContext selected) =>
       setState(() => _selectedMembershipId = selected.membershipId);
+
+  /// Contexto bloqueado pelo servidor: mostra o popup (uma vez por sessão por
+  /// contexto) ou a mensagem curta e volta ao seletor, sem selecionar.
+  Future<void> _choose(BuildContext context, PrincipalRuntimeContext chosen) async {
+    if (!chosen.accessBlocked) {
+      _select(chosen);
+      return;
+    }
+    if (_blockedPopupShown.add(chosen.membershipId)) {
+      await showPrincipalBlockedContextDialog(context, chosen);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(staffAccessBlockedMessage(chosen.accessPopup))),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) => FutureBuilder<List<PrincipalRuntimeContext>>(
@@ -125,11 +177,26 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
         );
       }
 
-      final selected = contexts.firstWhere(
+      final available = contexts.where((item) => !item.accessBlocked).toList();
+      if (available.isEmpty) {
+        // Todos os vínculos bloqueados agora: nada do contexto é mostrado.
+        final first = contexts.first;
+        return Scaffold(
+          body: CoeloStatePanel(
+            key: const Key('principal-context-all-blocked'),
+            title: 'Este contexto não está disponível agora',
+            message: staffAccessBlockedMessage(first.accessPopup),
+            icon: Icons.lock_clock_outlined,
+            actionLabel: 'Tentar novamente',
+            onAction: _retry,
+          ),
+        );
+      }
+      final selected = available.firstWhere(
         (item) => item.membershipId == _selectedMembershipId,
-        orElse: () => contexts.first,
+        orElse: () => available.first,
       );
-      final chosenContexts = contexts
+      final chosenContexts = available
           .where((item) => _selectedMembershipIds.contains(item.membershipId))
           .toList();
       final selectedContexts = chosenContexts.isEmpty ? [selected] : chosenContexts;
@@ -186,9 +253,11 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
                     ),
                   );
                   if (chosen != null && chosen.isNotEmpty && mounted) {
+                    final allowed = chosen.where((c) => !c.accessBlocked).toList();
+                    if (allowed.isEmpty) return;
                     setState(() {
-                      _selectedMembershipIds = chosen.map((c) => c.membershipId).toSet();
-                      _selectedMembershipId = chosen.first.membershipId;
+                      _selectedMembershipIds = allowed.map((c) => c.membershipId).toSet();
+                      _selectedMembershipId = allowed.first.membershipId;
                     });
                   }
                   return;
@@ -211,7 +280,7 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
                     ),
                   ),
                 );
-                if (chosen != null && mounted) _select(chosen);
+                if (chosen != null && context.mounted) await _choose(context, chosen);
               } finally {
                 restoreLauncher?.call();
               }
@@ -295,7 +364,12 @@ final class PrincipalContextSelectorBar extends StatelessWidget {
       builder: (sheetContext) =>
           _ContextSheet(contexts: contexts, selected: selected, hybrid: _hybrid),
     );
-    if (chosen != null) onSelect(chosen);
+    if (chosen == null || !context.mounted) return;
+    if (chosen.accessBlocked) {
+      await showPrincipalBlockedContextDialog(context, chosen);
+      return;
+    }
+    onSelect(chosen);
   }
 }
 
@@ -391,6 +465,7 @@ final class _ContextTile extends StatelessWidget {
       if (item.groupName != null) item.unitName,
       if (item.groupName != null || item.unitName != null) item.institutionName,
     ].whereType<String>().join(' · ');
+    final blocked = item.accessBlocked;
     return ListTile(
       key: ValueKey('principal-context-${item.membershipId}'),
       selected: false,
@@ -399,9 +474,19 @@ final class _ContextTile extends StatelessWidget {
       leading: CircleAvatar(child: Text(_initials(item.label))),
       title: Text(item.label),
       subtitle: Text(
-        [if (item.handle != null) '@${item.handle}', if (scope.isNotEmpty) scope].join(' · '),
+        blocked
+            ? 'Não disponível agora'
+            : [if (item.handle != null) '@${item.handle}', if (scope.isNotEmpty) scope].join(' · '),
       ),
-      trailing: isSelected ? const Icon(Icons.check_rounded) : null,
+      trailing: blocked
+          ? Icon(
+              Icons.lock_outline_rounded,
+              key: ValueKey('principal-context-blocked-${item.membershipId}'),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            )
+          : isSelected
+          ? const Icon(Icons.check_rounded)
+          : null,
       onTap: () => Navigator.of(context).pop(item),
     );
   }
@@ -445,13 +530,16 @@ class _MultipleContextSheetState extends State<_MultipleContextSheet> {
                     value: selected.contains(item.membershipId),
                     hoverColor: Colors.transparent,
                     controlAffinity: ListTileControlAffinity.leading,
-                    onChanged: (value) => setState(() {
-                      if (value == true) {
-                        selected.add(item.membershipId);
-                      } else {
-                        selected.remove(item.membershipId);
-                      }
-                    }),
+                    secondary: item.accessBlocked ? const Icon(Icons.lock_outline_rounded) : null,
+                    onChanged: item.accessBlocked
+                        ? null
+                        : (value) => setState(() {
+                            if (value == true) {
+                              selected.add(item.membershipId);
+                            } else {
+                              selected.remove(item.membershipId);
+                            }
+                          }),
                   ),
               ],
             ),

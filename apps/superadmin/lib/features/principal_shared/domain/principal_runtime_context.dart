@@ -12,6 +12,9 @@ final class PrincipalRuntimeContext {
     this.groupName,
     this.institutionHandle,
     this.unitHandle,
+    this.accessBlocked = false,
+    this.accessReason,
+    this.accessPopup,
   });
 
   final String membershipId;
@@ -32,6 +35,18 @@ final class PrincipalRuntimeContext {
 
   /// O @ mais especifico do contexto, sem o prefixo.
   String? get handle => unitHandle ?? institutionHandle;
+
+  /// ADR 0035: o vinculo profissional esta bloqueado agora pelo servidor
+  /// (horario, vigencia, afastamento ou superficie). O contexto segue listado,
+  /// sem dados; a troca para outro contexto continua disponivel.
+  final bool accessBlocked;
+
+  /// `schedule` | `validity` | `leave` | `surface` quando bloqueado.
+  final String? accessReason;
+
+  /// Dados do popup informativo (so quando o administrador o ligou); null
+  /// significa a mensagem generica "Este contexto nao esta disponivel agora".
+  final Map<String, dynamic>? accessPopup;
 
   /// Responsavel e aluno so leem; o resto da hierarquia pode publicar (P28: o
   /// botao de publicar so aparece para quem pode adicionar algo).

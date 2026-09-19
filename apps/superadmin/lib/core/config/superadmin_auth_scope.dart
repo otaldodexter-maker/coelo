@@ -9,7 +9,7 @@ import '../../features/groups/domain/group_detail.dart';
 import '../../features/groups/data/supabase_group_detail_repository.dart';
 import '../../features/units/domain/unit_detail.dart';
 import '../../features/units/data/supabase_unit_detail_repository.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/auth/domain/coelo_auth_login_action.dart';
@@ -98,7 +98,9 @@ import '../../features/access_profiles/data/supabase_access_profile_repository.d
 import '../../features/access_profiles/domain/access_profile.dart';
 import '../../features/platform_users/data/supabase_platform_user_repository.dart';
 import '../../features/platform_users/domain/platform_user.dart';
+import '../../features/staff_access/data/staff_access_user_agent.dart';
 import '../../features/staff_access/data/supabase_staff_access_repository.dart';
+import '../../features/staff_access/domain/staff_access_surface_detector.dart';
 import '../../features/staff_access/domain/staff_access.dart';
 import '../../features/units/data/unavailable_unit_composition.dart';
 import '../../features/units/data/supabase_unit_backend_commands_gateway.dart';
@@ -647,10 +649,20 @@ Future<SupabaseClient> _initializeSupabase({
   required String publishableKey,
   required LocalStorage localStorage,
 }) async {
+  // ADR 0035 (decisao 4): o cliente declara a superficie; o servidor aplica a
+  // regra de acesso de funcionarios a superficie declarada (fallback web).
+  final view = WidgetsBinding.instance.platformDispatcher.views.firstOrNull;
+  final logicalWidth = view == null ? 1440.0 : view.physicalSize.width / view.devicePixelRatio;
   await Supabase.initialize(
     url: url,
     publishableKey: publishableKey,
     authOptions: FlutterAuthClientOptions(localStorage: localStorage),
+    headers: {
+      'x-coelo-surface': detectStaffAccessSurface(
+        logicalWidth: logicalWidth,
+        userAgent: staffAccessUserAgent,
+      ),
+    },
   );
   return Supabase.instance.client;
 }

@@ -40,6 +40,12 @@ PrincipalRuntimeContext _contextFromJson(Map<String, dynamic> json) => Principal
   groupName: _optionalText(json, 'group_name'),
   institutionHandle: _optionalText(json, 'institution_handle'),
   unitHandle: _optionalText(json, 'unit_handle'),
+  // staff_access_v1 (lote 84): vinculo bloqueado agora, sem dados do contexto.
+  accessBlocked: json['access_blocked'] == true,
+  accessReason: _optionalText(json, 'access_reason'),
+  accessPopup: json['access_popup'] is Map
+      ? Map<String, dynamic>.from(json['access_popup'] as Map)
+      : null,
 );
 
 String _requiredText(Map<String, dynamic> json, String key) {
