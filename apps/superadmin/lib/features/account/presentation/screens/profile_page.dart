@@ -719,6 +719,100 @@ class _AccessCardState extends State<_AccessCard> {
       }
     }
     final hasDetails = widget.access.capabilityDetails.isNotEmpty;
+    // Vínculos: um por escopo (plataforma, instituição, unidade…), com a contagem
+    // de permissões que ele concede.
+    final bindings = <String, int>{};
+    for (final item in widget.access.capabilityDetails) {
+      bindings[item.scopeLabel] = (bindings[item.scopeLabel] ?? 0) + 1;
+    }
+    // r12-46 (layout A+): a lista rola dentro do card; a altura acompanha o
+    // viewport para o rodapé de ações continuar alcançável em telas baixas.
+    final viewport = MediaQuery.sizeOf(context).height;
+    final listHeight = (viewport * 0.45).clamp(200.0, 400.0);
+    final theme = Theme.of(context);
+
+    Widget profileBlock() => Column(
+      key: const Key('account-access-profile'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Perfil', style: theme.textTheme.labelLarge),
+        const SizedBox(height: CoeloSpacing.space1),
+        Text(widget.access.role, style: theme.textTheme.titleMedium),
+        Text(widget.access.mfaEnabled ? 'MFA configurada' : 'MFA fora do MVP'),
+      ],
+    );
+    Widget bindingsBlock() => Column(
+      key: const Key('account-access-bindings'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Vínculos', style: theme.textTheme.labelLarge),
+        const SizedBox(height: CoeloSpacing.space1),
+        if (bindings.isEmpty)
+          const Text('Plataforma')
+        else
+          for (final entry in bindings.entries)
+            Text('${entry.key} · ${entry.value}', maxLines: 1, overflow: TextOverflow.ellipsis),
+      ],
+    );
+    Widget permissionsBlock() => Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Permissões', style: theme.textTheme.labelLarge),
+        const SizedBox(height: CoeloSpacing.space2),
+        CoeloSearchField(
+          key: const Key('account-access-search'),
+          controller: _search,
+          semanticLabel: 'Buscar em Meu acesso',
+          hintText: 'Buscar permissão',
+          onChanged: (_) => setState(() {}),
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: listHeight),
+          child: Scrollbar(
+            controller: _scroll,
+            thumbVisibility: true,
+            child: SingleChildScrollView(
+              key: const Key('account-access-scroll'),
+              controller: _scroll,
+              primary: false,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (hasDetails ? groups.isEmpty : capabilities.isEmpty)
+                    const Text('Nenhuma permissão encontrada.'),
+                  if (hasDetails)
+                    for (final group in groups.values) ...[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+                        child: Text(group.first.groupLabel, style: theme.textTheme.titleSmall),
+                      ),
+                      for (final item in group)
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            bottom: CoeloSpacing.space3,
+                            right: CoeloSpacing.space3,
+                          ),
+                          child: Text(item.label),
+                        ),
+                    ],
+                  if (!hasDetails)
+                    for (final capability in capabilities)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: CoeloSpacing.space3,
+                          right: CoeloSpacing.space3,
+                        ),
+                        child: Text(capability),
+                      ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+
     return _SectionCard(
       cardKey: widget.cardKey,
       title: 'Meu acesso',
@@ -726,62 +820,50 @@ class _AccessCardState extends State<_AccessCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(widget.access.role, style: Theme.of(context).textTheme.titleMedium),
-          Text(widget.access.mfaEnabled ? 'MFA configurada' : 'MFA fora do MVP'),
-          const SizedBox(height: CoeloSpacing.space3),
-          CoeloSearchField(
-            key: const Key('account-access-search'),
-            controller: _search,
-            semanticLabel: 'Buscar em Meu acesso',
-            hintText: 'Buscar permissão',
-            onChanged: (_) => setState(() {}),
-          ),
-          const SizedBox(height: CoeloSpacing.space3),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: CoeloSpacing.space10 * 10),
-            child: Scrollbar(
-              controller: _scroll,
-              thumbVisibility: true,
-              child: SingleChildScrollView(
-                key: const Key('account-access-scroll'),
-                controller: _scroll,
-                primary: false,
-                child: Column(
+          LayoutBuilder(
+            builder: (context, constraints) {
+              // Uma linha só quando cabem as três colunas com folga de leitura.
+              final inline = constraints.maxWidth >= 640;
+              if (!inline) {
+                // Coluna lateral (1440) e telas médias: perfil e vínculos lado a
+                // lado, permissões embaixo em largura cheia; só no estreito (375)
+                // tudo empilha.
+                final pair = constraints.maxWidth >= 340;
+                return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (hasDetails ? groups.isEmpty : capabilities.isEmpty)
-                      const Text('Nenhuma permissão encontrada.'),
-                    if (hasDetails)
-                      for (final group in groups.values) ...[
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
-                          child: Text(
-                            group.first.groupLabel,
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                        ),
-                        for (final item in group)
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: CoeloSpacing.space3,
-                              right: CoeloSpacing.space3,
-                            ),
-                            child: Text(item.label),
-                          ),
-                      ],
-                    if (!hasDetails)
-                      for (final capability in capabilities)
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            bottom: CoeloSpacing.space3,
-                            right: CoeloSpacing.space3,
-                          ),
-                          child: Text(capability),
-                        ),
+                    if (pair)
+                      Row(
+                        key: const Key('account-access-inline'),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: profileBlock()),
+                          const SizedBox(width: CoeloSpacing.space4),
+                          Expanded(child: bindingsBlock()),
+                        ],
+                      )
+                    else ...[
+                      profileBlock(),
+                      const SizedBox(height: CoeloSpacing.space4),
+                      bindingsBlock(),
+                    ],
+                    const SizedBox(height: CoeloSpacing.space4),
+                    permissionsBlock(),
                   ],
-                ),
-              ),
-            ),
+                );
+              }
+              return Row(
+                key: const Key('account-access-inline'),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(width: 160, child: profileBlock()),
+                  const SizedBox(width: CoeloSpacing.space5),
+                  SizedBox(width: 180, child: bindingsBlock()),
+                  const SizedBox(width: CoeloSpacing.space5),
+                  Expanded(child: permissionsBlock()),
+                ],
+              );
+            },
           ),
           const SizedBox(height: CoeloSpacing.space3),
           const Text(

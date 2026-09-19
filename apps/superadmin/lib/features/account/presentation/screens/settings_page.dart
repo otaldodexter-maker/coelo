@@ -383,7 +383,9 @@ class _SettingsSessionsSectionState extends State<SettingsSessionsSection> {
               key: const Key('settings-sessions-revoke-others'),
               onPressed: _busy || others == 0 ? null : _revokeOthers,
               icon: const Icon(Icons.logout_rounded),
-              label: Text(others == 0 ? 'Nenhuma outra sessão' : 'Encerrar as outras sessões ($others)'),
+              label: Text(
+                others == 0 ? 'Nenhuma outra sessão' : 'Encerrar as outras sessões ($others)',
+              ),
             ),
           ],
         ),
@@ -412,7 +414,9 @@ class _SessionRow extends StatelessWidget {
         children: [
           Icon(
             session.isCurrent ? Icons.verified_user_outlined : Icons.devices_other_outlined,
-            color: session.isCurrent ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
+            color: session.isCurrent
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurfaceVariant,
           ),
           const SizedBox(width: CoeloSpacing.space3),
           Expanded(
@@ -428,7 +432,9 @@ class _SessionRow extends StatelessWidget {
                 if (details.isNotEmpty)
                   Text(
                     details,
-                    style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
               ],
             ),

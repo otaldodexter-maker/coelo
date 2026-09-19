@@ -113,9 +113,17 @@ final class SupabaseAccountProfileRepository
     return data;
   }
 
-  Future<Object?> _mediaInvoke(Object body, {Map<String, String>? headers, required String failure}) async {
+  Future<Object?> _mediaInvoke(
+    Object body, {
+    Map<String, String>? headers,
+    required String failure,
+  }) async {
     try {
-      final response = await _client.functions.invoke('account-media', body: body, headers: headers);
+      final response = await _client.functions.invoke(
+        'account-media',
+        body: body,
+        headers: headers,
+      );
       if (response.status != 200) throw AccountProfileRepositoryException(failure);
       return response.data;
     } on FunctionException catch (error) {

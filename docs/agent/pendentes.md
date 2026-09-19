@@ -2,7 +2,6 @@
 
 Uma linha por item: tela · o que falta · quem pediu · data. Apague a linha quando entregar.
 
-- Conta · layout A+ "Meu acesso" (r12-46) · Owner · 18/09
 - Instituições · spec 066 entregue para instituições (ativar/inativar/excluir com motivo, PT409, auditoria, lote 94); falta estender a unidades/turmas/atividades pelo mesmo predicado `lifecycle_can_hard_delete_v1`, cascata de visibilidade nos leitores de unidades/turmas quando a instituição está inativa, e pessoas/suspensão por período · Sessão ETAPA-3 · 20/09
 - Locais · spec 067 mapa por imagem (planta) com pontos/áreas · Owner · 18/09
 - Avisos · spec 069: CTA por tipo tem rota real no Principal só para circular; formulário/convite/aviso ficam na mensagem honesta até existir rota no Principal hospedado (Etapa 4) · Sessão ETAPA-3 · 19/09
