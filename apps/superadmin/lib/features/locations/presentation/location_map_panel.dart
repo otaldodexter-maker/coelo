@@ -268,7 +268,7 @@ final class _LocationMapPanelState extends State<LocationMapPanel> {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      widget.background ?? const _GridBackground(),
+                      widget.background ?? const LocationMapGridBackground(),
                       CustomPaint(
                         painter: _AreasPainter(
                           areas: [
@@ -394,8 +394,10 @@ final class _LocationMapPanelState extends State<LocationMapPanel> {
   }
 }
 
-final class _GridBackground extends StatelessWidget {
-  const _GridBackground();
+/// Grade neutra do mapa; é o fundo quando a planta (entity image `floor_plan`)
+/// ainda não existe e o fallback do [EntityImageView] que a exibe.
+final class LocationMapGridBackground extends StatelessWidget {
+  const LocationMapGridBackground({super.key});
 
   @override
   Widget build(BuildContext context) => CustomPaint(

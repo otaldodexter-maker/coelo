@@ -2,6 +2,9 @@ import 'package:coelo_domain/locations.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
+import '../../../shared/data/entity_image_repository.dart';
+import '../../../shared/presentation/widgets/entity_image_view.dart';
+import '../../../shared/presentation/widgets/entity_images_section.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../units/domain/unit_directory.dart';
 import '../domain/location_capabilities.dart';
@@ -203,6 +206,11 @@ final class _LocationsPageState extends State<LocationsPage> {
   /// ler o mapa (produção). Escrita só com capacidade de edição.
   Widget? _trailing(int generation, LocationCapabilities can) {
     final reader = widget.reader;
+    // Dono do mapa: a planta baixa é imagem de entidade (`floor_plan`) da unidade ou da instituição.
+    final (EntityKind ownerKind, String ownerId) = switch (widget.scope) {
+      UnitLocationScope(:final unitId) => (EntityKind.unit, unitId),
+      _ => (EntityKind.institution, widget.scope.institutionId),
+    };
     final children = <Widget?>[
       if (reader is LocationMapReader)
         LocationMapPanel(
@@ -214,6 +222,24 @@ final class _LocationsPageState extends State<LocationsPage> {
               : null,
           sessionAvailable: widget.sessionAvailable,
           contextRevision: widget.contextRevision,
+          background: EntityImageView(
+            entity: ownerKind,
+            entityId: ownerId,
+            kind: EntityImageKind.floorPlan,
+            shape: BoxShape.rectangle,
+            fit: BoxFit.contain,
+            semanticLabel: 'Planta baixa',
+            fallback: const LocationMapGridBackground(),
+          ),
+        ),
+      if (reader is LocationMapReader && can.update)
+        EntityImagesSection(
+          key: const Key('locations-floor-plan'),
+          kind: ownerKind,
+          entityId: ownerId,
+          showProfile: false,
+          showCover: false,
+          showFloorPlan: true,
         ),
       switch ((widget.scope, widget.unitDirectoryRepository)) {
         (InstitutionLocationScope(:final institutionId), final units?) =>
