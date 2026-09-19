@@ -470,3 +470,7 @@ verify_jwt = false
 # o cron de expiracao por x-worker-secret (CHAT_MEDIA_WORKER_SECRET).
 [functions.chat-media]
 verify_jwt = false
+
+# Fotos de perfil/capa/icone das entidades (19/09): bytes passam pela Edge; JWT do usuario validado no handler.
+[functions.entity-media]
+verify_jwt = true

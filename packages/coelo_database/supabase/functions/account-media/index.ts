@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-import { readStoredBytes } from "../chat-media/stored_bytes.ts";
+import { matchesDeclaredType, readStoredBytes, sha256Hex } from "../chat-media/stored_bytes.ts";
 import { AccountR2Client, accountR2Config } from "./r2_s3.ts";
 
 type Json = Record<string, unknown>;
@@ -12,14 +12,25 @@ function allowedOrigins() {
     .split(",").map((value) => value.trim()).filter(Boolean));
 }
 
-function reply(origin: string | null, status: number, body: Json) {
+function corsHeaders(origin: string | null) {
   const headers: Record<string, string> = {
-    "Content-Type": "application/json", "Cache-Control": "no-store", Vary: "Origin",
-    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info, x-worker-secret",
+    "Cache-Control": "no-store", Vary: "Origin",
+    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info, x-worker-secret, x-coelo-asset-id",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
   if (origin !== null && allowedOrigins().has(origin)) headers["Access-Control-Allow-Origin"] = origin;
-  return new Response(JSON.stringify(body), { status, headers });
+  return headers;
+}
+
+function reply(origin: string | null, status: number, body: Json) {
+  return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders(origin), "Content-Type": "application/json" } });
+}
+
+// Bytes da foto passam pela Edge (nunca do navegador direto ao R2): o CORS do
+// bucket so lista alguns hosts e o app de desenvolvimento roda em qualquer porta.
+function replyBytes(origin: string | null, bytes: Uint8Array, contentType: string) {
+  return new Response(bytes.slice().buffer as ArrayBuffer, { status: 200, headers: { ...corsHeaders(origin),
+    "Content-Type": "application/octet-stream", "X-Coelo-Content-Type": contentType } });
 }
 
 function environment() {
@@ -62,7 +73,10 @@ Deno.serve(async (request) => {
   if (request.method === "OPTIONS") return reply(origin, 200, { ok: true });
   if (request.method !== "POST") return reply(origin, 405, { error: "method_not_allowed" });
   try {
-    const body = await request.json() as Json;
+    const binary = (request.headers.get("content-type") ?? "").startsWith("application/octet-stream");
+    const body = binary
+      ? { action: "upload", asset_id: request.headers.get("x-coelo-asset-id") } as Json
+      : await request.json() as Json;
     const url = requiredSecret("SUPABASE_URL");
     const admin = createClient(url, requiredSecret("SUPABASE_SERVICE_ROLE_KEY"), { auth: { persistSession: false } });
     const r2 = new AccountR2Client(accountR2Config(environment()));
@@ -94,6 +108,20 @@ Deno.serve(async (request) => {
       return reply(origin, 200, { ...prepared, upload_url: signed.url.toString(), required_headers: signed.requiredHeaders,
         expires_at: new Date(Date.now() + 300_000).toISOString() });
     }
+    if (body.action === "upload") {
+      const ticket = await rpc(user, "superadmin_account_avatar_authorize_finalize_v1", { p_asset_id: uuid(body.asset_id) });
+      const bytes = new Uint8Array(await request.arrayBuffer());
+      const contentType = String(ticket.content_type);
+      if (bytes.byteLength !== Number(ticket.byte_size) || !matchesDeclaredType(bytes, contentType)) {
+        throw new Error("account_avatar_mismatch");
+      }
+      await r2.put(String(ticket.object_key), bytes, contentType);
+      const finalized = await rpc(admin, "superadmin_account_avatar_finalize_v1", {
+        p_asset_id: ticket.asset_id, p_finalize_ticket: ticket.finalize_ticket,
+        p_byte_size: bytes.byteLength, p_checksum_sha256: await sha256Hex(bytes),
+      });
+      return reply(origin, 200, finalized);
+    }
     if (body.action === "finalize") {
       const ticket = await rpc(user, "superadmin_account_avatar_authorize_finalize_v1", { p_asset_id: uuid(body.asset_id) });
       const stored = await r2.head(String(ticket.object_key));
@@ -110,6 +138,10 @@ Deno.serve(async (request) => {
     }
     if (body.action === "read") {
       const descriptor = await rpc(user, "superadmin_account_avatar_authorize_read_v1", { p_asset_id: uuid(body.asset_id) });
+      if (body.inline === true) {
+        const bytes = await r2.get(String(descriptor.object_key), Number(descriptor.byte_size));
+        return replyBytes(origin, bytes, String(descriptor.content_type));
+      }
       const ttl = Number(descriptor.ttl_seconds ?? 120);
       const signed = await r2.presignGet(String(descriptor.object_key), ttl);
       return reply(origin, 200, { asset_id: descriptor.asset_id, signed_url: signed.url.toString(),

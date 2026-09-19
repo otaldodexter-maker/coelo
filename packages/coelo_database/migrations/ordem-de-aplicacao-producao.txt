@@ -440,3 +440,9 @@
 # pgTAP staff_access_v1_test 68/68 e principal_runtime_contexts_test 13/13 no espelho mirror-acesso (dump de producao de 19/09);
 # ledger 20260919100000 reparado e listado local+remoto.
 20260919100000_staff_access_v1.sql
+# Lote 85 (Sessão IMAGENS, 19/09/2026): fotos de perfil/capa/ícone de instituição, unidade, turma, atividade e pessoa em R2 privado.
+# Tabela public.entity_image_assets (ticket embutido, RLS deny, sem grant a cliente); helpers app_private.entity_image_*;
+# RPCs superadmin_entity_image_prepare_v1 / authorize_upload_v1 / finalize_v1 (service_role) / authorize_read_v1 / remove_v1 /
+# superadmin_entity_images_get_v1. Bytes passam pela Edge entity-media (o navegador nunca fala com o R2 — CORS do bucket fora da conta).
+# pgTAP entity_images_r2_v1_test 34/34 no espelho mirror-acesso (transação revertida); ledger 20260919200000 reparado e listado.
+20260919200000_entity_images_r2_v1.sql

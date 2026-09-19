@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/account_profile.dart';
@@ -12,11 +11,9 @@ import 'account_profile_repository.dart';
 
 final class SupabaseAccountProfileRepository
     implements AccountProfileRepository, AccountEmailChangeCancellation {
-  SupabaseAccountProfileRepository(this._client, {http.Client? mediaClient})
-    : _mediaClient = mediaClient;
+  SupabaseAccountProfileRepository(this._client);
 
   final SupabaseClient _client;
-  final http.Client? _mediaClient;
   int _avatarContractVersion = 1;
   String? _loadedAvatarAssetId;
 
@@ -66,20 +63,11 @@ final class SupabaseAccountProfileRepository
       _loadedAvatarAssetId = null;
       return profile;
     }
-    final descriptor = await _mediaAction({'action': 'read', 'asset_id': assetId});
-    final signedUrl = descriptor['signed_url'];
-    final uri = signedUrl is String ? Uri.tryParse(signedUrl) : null;
-    if (uri == null || !uri.hasScheme || uri.userInfo.isNotEmpty) {
-      throw const AccountProfileRepositoryException('Leitura de foto não autorizada.');
-    }
-    final response = await _withMediaClient((client) => client.get(uri));
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw const AccountProfileRepositoryException('Leitura de foto não autorizada.');
-    }
+    // Os bytes vêm pela Edge (`inline`): o navegador nunca fala com o R2,
+    // então o CORS do bucket não importa (19/09: porta de dev fora da lista).
+    final bytes = await _mediaBytes({'action': 'read', 'asset_id': assetId, 'inline': true});
     _loadedAvatarAssetId = assetId;
-    return profile.copyWith(
-      avatar: profile.avatar.copyWith(photoBytes: Uint8List.fromList(response.bodyBytes)),
-    );
+    return profile.copyWith(avatar: profile.avatar.copyWith(photoBytes: bytes));
   }
 
   Future<String> _uploadAvatar(Uint8List bytes) async {
@@ -93,36 +81,13 @@ final class SupabaseAccountProfileRepository
       'sha256': digest,
     });
     final assetId = _string(prepared, 'asset_id');
-    final uploadUrl = _url(prepared, 'upload_url');
-    final headers = <String, String>{};
-    final requiredHeaders = prepared['required_headers'];
-    if (requiredHeaders is! Map) {
-      throw const AccountProfileRepositoryException('Upload de foto inválido.');
-    }
-    for (final entry in requiredHeaders.entries) {
-      if (entry.key is! String || entry.value is! String) {
-        throw const AccountProfileRepositoryException('Upload de foto inválido.');
-      }
-      final key = (entry.key as String).toLowerCase();
-      if (key == 'authorization' || key == 'apikey' || key == 'cookie') {
-        throw const AccountProfileRepositoryException('Upload de foto inválido.');
-      }
-      headers[key] = entry.value as String;
-    }
-    if (headers['content-type'] != 'image/png') {
-      throw const AccountProfileRepositoryException('Upload de foto inválido.');
-    }
-    final uploaded = await _withMediaClient((client) async {
-      final request = http.Request('PUT', uploadUrl)
-        ..followRedirects = false
-        ..headers.addAll(headers)
-        ..bodyBytes = bytes;
-      return http.Response.fromStream(await client.send(request));
-    });
-    if (uploaded.statusCode < 200 || uploaded.statusCode >= 300) {
-      throw const AccountProfileRepositoryException('Não foi possível enviar a foto.');
-    }
-    final finalized = await _mediaAction({'action': 'finalize', 'asset_id': assetId});
+    // Upload pela Edge (bytes no corpo, `x-coelo-asset-id` no cabeçalho): ela
+    // grava no R2 e finaliza no mesmo passo.
+    final finalized = await _mediaAction(
+      bytes,
+      headers: {'x-coelo-asset-id': assetId},
+      failure: 'Não foi possível enviar a foto.',
+    );
     if (_string(finalized, 'asset_id') != assetId || finalized['status'] != 'active') {
       throw const AccountProfileRepositoryException('Não foi possível confirmar a foto.');
     }
@@ -130,28 +95,33 @@ final class SupabaseAccountProfileRepository
     return assetId;
   }
 
-  Future<Map<String, dynamic>> _mediaAction(Map<String, dynamic> body) async {
-    try {
-      final response = await _client.functions.invoke('account-media', body: body);
-      if (response.status != 200 || response.data is! Map) {
-        throw const AccountProfileRepositoryException('Operação de foto não autorizada.');
-      }
-      return Map<String, dynamic>.from(response.data as Map);
-    } on FunctionException catch (error) {
-      throw AccountProfileRepositoryException(
-        error.details is Map
-            ? '${(error.details as Map)['error'] ?? 'Operação de foto não autorizada.'}'
-            : 'Operação de foto não autorizada.',
-      );
-    }
+  Future<Map<String, dynamic>> _mediaAction(
+    Object body, {
+    Map<String, String>? headers,
+    String failure = 'Operação de foto não autorizada.',
+  }) async {
+    final data = await _mediaInvoke(body, headers: headers, failure: failure);
+    if (data is! Map) throw AccountProfileRepositoryException(failure);
+    return Map<String, dynamic>.from(data);
   }
 
-  Future<T> _withMediaClient<T>(Future<T> Function(http.Client client) action) async {
-    final client = _mediaClient ?? http.Client();
+  Future<Uint8List> _mediaBytes(Map<String, dynamic> body) async {
+    final data = await _mediaInvoke(body, failure: 'Leitura de foto não autorizada.');
+    if (data is! Uint8List || data.isEmpty) {
+      throw const AccountProfileRepositoryException('Leitura de foto não autorizada.');
+    }
+    return data;
+  }
+
+  Future<Object?> _mediaInvoke(Object body, {Map<String, String>? headers, required String failure}) async {
     try {
-      return await action(client);
-    } finally {
-      if (_mediaClient == null) client.close();
+      final response = await _client.functions.invoke('account-media', body: body, headers: headers);
+      if (response.status != 200) throw AccountProfileRepositoryException(failure);
+      return response.data;
+    } on FunctionException catch (error) {
+      throw AccountProfileRepositoryException(
+        error.details is Map ? '${(error.details as Map)['error'] ?? failure}' : failure,
+      );
     }
   }
 
@@ -236,15 +206,6 @@ final class SupabaseAccountProfileRepository
       _ => EmailChangeStatus.pending,
     },
   );
-}
-
-Uri _url(Map<String, dynamic> json, String key) {
-  final value = json[key];
-  final uri = value is String ? Uri.tryParse(value) : null;
-  if (uri == null || !uri.hasScheme || uri.userInfo.isNotEmpty) {
-    throw const AccountProfileRepositoryException('URL de mídia inválida.');
-  }
-  return uri;
 }
 
 final class AccountProfileRepositoryException implements Exception {

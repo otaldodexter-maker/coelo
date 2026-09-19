@@ -7,11 +7,11 @@ import {
 } from "../_shared/r2_s3.ts";
 
 function compatibleError(error: unknown): never {
-  if (error instanceof R2TransportError) throw new Error(`account_r2_${error.code}`);
+  if (error instanceof R2TransportError) throw new Error(`entity_r2_${error.code}`);
   throw error;
 }
 
-export function accountR2Config(environment: Record<string, string | undefined>): R2Config {
+export function entityR2Config(environment: Record<string, string | undefined>): R2Config {
   try {
     return validateR2Config({
       endpoint: environment.COELO_R2_ENDPOINT ?? "",
@@ -25,7 +25,7 @@ export function accountR2Config(environment: Record<string, string | undefined>)
   }
 }
 
-export class AccountR2Client {
+export class EntityR2Client {
   readonly #client: R2Client;
 
   constructor(config: R2Config, options: R2Options = {}) {

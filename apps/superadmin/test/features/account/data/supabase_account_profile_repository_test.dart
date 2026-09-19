@@ -81,22 +81,20 @@ void main() {
     expect(jsonDecode(requests.last.body), isNot(contains('p_avatar_background_color')));
   });
 
+  Response bytesResponse(Request request) => Response.bytes(
+    const [137, 80, 78, 71, 13, 10, 26, 10, 1],
+    200,
+    request: request,
+    headers: {'content-type': 'application/octet-stream'},
+  );
+
   test('projects a finalized private avatar asset as a photo after reload', () async {
     late final MockClient mediaClient;
     mediaClient = MockClient((request) async {
       if (request.url.path.endsWith('/functions/v1/account-media')) {
-        return Response(
-          jsonEncode({
-            'asset_id': '8d200000-0000-4000-8000-000000000901',
-            'signed_url': 'https://r2.coelo.test/read',
-            'expires_in': 120,
-          }),
-          200,
-          request: request,
-          headers: {'content-type': 'application/json'},
-        );
+        expect((jsonDecode(request.body) as Map)['inline'], isTrue);
+        return bytesResponse(request);
       }
-      if (request.url.host == 'r2.coelo.test') return Response('', 200, request: request);
       return Response(
         jsonEncode(photoResponse(2)),
         200,
@@ -112,10 +110,11 @@ void main() {
     );
     addTearDown(client.dispose);
 
-    final profile = await SupabaseAccountProfileRepository(client, mediaClient: mediaClient).load();
+    final profile = await SupabaseAccountProfileRepository(client).load();
 
     expect(profile.avatar.mode, AccountAvatarMode.photo);
     expect(profile.avatar.photoAssetId, '8d200000-0000-4000-8000-000000000901');
+    expect(profile.avatar.photoBytes, hasLength(9));
   });
 
   test('uploads a new avatar through the private media gateway before saving', () async {
@@ -124,25 +123,24 @@ void main() {
     mediaClient = MockClient((request) async {
       requests.add(request);
       if (request.url.path.endsWith('/functions/v1/account-media')) {
+        if (request.headers['content-type'] == 'application/octet-stream') {
+          expect(request.headers['x-coelo-asset-id'], '8d200000-0000-4000-8000-000000000902');
+          expect(request.bodyBytes, [1, 2, 3]);
+          return Response(
+            jsonEncode({'asset_id': '8d200000-0000-4000-8000-000000000902', 'status': 'active'}),
+            200,
+            request: request,
+            headers: {'content-type': 'application/json'},
+          );
+        }
         final body = jsonDecode(request.body) as Map<String, dynamic>;
+        if (body['action'] == 'read') return bytesResponse(request);
         return Response(
           jsonEncode(switch (body['action']) {
             'prepare' => {
               'asset_id': '8d200000-0000-4000-8000-000000000902',
               'object_key': 'people/owner/avatar/902/original/object.png',
-              'upload_url': 'https://r2.coelo.test/upload',
-              'required_headers': {'content-type': 'image/png'},
-              'expires_at': DateTime.now()
-                  .toUtc()
-                  .add(const Duration(minutes: 5))
-                  .toIso8601String(),
               'upload_status': 'draft',
-            },
-            'finalize' => {'asset_id': '8d200000-0000-4000-8000-000000000902', 'status': 'active'},
-            'read' => {
-              'asset_id': '8d200000-0000-4000-8000-000000000902',
-              'signed_url': 'https://r2.coelo.test/read',
-              'expires_in': 120,
             },
             _ => <String, Object?>{},
           }),
@@ -150,9 +148,6 @@ void main() {
           request: request,
           headers: {'content-type': 'application/json'},
         );
-      }
-      if (request.url.host == 'r2.coelo.test') {
-        return Response('', 200, request: request);
       }
       if (request.url.path.endsWith('/superadmin_account_profile_save_v2')) {
         return Response(
@@ -171,7 +166,7 @@ void main() {
       httpClient: mediaClient,
     );
     addTearDown(client.dispose);
-    final repository = SupabaseAccountProfileRepository(client, mediaClient: mediaClient);
+    final repository = SupabaseAccountProfileRepository(client);
     await repository.load();
     final profile = AccountProfile.prototype().copyWith(
       avatar: AccountAvatar(
@@ -187,8 +182,12 @@ void main() {
     expect(
       requests
           .where((request) => request.url.path.endsWith('/functions/v1/account-media'))
-          .map((request) => (jsonDecode(request.body) as Map)['action']),
-      containsAllInOrder(['prepare', 'finalize', 'read']),
+          .map(
+            (request) => request.headers['content-type'] == 'application/octet-stream'
+                ? 'upload'
+                : (jsonDecode(request.body) as Map)['action'],
+          ),
+      containsAllInOrder(['prepare', 'upload', 'read']),
     );
     expect(saved.avatar.mode, AccountAvatarMode.photo);
     expect(saved.avatar.photoAssetId, '8d200000-0000-4000-8000-000000000901');
@@ -201,6 +200,7 @@ void main() {
       if (request.url.path.endsWith('/functions/v1/account-media')) {
         final body = jsonDecode(request.body) as Map<String, dynamic>;
         actions.add(body['action'] as String);
+        if (body['action'] == 'read') return bytesResponse(request);
         return Response(
           jsonEncode(switch (body['action']) {
             'read' => {
@@ -220,7 +220,6 @@ void main() {
           headers: {'content-type': 'application/json'},
         );
       }
-      if (request.url.host == 'r2.coelo.test') return Response('', 200, request: request);
       return Response(
         jsonEncode(
           request.url.path.endsWith('/superadmin_account_profile_get')
@@ -239,7 +238,7 @@ void main() {
       httpClient: mediaClient,
     );
     addTearDown(client.dispose);
-    final repository = SupabaseAccountProfileRepository(client, mediaClient: mediaClient);
+    final repository = SupabaseAccountProfileRepository(client);
     await repository.load();
 
     final saved = await repository.save(
