@@ -484,3 +484,9 @@
 # Contagens administrativas (Pessoas, Unidades, Perfis), audiência de formulários e chat não mudam (49 funções restantes anotadas em pendentes.md).
 # pgTAP staff_access_legacy_readers_v1_test 13/13 no espelho mirror-acesso; ledger 20260919230000 reparado e listado.
 20260919230000_staff_access_legacy_readers_v1.sql
+# Lote 90 (19/09 — Sessão ACESSO-PERFIL): erro com motivo (item 5 do F7). app_private.staff_access_assert(inst, unit, group, person)
+# levanta PT403 / STAFF_ACCESS_DENIED com detail JSON {code, membership_id, institution_id, reason, popup} quando todo vínculo de equipe
+# do ator na instituição está bloqueado agora; chamada no começo de happens_actor, now_actor, circular_actor, moments_actor_for_auth_user
+# e, em now_reader_actor, só depois que equipe e família falharam (família continua passando). assert_agenda/plan/people/support são do
+# realm interno (sem membership de instituição): fora. Nunca 40001. pgTAP staff_access_assert_v1_test 18/18 no espelho; ledger reparado.
+20260919233000_staff_access_assert_v1.sql
