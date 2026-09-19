@@ -172,6 +172,7 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
   ) {
     if (!mounted || generation != _loadGeneration) return;
     _validityTimer?.cancel();
+    _communications = communications;
     final now = clock();
     final highlights = PrincipalForYouCommunicationsAdapter.highlights(
       communications,
@@ -213,12 +214,39 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
   /// Routes a hub action to a real destination, or says plainly that the
   /// capability is not available yet. A production route never answers with the
   /// preview message.
+  /// Último instantâneo autorizado pelo servidor; serve para abrir um aviso
+  /// apontado pelo CTA (spec 069 H13, `kind: notice`) sem nova leitura.
+  List<PlatformNotice> _communications = const [];
+
   void _openHighlight(PrincipalForYouHighlight highlight) {
-    if (highlight.ctaTarget.hasTarget &&
-        widget.onOpenCtaTarget?.call(highlight.ctaTarget) == true) {
-      return;
+    final target = highlight.ctaTarget;
+    if (target.hasTarget && widget.onOpenCtaTarget?.call(target) == true) return;
+    if (target.kind == NoticeCtaTargetKind.notice) {
+      final notice = _communications.where((item) => item.id == target.id).firstOrNull;
+      if (notice != null) {
+        _showNotice(notice);
+        return;
+      }
     }
     _handleAction(highlight.cta);
+  }
+
+  void _showNotice(PlatformNotice notice) {
+    showDialog<void>(
+      context: context,
+      barrierColor: context.coeloScrim,
+      builder: (dialogContext) => AlertDialog(
+        key: const Key('principal-for-you-notice-dialog'),
+        title: Text(notice.title),
+        content: SingleChildScrollView(child: Text(notice.message)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Fechar'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _handleAction(String label) {
