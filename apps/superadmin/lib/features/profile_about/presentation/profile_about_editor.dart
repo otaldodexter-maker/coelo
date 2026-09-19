@@ -468,23 +468,18 @@ final class _SectionRow extends StatelessWidget {
               icon: const Icon(Icons.keyboard_arrow_down),
             ),
             CoeloAdminFlyout<String>(
-              items: const [
-                CoeloAdminFlyoutItem(value: 'duplicate', label: 'Duplicar'),
-                CoeloAdminFlyoutItem(
-                  value: 'remove',
-                  label: 'Remover',
-                  tone: CoeloAdminFlyoutTone.negative,
-                ),
+              items: [
+                CoeloAdminEntityActions.duplicate('duplicate'),
+                CoeloAdminEntityActions.delete('remove', label: 'Remover', startsGroup: true),
               ],
               onSelected: (value) => switch (value) {
                 'duplicate' => onDuplicate(),
                 'remove' => onRemove(),
                 _ => null,
               },
-              builder: (context, flyout) => IconButton(
+              builder: (context, flyout) => CoeloAdminEntityActionsTrigger(
+                controller: flyout,
                 tooltip: 'Mais ações da seção',
-                onPressed: () => flyout.isOpen ? flyout.close() : flyout.open(),
-                icon: const Icon(Icons.more_vert),
               ),
             ),
           ],
@@ -606,7 +601,6 @@ String _audienceLabel(ProfileAboutAudience value) => switch (value) {
   ProfileAboutAudience.linked => 'Somente vinculados',
   ProfileAboutAudience.team => 'Somente equipe',
 };
-
 
 const _addableSectionTypes = [
   ProfileAboutSectionType.text,

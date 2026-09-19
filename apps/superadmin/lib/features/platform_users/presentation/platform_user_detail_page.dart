@@ -431,12 +431,9 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage>
         ),
       );
       items.add(
-        const CoeloAdminFlyoutItem(
-          value: _InternalUserAction.revokeInvitation,
+        CoeloAdminEntityActions.cancel(
+          _InternalUserAction.revokeInvitation,
           label: 'Revogar convite pendente',
-          icon: Icons.mark_email_unread_outlined,
-          startsGroup: true,
-          tone: CoeloAdminFlyoutTone.negative,
         ),
       );
     }
@@ -445,7 +442,7 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage>
         CoeloAdminFlyoutItem(
           value: _InternalUserAction.suspend,
           label: 'Suspender acesso',
-          icon: Icons.pause_circle_outline,
+          icon: CoeloAdminActionIcons.inactivate,
           startsGroup: items.isNotEmpty,
           tone: CoeloAdminFlyoutTone.negative,
           enabled: !protectedOwner,
@@ -454,11 +451,7 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage>
     }
     if (record.status == PlatformMembershipStatus.suspended) {
       items.add(
-        const CoeloAdminFlyoutItem(
-          value: _InternalUserAction.reactivate,
-          label: 'Reativar acesso',
-          icon: Icons.play_circle_outline,
-        ),
+        CoeloAdminEntityActions.activate(_InternalUserAction.reactivate, label: 'Reativar acesso'),
       );
     }
     if (record.status != PlatformMembershipStatus.revoked) {
@@ -466,7 +459,7 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage>
         CoeloAdminFlyoutItem(
           value: _InternalUserAction.revoke,
           label: 'Revogar usuário interno',
-          icon: Icons.block_outlined,
+          icon: CoeloAdminActionIcons.cancel,
           startsGroup: true,
           tone: CoeloAdminFlyoutTone.negative,
           enabled: !protectedOwner,
