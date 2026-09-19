@@ -35,7 +35,10 @@ Versão anterior em `docs/archive/skills-20260918/`.
 - Responsivo: 375, 600 e 1440 sem estouro horizontal; teclado e semântica nos controles.
 - Tour: texto só em `apps/superadmin/lib/app/tour/` (menu em `superadmin_menu_tour_steps.dart`, telas em `screens/<destino>_tour.dart`, registro em `superadmin_screen_tours.dart`); componente compartilhado leva `CoeloTourAnchor` com id genérico (`directory.*`, `form.*`, `page.*`) uma vez só; a tela só envolve o que é específico dela. Todo destino roteado novo entra no registro ou em `superadminScreenTourExclusions` com motivo (teste cobra).
 - Tokens pelo contexto: `context.coeloScrim`, `context.coeloStatusColors`,
-  `context.coeloActionColors`, `context.coeloVisualColors` (coelo_tokens); nada de
+  `context.coeloActionColors`, `context.coeloVisualColors`,
+  `context.coeloOnMediaColors` (texto/ícone/véu SOBRE mídia: `foreground`,
+  `foregroundMuted`, `foregroundSubtle`, `scrim*`, `backdrop`; iguais no claro
+  e no escuro — nunca `Colors.white/black` sobre foto) (coelo_tokens); nada de
   `Theme.of(context).extension<…>()!` nem `Colors.black54` em `barrierColor`.
   Seção de formulário: `SuperadminFormSection`/`SuperadminFormSectionHeader`
   (`shared/presentation/widgets`). CPF: `CoeloCpfInputFormatter`; telefone:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'coelo_on_media_colors.dart';
 import 'coelo_palette.dart';
 import 'coelo_status_colors.dart';
 import 'coelo_scales.dart';
@@ -86,6 +87,7 @@ abstract final class CoeloTheme {
         statusColors,
         actionColors,
         overlayColors,
+        CoeloOnMediaColors.standard,
         CoeloSurfaceColors(
           background: scaffoldBackgroundColor,
           surface: surface,

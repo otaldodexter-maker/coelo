@@ -540,7 +540,7 @@ final class _MomentPager extends StatelessWidget {
       ),
     );
     return ColoredBox(
-      color: Colors.black,
+      color: context.coeloOnMediaColors.backdrop,
       child: framed
           ? Center(
               child: AspectRatio(
@@ -589,6 +589,7 @@ final class _MomentFrame extends StatelessWidget {
     // Hosted in the Superadmin shell the system insets already belong to the
     // host chrome; only the standalone viewer offsets its overlay controls.
     final viewPadding = embedded ? EdgeInsets.zero : MediaQuery.viewPaddingOf(context);
+    final onMedia = context.coeloOnMediaColors;
     return Semantics(
       image: true,
       label: 'Momento de ${moment.author}, ${moment.context}. ${moment.caption}',
@@ -596,13 +597,13 @@ final class _MomentFrame extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           _MomentSurface(moment: moment),
-          const DecoratedBox(
+          DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0x66000000), Color(0x00000000), Color(0xCC000000)],
-                stops: [0, .48, 1],
+                colors: [onMedia.scrimSoft, Colors.transparent, onMedia.scrimStrong],
+                stops: const [0, .48, 1],
               ),
             ),
           ),
@@ -613,7 +614,7 @@ final class _MomentFrame extends StatelessWidget {
               key: const Key('principal-moments-back'),
               onPressed: onBack,
               style: TextButton.styleFrom(
-                foregroundColor: Colors.white,
+                foregroundColor: onMedia.foreground,
                 minimumSize: const Size(CoeloSize.touchMin, CoeloSize.touchMin),
               ),
               icon: const Icon(Icons.chevron_left_rounded, size: 22),
@@ -714,15 +715,18 @@ final class _ActionRail extends StatelessWidget {
       ),
       if (canWithdraw)
         withdrawing
-            ? const Padding(
-                key: Key('principal-moments-withdraw-progress'),
-                padding: EdgeInsets.only(bottom: CoeloSpacing.space2),
+            ? Padding(
+                key: const Key('principal-moments-withdraw-progress'),
+                padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
                 child: SizedBox.square(
                   dimension: CoeloSize.touchMin,
                   child: Center(
                     child: SizedBox.square(
                       dimension: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: context.coeloOnMediaColors.foreground,
+                      ),
                     ),
                   ),
                 ),
@@ -764,44 +768,49 @@ final class _OverlayIcon extends StatelessWidget {
   final bool active;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
-    child: Column(
-      children: [
-        IconButton(
-          key: actionKey,
-          tooltip: label,
-          onPressed: onPressed,
-          style:
-              IconButton.styleFrom(
-                minimumSize: const Size.square(CoeloSize.touchMin),
-                foregroundColor: Colors.white,
-              ).copyWith(
-                foregroundColor: WidgetStateProperty.resolveWith((states) {
-                  final highlighted =
-                      states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
-                  return highlighted || active
-                      ? Theme.of(context).colorScheme.primary
-                      : Colors.white;
-                }),
-                backgroundColor: WidgetStateProperty.resolveWith((states) {
-                  final highlighted =
-                      states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
-                  if (highlighted) return Theme.of(context).colorScheme.primaryContainer;
-                  return circularBackground ? Colors.black38 : Colors.transparent;
-                }),
-                overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-              ),
-          icon: Icon(icon, size: 24),
-        ),
-        if (count case final value?)
-          Text(
-            '$value',
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white),
+  Widget build(BuildContext context) {
+    final onMedia = context.coeloOnMediaColors;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+      child: Column(
+        children: [
+          IconButton(
+            key: actionKey,
+            tooltip: label,
+            onPressed: onPressed,
+            style:
+                IconButton.styleFrom(
+                  minimumSize: const Size.square(CoeloSize.touchMin),
+                  foregroundColor: onMedia.foreground,
+                ).copyWith(
+                  foregroundColor: WidgetStateProperty.resolveWith((states) {
+                    final highlighted =
+                        states.contains(WidgetState.hovered) ||
+                        states.contains(WidgetState.focused);
+                    return highlighted || active
+                        ? Theme.of(context).colorScheme.primary
+                        : onMedia.foreground;
+                  }),
+                  backgroundColor: WidgetStateProperty.resolveWith((states) {
+                    final highlighted =
+                        states.contains(WidgetState.hovered) ||
+                        states.contains(WidgetState.focused);
+                    if (highlighted) return Theme.of(context).colorScheme.primaryContainer;
+                    return circularBackground ? onMedia.scrimSoft : Colors.transparent;
+                  }),
+                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                ),
+            icon: Icon(icon, size: 24),
           ),
-      ],
-    ),
-  );
+          if (count case final value?)
+            Text(
+              '$value',
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: onMedia.foreground),
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 final class _MomentContext extends StatelessWidget {
@@ -809,39 +818,52 @@ final class _MomentContext extends StatelessWidget {
   final PrincipalMomentPreviewItem moment;
 
   @override
-  Widget build(BuildContext context) => DefaultTextStyle(
-    style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.white),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              child: Text(
-                moment.resolvedInitials,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+  Widget build(BuildContext context) {
+    final onMedia = context.coeloOnMediaColors;
+    final textTheme = Theme.of(context).textTheme;
+    return DefaultTextStyle(
+      style: textTheme.bodySmall!.copyWith(color: onMedia.foreground),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                child: Text(
+                  moment.resolvedInitials,
+                  style: textTheme.labelMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(width: CoeloSpacing.space2),
-            Flexible(
-              child: Text(moment.author, style: const TextStyle(fontWeight: FontWeight.w800)),
-            ),
-            const SizedBox(width: CoeloSpacing.space1),
-            Icon(Icons.verified_rounded, color: Theme.of(context).colorScheme.primary, size: 16),
-          ],
-        ),
-        const SizedBox(height: CoeloSpacing.space1),
-        Text('${moment.time}  •  ${moment.context}', style: const TextStyle(color: Colors.white70)),
-        const SizedBox(height: CoeloSpacing.space2),
-        Text(moment.caption, maxLines: 2, overflow: TextOverflow.ellipsis),
-        const SizedBox(height: CoeloSpacing.space2),
-        const Text('Curtido por Maria e outras 531 pessoas', style: TextStyle(fontSize: 10)),
-      ],
-    ),
-  );
+              const SizedBox(width: CoeloSpacing.space2),
+              Flexible(
+                child: Text(moment.author, style: const TextStyle(fontWeight: FontWeight.w800)),
+              ),
+              const SizedBox(width: CoeloSpacing.space1),
+              Icon(Icons.verified_rounded, color: Theme.of(context).colorScheme.primary, size: 16),
+            ],
+          ),
+          const SizedBox(height: CoeloSpacing.space1),
+          Text(
+            '${moment.time}  •  ${moment.context}',
+            style: TextStyle(color: onMedia.foregroundMuted),
+          ),
+          const SizedBox(height: CoeloSpacing.space2),
+          Text(moment.caption, maxLines: 2, overflow: TextOverflow.ellipsis),
+          const SizedBox(height: CoeloSpacing.space2),
+          Text(
+            'Curtido por Maria e outras 531 pessoas',
+            style: textTheme.labelSmall?.copyWith(color: onMedia.foregroundMuted),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 /// Renders the authorized media rendition when the backend provided one, and
@@ -858,15 +880,16 @@ final class _MomentSurface extends StatelessWidget {
     }
     // IMG (decisao do Owner de 10/09/2026): a midia nao pode ser perdida nem
     // cortada; ela cabe inteira sobre o preto em vez de preencher cortando.
+    final backdrop = context.coeloOnMediaColors.backdrop;
     return ColoredBox(
-      color: Colors.black,
+      color: backdrop,
       child: Image.network(
         moment.media.first.signedUrl,
         key: const Key('principal-moments-media'),
         fit: BoxFit.contain,
         alignment: Alignment.center,
         excludeFromSemantics: true,
-        errorBuilder: (context, error, stackTrace) => const ColoredBox(color: Colors.black),
+        errorBuilder: (context, error, stackTrace) => ColoredBox(color: backdrop),
       ),
     );
   }
@@ -921,7 +944,9 @@ final class _DesktopAside extends StatelessWidget {
                                   bottom: 3,
                                   child: Text(
                                     item.duration,
-                                    style: const TextStyle(color: Colors.white, fontSize: 9),
+                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                      color: context.coeloOnMediaColors.foreground,
+                                    ),
                                   ),
                                 ),
                               ],

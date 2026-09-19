@@ -382,7 +382,7 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
     final navigator = Navigator.of(context, rootNavigator: true);
     final route = superadminDialogRoute<void>(
       context,
-      barrierColor: Colors.black.withValues(alpha: .72),
+      barrierColor: context.coeloOnMediaColors.scrimStrong,
       builder: (context) => !isCurrent()
           ? const SizedBox.shrink()
           : _HappensGallery(
@@ -1020,90 +1020,98 @@ final class _NowCard extends StatelessWidget {
   final VoidCallback onPressed;
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-    width: width,
-    child: Semantics(
-      label: '${item.title}, publicado há ${item.time}',
-      child: TextButton(
-        onPressed: onPressed,
-        style: ButtonStyle(
-          padding: const WidgetStatePropertyAll(EdgeInsets.zero),
-          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-          shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+  Widget build(BuildContext context) {
+    final onMedia = context.coeloOnMediaColors;
+    return SizedBox(
+      width: width,
+      child: Semantics(
+        label: '${item.title}, publicado há ${item.time}',
+        child: TextButton(
+          onPressed: onPressed,
+          style: ButtonStyle(
+            padding: const WidgetStatePropertyAll(EdgeInsets.zero),
+            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+            shape: WidgetStatePropertyAll(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
+            ),
+            side: WidgetStateProperty.resolveWith((states) {
+              final active =
+                  states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
+              return BorderSide(
+                color: active
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.outlineVariant,
+                width: active ? 2 : 1,
+              );
+            }),
           ),
-          side: WidgetStateProperty.resolveWith((states) {
-            final active =
-                states.contains(WidgetState.hovered) || states.contains(WidgetState.focused);
-            return BorderSide(
-              color: active
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.outlineVariant,
-              width: active ? 2 : 1,
-            );
-          }),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(CoeloRadius.md),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              _SpriteImage(
-                asset: 'assets/principal_happens/now-strip.png',
-                index: item.imageIndex,
-                count: 5,
-              ),
-              const DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Color(0xB8000000)],
-                    stops: [.45, 1],
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(CoeloRadius.md),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                _SpriteImage(
+                  asset: 'assets/principal_happens/now-strip.png',
+                  index: item.imageIndex,
+                  count: 5,
+                ),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.transparent, onMedia.scrim],
+                      stops: const [.45, 1],
+                    ),
                   ),
                 ),
-              ),
-              Positioned(
-                left: CoeloSpacing.space2,
-                right: CoeloSpacing.space2,
-                bottom: CoeloSpacing.space2,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CircleAvatar(
-                      radius: 11,
-                      backgroundColor: Colors.white,
-                      foregroundColor: Theme.of(context).colorScheme.primary,
-                      child: const Icon(Icons.school_outlined, size: 13),
-                    ),
-                    const SizedBox(height: CoeloSpacing.space1),
-                    Text(
-                      item.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
+                Positioned(
+                  left: CoeloSpacing.space2,
+                  right: CoeloSpacing.space2,
+                  bottom: CoeloSpacing.space2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        radius: 11,
+                        backgroundColor: onMedia.foreground,
+                        foregroundColor: Theme.of(context).colorScheme.primary,
+                        child: const Icon(Icons.school_outlined, size: 13),
                       ),
-                    ),
-                    Text(item.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
-                    const SizedBox(height: CoeloSpacing.space1),
-                    LinearProgressIndicator(
-                      value: item.progress,
-                      minHeight: 3,
-                      borderRadius: BorderRadius.circular(CoeloRadius.full),
-                      backgroundColor: Colors.white38,
-                      color: Colors.white,
-                    ),
-                  ],
+                      const SizedBox(height: CoeloSpacing.space1),
+                      Text(
+                        item.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: onMedia.foreground,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      Text(
+                        item.time,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.labelSmall?.copyWith(color: onMedia.foregroundMuted),
+                      ),
+                      const SizedBox(height: CoeloSpacing.space1),
+                      LinearProgressIndicator(
+                        value: item.progress,
+                        minHeight: 3,
+                        borderRadius: BorderRadius.circular(CoeloRadius.full),
+                        backgroundColor: onMedia.foregroundSubtle,
+                        color: onMedia.foreground,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 final class _PostCard extends StatelessWidget {
@@ -1469,6 +1477,7 @@ final class _HappensGalleryState extends State<_HappensGallery> {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
+      final onMedia = context.coeloOnMediaColors;
       final content = KeyboardListener(
         focusNode: _focusNode,
         autofocus: true,
@@ -1526,7 +1535,7 @@ final class _HappensGalleryState extends State<_HappensGallery> {
                   child: TextButton.icon(
                     key: const Key('principal-happens-gallery-compact-return'),
                     onPressed: () => Navigator.of(context).pop(),
-                    style: TextButton.styleFrom(foregroundColor: Colors.white),
+                    style: TextButton.styleFrom(foregroundColor: onMedia.foreground),
                     icon: const Icon(Icons.chevron_left_rounded),
                     label: const Text('Acontece'),
                   ),
@@ -1538,7 +1547,7 @@ final class _HappensGalleryState extends State<_HappensGallery> {
                   child: Text(
                     'coelo',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
+                      color: onMedia.foreground,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -1551,7 +1560,7 @@ final class _HappensGalleryState extends State<_HappensGallery> {
                     key: const Key('principal-happens-gallery-wide-close'),
                     tooltip: 'Fechar galeria',
                     onPressed: () => Navigator.of(context).pop(),
-                    color: Colors.white,
+                    color: onMedia.foreground,
                     icon: const Icon(Icons.close_rounded),
                   ),
                 ),
@@ -1594,25 +1603,25 @@ final class _HappensGalleryState extends State<_HappensGallery> {
                     IconButton(
                       tooltip: 'Compartilhar mídia',
                       onPressed: widget.onShare,
-                      color: Colors.white,
+                      color: onMedia.foreground,
                       icon: const Icon(Icons.ios_share_rounded),
                     ),
                     IconButton(
                       tooltip: 'Salvar mídia',
                       onPressed: widget.onSave,
-                      color: Colors.white,
+                      color: onMedia.foreground,
                       icon: const Icon(Icons.bookmark_border_rounded),
                     ),
                     IconButton(
                       tooltip: 'Baixar mídia',
                       onPressed: widget.onDownload,
-                      color: Colors.white,
+                      color: onMedia.foreground,
                       icon: const Icon(Icons.download_rounded),
                     ),
                     const Spacer(),
                     DecoratedBox(
                       decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: .64),
+                        color: onMedia.scrim,
                         borderRadius: BorderRadius.circular(CoeloRadius.full),
                       ),
                       child: Padding(
@@ -1622,7 +1631,10 @@ final class _HappensGalleryState extends State<_HappensGallery> {
                         ),
                         child: Text(
                           '${_index + 1} de $_count',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: onMedia.foreground,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ),
                     ),
@@ -1636,7 +1648,7 @@ final class _HappensGalleryState extends State<_HappensGallery> {
       if (compact) {
         return Dialog.fullscreen(
           key: const Key('principal-happens-gallery'),
-          backgroundColor: Colors.black,
+          backgroundColor: onMedia.backdrop,
           child: content,
         );
       }
@@ -1649,7 +1661,7 @@ final class _HappensGalleryState extends State<_HappensGallery> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.lg)),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1120, maxHeight: 820),
-          child: ColoredBox(color: Colors.black, child: content),
+          child: ColoredBox(color: onMedia.backdrop, child: content),
         ),
       );
     },
@@ -1987,7 +1999,7 @@ final class _AvatarStack extends StatelessWidget {
                   Theme.of(context).colorScheme.secondaryContainer,
                   index / 3,
                 ),
-                child: Text('${index + 1}', style: const TextStyle(fontSize: 8)),
+                child: Text('${index + 1}', style: Theme.of(context).textTheme.labelSmall),
               ),
             ),
           ),
@@ -2109,7 +2121,12 @@ final class _EventRow extends StatelessWidget {
           ),
           child: Column(
             children: [
-              Text(event.month, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800)),
+              Text(
+                event.month,
+                style: Theme.of(
+                  context,
+                ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800),
+              ),
               Text(event.day, style: const TextStyle(fontWeight: FontWeight.w800)),
             ],
           ),
@@ -2163,7 +2180,10 @@ final class _BirthdayRow extends StatelessWidget {
     padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
     child: Row(
       children: [
-        CircleAvatar(radius: 17, child: Text(item.initials, style: const TextStyle(fontSize: 9))),
+        CircleAvatar(
+          radius: 17,
+          child: Text(item.initials, style: Theme.of(context).textTheme.labelSmall),
+        ),
         const SizedBox(width: CoeloSpacing.space2),
         Expanded(
           child: Column(

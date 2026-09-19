@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'coelo_on_media_colors.dart';
 import 'coelo_status_colors.dart';
 import 'coelo_theme.dart';
 
@@ -25,4 +26,8 @@ extension CoeloThemeContext on BuildContext {
   CoeloActionColors get coeloActionColors => _theme.extension<CoeloActionColors>()!;
 
   CoeloVisualColors get coeloVisualColors => _theme.extension<CoeloVisualColors>()!;
+
+  /// Texto, ícone e véu sobre mídia; iguais no claro e no escuro.
+  CoeloOnMediaColors get coeloOnMediaColors =>
+      _theme.extension<CoeloOnMediaColors>() ?? CoeloOnMediaColors.standard;
 }

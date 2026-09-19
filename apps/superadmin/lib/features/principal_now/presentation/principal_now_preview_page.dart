@@ -871,10 +871,14 @@ final class _StoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final safePadding = edgeToEdge ? MediaQuery.paddingOf(context) : EdgeInsets.zero;
     final enlargedText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
+    final onMedia = context.coeloOnMediaColors;
+    final textTheme = Theme.of(context).textTheme;
     return ClipRRect(
       borderRadius: BorderRadius.circular(edgeToEdge ? 0 : CoeloRadius.lg),
       child: DecoratedBox(
-        decoration: BoxDecoration(border: edgeToEdge ? null : Border.all(color: Colors.white38)),
+        decoration: BoxDecoration(
+          border: edgeToEdge ? null : Border.all(color: onMedia.foregroundSubtle),
+        ),
         child: Listener(
           onPointerDown: (_) => onHoldChanged(true),
           onPointerUp: (_) => onHoldChanged(false),
@@ -883,18 +887,18 @@ final class _StoryCard extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               _StoryImage(story: story),
-              const DecoratedBox(
+              DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.black54,
+                      onMedia.scrim,
                       Colors.transparent,
                       Colors.transparent,
-                      Colors.black87,
+                      onMedia.scrimStrong,
                     ],
-                    stops: [0, .22, .58, 1],
+                    stops: const [0, .22, .58, 1],
                   ),
                 ),
               ),
@@ -947,8 +951,8 @@ final class _StoryCard extends StatelessWidget {
                                 value: value,
                                 minHeight: 3,
                                 borderRadius: BorderRadius.circular(CoeloRadius.full),
-                                backgroundColor: Colors.white30,
-                                color: Colors.white,
+                                backgroundColor: onMedia.foregroundSubtle,
+                                color: onMedia.foreground,
                               ),
                             ),
                           );
@@ -969,11 +973,15 @@ final class _StoryCard extends StatelessWidget {
                           CircleAvatar(
                             radius: 17,
                             backgroundColor: CoeloStatusColors.light.warningContainer,
-                            child: Text(
-                              'COELO',
-                              style: TextStyle(
-                                fontSize: 7,
-                                color: CoeloStatusColors.light.onWarningContainer,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space1),
+                              child: FittedBox(
+                                child: Text(
+                                  'COELO',
+                                  style: textTheme.labelSmall?.copyWith(
+                                    color: CoeloStatusColors.light.onWarningContainer,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -987,16 +995,16 @@ final class _StoryCard extends StatelessWidget {
                                 story.author,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                  color: Colors.white,
+                                style: textTheme.labelLarge?.copyWith(
+                                  color: onMedia.foreground,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
                               Text(
                                 '${story.contextLabel} · ${story.timeLabel}',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.labelSmall?.copyWith(color: Colors.white70),
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: onMedia.foregroundMuted,
+                                ),
                               ),
                             ],
                           ),
@@ -1050,10 +1058,10 @@ final class _StoryCard extends StatelessWidget {
                       story.caption,
                       maxLines: 4,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.white,
+                      style: textTheme.titleLarge?.copyWith(
+                        color: onMedia.foreground,
                         fontWeight: FontWeight.w900,
-                        shadows: const [Shadow(color: Colors.black87, blurRadius: 10)],
+                        shadows: [Shadow(color: onMedia.scrimStrong, blurRadius: 10)],
                       ),
                     ),
                     const SizedBox(height: CoeloSpacing.space2),
@@ -1062,16 +1070,18 @@ final class _StoryCard extends StatelessWidget {
                       label: 'Audiência do Agora',
                       child: Row(
                         children: [
-                          const Icon(Icons.lock_outline_rounded, size: 14, color: Colors.white70),
+                          Icon(
+                            Icons.lock_outline_rounded,
+                            size: 14,
+                            color: onMedia.foregroundMuted,
+                          ),
                           const SizedBox(width: CoeloSpacing.space1),
                           Expanded(
                             child: Text(
                               story.audienceLabel,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: Theme.of(
-                                context,
-                              ).textTheme.labelSmall?.copyWith(color: Colors.white70),
+                              style: textTheme.labelSmall?.copyWith(color: onMedia.foregroundMuted),
                             ),
                           ),
                         ],
@@ -1145,41 +1155,47 @@ final class _PrivateReplyFieldState extends State<_PrivateReplyField> {
   var _hovered = false;
 
   @override
-  Widget build(BuildContext context) => MouseRegion(
-    onEnter: (_) => setState(() => _hovered = true),
-    onExit: (_) => setState(() => _hovered = false),
-    child: Semantics(
-      textField: true,
-      label: 'Resposta privada ao Agora',
-      child: TextField(
-        key: const Key('principal-now-reply-field'),
-        controller: widget.controller,
-        focusNode: widget.focusNode,
-        cursorColor: Colors.white,
-        style: const TextStyle(color: Colors.white),
-        textInputAction: TextInputAction.send,
-        onSubmitted: (_) => widget.onSubmitted(),
-        decoration: InputDecoration(
-          hintText: 'Responder em particular…',
-          hintStyle: const TextStyle(color: Colors.white70),
-          filled: true,
-          fillColor: Colors.black26,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: CoeloSpacing.space4,
-            vertical: CoeloSpacing.space3,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(CoeloRadius.full),
-            borderSide: BorderSide(color: _hovered ? Colors.white70 : Colors.white38),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(CoeloRadius.full),
-            borderSide: const BorderSide(color: Colors.white, width: 2),
+  Widget build(BuildContext context) {
+    final onMedia = context.coeloOnMediaColors;
+    final textTheme = Theme.of(context).textTheme;
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: Semantics(
+        textField: true,
+        label: 'Resposta privada ao Agora',
+        child: TextField(
+          key: const Key('principal-now-reply-field'),
+          controller: widget.controller,
+          focusNode: widget.focusNode,
+          cursorColor: onMedia.foreground,
+          style: textTheme.bodyMedium?.copyWith(color: onMedia.foreground),
+          textInputAction: TextInputAction.send,
+          onSubmitted: (_) => widget.onSubmitted(),
+          decoration: InputDecoration(
+            hintText: 'Responder em particular…',
+            hintStyle: textTheme.bodyMedium?.copyWith(color: onMedia.foregroundMuted),
+            filled: true,
+            fillColor: onMedia.scrimSoft,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: CoeloSpacing.space4,
+              vertical: CoeloSpacing.space3,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(CoeloRadius.full),
+              borderSide: BorderSide(
+                color: _hovered ? onMedia.foregroundMuted : onMedia.foregroundSubtle,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(CoeloRadius.full),
+              borderSide: BorderSide(color: onMedia.foreground, width: 2),
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 final class _NeighborPreview extends StatefulWidget {
@@ -1238,12 +1254,16 @@ final class _NeighborPreviewState extends State<_NeighborPreview> {
                 fit: StackFit.expand,
                 children: [
                   _StoryImage(story: widget.story),
-                  const ColoredBox(color: Colors.black54),
+                  ColoredBox(color: context.coeloOnMediaColors.scrim),
                   Center(
                     child: CircleAvatar(
                       radius: 22,
-                      backgroundColor: Colors.black45,
-                      child: Icon(widget.icon, color: Colors.white, size: 34),
+                      backgroundColor: context.coeloOnMediaColors.scrimSoft,
+                      child: Icon(
+                        widget.icon,
+                        color: context.coeloOnMediaColors.foreground,
+                        size: 34,
+                      ),
                     ),
                   ),
                   Positioned(
@@ -1256,7 +1276,7 @@ final class _NeighborPreviewState extends State<_NeighborPreview> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.white70,
+                        color: context.coeloOnMediaColors.foregroundMuted,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -1285,7 +1305,10 @@ final class _StoryImage extends StatelessWidget {
         child: Semantics(
           key: const Key('principal-now-media-unavailable'),
           label: 'Mídia do Agora indisponível',
-          child: const Icon(Icons.image_not_supported_outlined, color: Colors.white70),
+          child: Icon(
+            Icons.image_not_supported_outlined,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
       ),
     );
@@ -1341,8 +1364,8 @@ final class _ViewerBackButton extends StatelessWidget {
       icon: const Icon(Icons.chevron_left_rounded, size: 22),
       label: const Text('Agora'),
       style: TextButton.styleFrom(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.black26,
+        foregroundColor: context.coeloOnMediaColors.foreground,
+        backgroundColor: context.coeloOnMediaColors.scrimSoft,
         minimumSize: const Size(CoeloSize.touchMin, CoeloSize.touchMin),
         padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space2),
         textStyle: Theme.of(context).textTheme.labelLarge,
@@ -1367,13 +1390,13 @@ final class _ViewerIconButton extends StatelessWidget {
   Widget build(BuildContext context) => IconButton(
     tooltip: tooltip,
     onPressed: onPressed,
-    color: Colors.white,
+    color: context.coeloOnMediaColors.foreground,
     icon: Icon(icon),
     style: IconButton.styleFrom(
       minimumSize: const Size.square(CoeloSize.touchMin),
       backgroundColor: Colors.transparent,
-      hoverColor: Colors.white12,
-      focusColor: Colors.white12,
+      hoverColor: context.coeloOnMediaColors.foregroundSubtle,
+      focusColor: context.coeloOnMediaColors.foregroundSubtle,
       highlightColor: Colors.transparent,
     ),
   );

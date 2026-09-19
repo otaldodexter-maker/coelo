@@ -65,6 +65,18 @@ void main() {
       expect(status?.onHistoryContainer, const Color(0xFF831843));
     });
 
+    test('exposes on-media colors identical in light and dark', () {
+      final light = CoeloTheme.light.extension<CoeloOnMediaColors>();
+      final dark = CoeloTheme.dark.extension<CoeloOnMediaColors>();
+
+      expect(light, same(CoeloOnMediaColors.standard));
+      expect(dark, same(CoeloOnMediaColors.standard));
+      expect(light?.foreground, const Color(0xFFFFFFFF));
+      expect(light?.backdrop, const Color(0xFF000000));
+      expect(light?.copyWith(foreground: const Color(0xFF000000)).foreground, const Color(0xFF000000));
+      expect(light?.lerp(dark, 0.5), isA<CoeloOnMediaColors>());
+    });
+
     test('history semantic colors meet WCAG AA contrast', () {
       for (final status in [CoeloStatusColors.light, CoeloStatusColors.dark]) {
         expect(
