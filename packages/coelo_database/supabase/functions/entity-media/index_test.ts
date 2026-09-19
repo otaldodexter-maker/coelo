@@ -17,3 +17,14 @@ Deno.test("entity gateway: svg do icone e leitor do Principal", async () => {
   assertEquals(source.includes('"icon_vector"'), true);
   assertEquals(source.includes('"principal_entity_image_authorize_read_v1"'), true, "responsavel le pela regra do Postgres");
 });
+
+Deno.test("entity gateway: planta baixa (floor_plan) so para instituicao/unidade e so raster", async () => {
+  const source = await Deno.readTextFile(new URL("./index.ts", import.meta.url));
+  assertEquals(source.includes('"floor_plan"'), true);
+  assertEquals(source.includes('floorPlanKinds = new Set(["institution", "unit"])'), true);
+  assertEquals(
+    source.includes('body.image_kind === "floor_plan" && (!floorPlanKinds.has(body.entity_kind) || body.content_type === "image/svg+xml")'),
+    true,
+    "svg e turma/atividade/pessoa sao recusados no gateway antes do Postgres",
+  );
+});

@@ -11,7 +11,9 @@ type Json = Record<string, unknown>;
 const allowedMimeTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/svg+xml"]);
 const maximumBytes = 5 * 1024 * 1024;
 const entityKinds = new Set(["institution", "unit", "group", "activity", "person"]);
-const imageKinds = new Set(["profile", "cover", "icon", "icon_vector"]);
+const imageKinds = new Set(["profile", "cover", "icon", "icon_vector", "floor_plan"]);
+// Planta baixa (spec 067): só instituição/unidade, só raster.
+const floorPlanKinds = new Set(["institution", "unit"]);
 
 // Assinatura real dos bytes: raster pelo cabeçalho; SVG pelo contrato estreito (sem script/href/externo).
 function bytesMatchDeclaredType(bytes: Uint8Array, contentType: string) {
@@ -67,6 +69,7 @@ function input(body: Json) {
     typeof body.byte_size !== "number" || !Number.isSafeInteger(body.byte_size) ||
     body.byte_size < 1 || body.byte_size > maximumBytes || typeof body.sha256 !== "string" ||
     ((body.image_kind === "icon_vector") !== (body.content_type === "image/svg+xml")) ||
+    (body.image_kind === "floor_plan" && (!floorPlanKinds.has(body.entity_kind) || body.content_type === "image/svg+xml")) ||
     (body.content_type === "image/svg+xml" && body.byte_size > maximumSvgBytes) ||
     !/^[0-9a-f]{64}$/.test(body.sha256) ||
     (body.icon_spec != null && (typeof body.icon_spec !== "object" || Array.isArray(body.icon_spec)))) {

@@ -4,6 +4,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../../data/edge_media_bytes.dart';
 import '../../data/entity_image_cache.dart';
 import '../../data/entity_image_repository.dart';
 import 'activity_icon_designer_dialog.dart';
@@ -87,7 +88,12 @@ final class EntityImagesController extends ChangeNotifier {
         kind: kind,
         bytes: bytes,
         iconSpec: iconSpec,
-        contentType: kind == EntityImageKind.iconVector ? 'image/svg+xml' : 'image/png',
+        // Recorte/ícone saem sempre em PNG; a planta baixa vai como veio (JPEG/PNG/WebP).
+        contentType: switch (kind) {
+          EntityImageKind.iconVector => 'image/svg+xml',
+          EntityImageKind.floorPlan => sniffMediaMimeType(bytes, fallback: 'image/png'),
+          _ => 'image/png',
+        },
       );
       _images[kind] = image;
       _pending.remove(kind);
@@ -151,6 +157,7 @@ final class EntityImagesSection extends StatefulWidget {
     this.showProfile = true,
     this.showCover = true,
     this.showIcon = false,
+    this.showFloorPlan = false,
     this.profileTitle = 'Foto de perfil',
     this.coverTitle = 'Foto de capa',
     this.onChanged,
@@ -165,6 +172,9 @@ final class EntityImagesSection extends StatefulWidget {
   final bool showProfile;
   final bool showCover;
   final bool showIcon;
+
+  /// Planta baixa (instituição/unidade): imagem inteira, sem recorte.
+  final bool showFloorPlan;
   final String profileTitle;
   final String coverTitle;
   final VoidCallback? onChanged;
@@ -254,6 +264,12 @@ final class _EntityImagesSectionState extends State<EntityImagesSection> {
     if (result != null) await _controller?.setImage(EntityImageKind.cover, result.bytes);
   }
 
+  Future<void> _pickFloorPlan() async {
+    final bytes = await _pickFile('Escolher planta baixa');
+    if (bytes == null || !mounted) return;
+    await _controller?.setImage(EntityImageKind.floorPlan, bytes);
+  }
+
   Future<void> _designIcon() async {
     final controller = _controller;
     if (controller == null) return;
@@ -340,6 +356,28 @@ final class _EntityImagesSectionState extends State<EntityImagesSection> {
               await controller.removeImage(EntityImageKind.icon);
               await controller.removeImage(EntityImageKind.iconVector);
             },
+          ),
+        ],
+        if (widget.showFloorPlan) ...[
+          if (widget.showProfile || widget.showCover || widget.showIcon)
+            const SizedBox(height: CoeloSpacing.space3),
+          _ImageRow(
+            key: const Key('entity-image-floor-plan'),
+            title: 'Planta baixa',
+            description:
+                'Imagem da planta em PNG, JPG ou WebP, até 5 MB. Os locais são marcados sobre ela na tela de Locais.',
+            preview: _Preview(
+              bytes: controller.bytesOf(EntityImageKind.floorPlan),
+              circular: false,
+              icon: Icons.map_outlined,
+              rounded: true,
+            ),
+            has: controller.has(EntityImageKind.floorPlan),
+            busy: controller.isBusy(EntityImageKind.floorPlan),
+            pickKey: const Key('entity-image-floor-plan-pick'),
+            pickLabel: controller.has(EntityImageKind.floorPlan) ? 'Trocar planta' : 'Enviar planta',
+            onPick: _pickFloorPlan,
+            onRemove: () => controller.removeImage(EntityImageKind.floorPlan),
           ),
         ],
         if (controller.error case final error?) ...[

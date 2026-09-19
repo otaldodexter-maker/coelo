@@ -26,11 +26,13 @@ enum EntityKind {
 
 /// `icon` é o PNG rasterizado do ícone da atividade; `iconVector` é o mesmo
 /// desenho em SVG (fundo + path), gravado junto para as superfícies vetoriais.
+/// `floorPlan` é a planta baixa (spec 067) de instituição/unidade, só raster.
 enum EntityImageKind {
   profile('profile'),
   cover('cover'),
   icon('icon'),
-  iconVector('icon_vector');
+  iconVector('icon_vector'),
+  floorPlan('floor_plan');
 
   const EntityImageKind(this.wire);
 
