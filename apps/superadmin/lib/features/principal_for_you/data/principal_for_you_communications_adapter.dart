@@ -104,6 +104,7 @@ final class PrincipalForYouCommunicationsAdapter {
             cta: item.linkLabel ?? item.buttonLabel,
             ctaTarget: item.ctaTarget,
             authorLabel: item.author?.label,
+            authorHandle: item.author?.handle,
           ),
         ),
   );

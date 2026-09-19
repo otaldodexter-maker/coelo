@@ -69,6 +69,8 @@ import '../../features/principal_now/domain/principal_now_feed_repository.dart';
 import '../../features/principal_now/presentation/principal_now_preview_page.dart';
 import '../../features/principal_now_publication/domain/now_publication.dart';
 import '../../features/principal_now_publication/presentation/principal_now_publication_page.dart';
+import '../../features/principal_official_profiles/domain/principal_official_profile.dart';
+import '../../features/principal_official_profiles/presentation/principal_official_profile_page.dart';
 import '../../features/principal_profile/presentation/principal_profile_preview_page.dart';
 import '../../features/principal_circulars/domain/circular_repository.dart';
 import '../../features/profile_about/domain/profile_about_repository.dart';
@@ -1766,6 +1768,13 @@ GoRouter createSuperadminRouter({
                     SuperadminRoutes.principalConversationsName,
                     queryParameters: const {'from': 'for-you'},
                   ),
+                  // spec 068: "por Coelo · @coelo" abre o perfil oficial.
+                  onOpenAuthor: noticeRepository is PrincipalOfficialProfilesReader
+                      ? (handle) => context.pushNamed(
+                          SuperadminRoutes.principalOfficialProfileName,
+                          pathParameters: {'handle': handle},
+                        )
+                      : null,
                   // spec 069 H13: o CTA abre o destino real por tipo. Só a
                   // circular tem rota no Principal hospedado hoje.
                   onOpenCtaTarget: (target) {
@@ -1838,6 +1847,65 @@ GoRouter createSuperadminRouter({
                       },
                     ),
             ),
+          ),
+          GoRoute(
+            path: SuperadminRoutes.principalOfficialProfile,
+            name: SuperadminRoutes.principalOfficialProfileName,
+            builder: (context, state) {
+              final handle = state.pathParameters['handle'];
+              if (handle == null ||
+                  handle.isEmpty ||
+                  noticeRepository is! PrincipalOfficialProfilesReader) {
+                return _unavailableCompositionRootRoute(context);
+              }
+              // spec 068: perfil oficial do Coelo lido pela pessoa do ator
+              // (auth.uid → pessoa), sem depender do vínculo institucional.
+              return ListenableBuilder(
+                listenable: session,
+                builder: (context, _) => !session.isAuthenticated || session.isPasswordRecovery
+                    ? _unavailableCompositionRootRoute(context)
+                    : PrincipalOfficialProfilePage(
+                        key: ValueKey(
+                          'principal-official-$handle-${session.authorizationInvalidationRevision}',
+                        ),
+                        handle: handle,
+                        reader: noticeRepository as PrincipalOfficialProfilesReader,
+                        embedded: true,
+                        onReturn: () => context.canPop()
+                            ? context.pop()
+                            : context.goNamed(SuperadminRoutes.principalForYouName),
+                        onOpenProfile: (other) => context.pushReplacementNamed(
+                          SuperadminRoutes.principalOfficialProfileName,
+                          pathParameters: {'handle': other},
+                        ),
+                        onOpenCtaTarget: (target) {
+                          switch (target.kind) {
+                            case NoticeCtaTargetKind.circular:
+                              context.pushNamed(
+                                SuperadminRoutes.principalHappensCircularName,
+                                pathParameters: {'circularId': target.id!},
+                              );
+                              return true;
+                            case NoticeCtaTargetKind.form:
+                              context.pushNamed(
+                                SuperadminRoutes.formOverviewName,
+                                pathParameters: {'formId': target.id!},
+                              );
+                              return true;
+                            case NoticeCtaTargetKind.invite:
+                              context.pushNamed(
+                                SuperadminRoutes.inviteDetailName,
+                                pathParameters: {'inviteId': target.id!},
+                              );
+                              return true;
+                            case NoticeCtaTargetKind.none:
+                            case NoticeCtaTargetKind.notice:
+                              return false;
+                          }
+                        },
+                      ),
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.principalProfile,

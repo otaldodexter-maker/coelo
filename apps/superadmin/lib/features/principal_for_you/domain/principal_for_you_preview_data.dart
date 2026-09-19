@@ -26,6 +26,7 @@ final class PrincipalForYouHighlight {
     required this.cta,
     this.ctaTarget = NoticeCtaTarget.none,
     this.authorLabel,
+    this.authorHandle,
     this.assetPath = '',
     this.assetIndex = 0,
   });
@@ -45,6 +46,9 @@ final class PrincipalForYouHighlight {
   /// "Coelo · @coelo" quando um perfil oficial assina (spec 068).
   final String? authorLabel;
 
+  /// Handle do perfil oficial que assina; abre a tela do perfil.
+  final String? authorHandle;
+
   /// Optional approved sprite for the preview fixtures.
   ///
   /// A real communication carries no authorized image contract yet, so the
@@ -63,6 +67,7 @@ final class PrincipalForYouHighlight {
     cta: cta,
     ctaTarget: ctaTarget,
     authorLabel: authorLabel,
+    authorHandle: authorHandle,
     assetPath: assetPath,
     assetIndex: assetIndex,
   );

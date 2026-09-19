@@ -26,6 +26,7 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
     this.onOpenMessages,
     this.onOpenActivities,
     this.onOpenCtaTarget,
+    this.onOpenAuthor,
   });
 
   final NoticeRepository repository;
@@ -55,6 +56,9 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
   /// Abre o destino real do CTA de um destaque (spec 069 H13). Devolve falso
   /// quando o tipo ainda não tem rota no Principal.
   final bool Function(NoticeCtaTarget target)? onOpenCtaTarget;
+
+  /// Abre o perfil oficial que assina o destaque (spec 068), pelo handle.
+  final ValueChanged<String>? onOpenAuthor;
 
   @override
   State<PrincipalForYouRoutePage> createState() => _PrincipalForYouRoutePageState();
@@ -342,6 +346,7 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
         onOpenMessages: widget.onOpenMessages,
         onAction: _handleAction,
         onOpenHighlight: _openHighlight,
+        onOpenAuthor: widget.onOpenAuthor,
       ),
     ),
   };

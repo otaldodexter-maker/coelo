@@ -25,6 +25,7 @@ final class PrincipalForYouPreviewPage extends StatefulWidget {
     this.onOpenMessages,
     this.onAction,
     this.onOpenHighlight,
+    this.onOpenAuthor,
     super.key,
   });
 
@@ -54,6 +55,9 @@ final class PrincipalForYouPreviewPage extends StatefulWidget {
   /// Abre o destino real do destaque (spec 069 H13). Sem callback, o botão
   /// cai em [onAction] com o rótulo.
   final ValueChanged<PrincipalForYouHighlight>? onOpenHighlight;
+
+  /// Abre o perfil oficial que assina o destaque (spec 068), pelo handle.
+  final ValueChanged<String>? onOpenAuthor;
 
   @override
   State<PrincipalForYouPreviewPage> createState() => _PrincipalForYouPreviewPageState();
@@ -176,6 +180,7 @@ final class _PrincipalForYouPreviewPageState extends State<PrincipalForYouPrevie
               onContext: _showContextSelector,
               onAction: widget.onAction ?? _feedback,
               onOpenHighlight: widget.onOpenHighlight,
+              onOpenAuthor: widget.onOpenAuthor,
             ),
             if (!widget.embedded)
               PrincipalGlobalNavigation(
@@ -204,6 +209,7 @@ final class _ForYouScroll extends StatelessWidget {
     required this.onContext,
     required this.onAction,
     this.onOpenHighlight,
+    this.onOpenAuthor,
   });
 
   final PrincipalForYouPreviewData data;
@@ -213,6 +219,7 @@ final class _ForYouScroll extends StatelessWidget {
   final VoidCallback onContext;
   final ValueChanged<String> onAction;
   final ValueChanged<PrincipalForYouHighlight>? onOpenHighlight;
+  final ValueChanged<String>? onOpenAuthor;
 
   @override
   Widget build(BuildContext context) {
@@ -242,6 +249,7 @@ final class _ForYouScroll extends StatelessWidget {
                 highlight: data.primaryHighlight,
                 onAction: onAction,
                 onOpenHighlight: onOpenHighlight,
+                onOpenAuthor: onOpenAuthor,
               ),
               const SizedBox(height: CoeloSpacing.space5),
               CoeloTourAnchor(
@@ -332,8 +340,14 @@ final class _Greeting extends StatelessWidget {
 }
 
 final class _HeroCard extends StatelessWidget {
-  const _HeroCard({required this.highlight, required this.onAction, this.onOpenHighlight});
+  const _HeroCard({
+    required this.highlight,
+    required this.onAction,
+    this.onOpenHighlight,
+    this.onOpenAuthor,
+  });
   final ValueChanged<PrincipalForYouHighlight>? onOpenHighlight;
+  final ValueChanged<String>? onOpenAuthor;
   final PrincipalForYouHighlight? highlight;
   final ValueChanged<String> onAction;
 
@@ -422,14 +436,28 @@ final class _HeroCard extends StatelessWidget {
                         ),
                         if (item.authorLabel case final author?) ...[
                           const SizedBox(height: CoeloSpacing.space2),
-                          Text(
-                            'por $author',
+                          // spec 068: o autor abre a tela do perfil oficial.
+                          InkWell(
                             key: const Key('principal-for-you-hero-author'),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(
-                              context,
-                            ).textTheme.labelMedium?.copyWith(color: scheme.onPrimary),
+                            onTap: onOpenAuthor == null || item.authorHandle == null
+                                ? null
+                                : () => onOpenAuthor!(item.authorHandle!),
+                            borderRadius: BorderRadius.circular(CoeloRadius.sm),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
+                              child: Text(
+                                'por $author',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  color: scheme.onPrimary,
+                                  decoration: onOpenAuthor == null || item.authorHandle == null
+                                      ? null
+                                      : TextDecoration.underline,
+                                  decorationColor: scheme.onPrimary,
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                         const SizedBox(height: CoeloSpacing.space3),

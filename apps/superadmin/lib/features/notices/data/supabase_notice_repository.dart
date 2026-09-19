@@ -2,11 +2,16 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../principal_official_profiles/domain/principal_official_profile.dart';
 import '../domain/notice_repository.dart';
 import '../domain/platform_notice.dart';
 
 final class SupabaseNoticeRepository
-    implements NoticeRepository, PrincipalForYouReader, NoticeCtaTargetOptionsReader {
+    implements
+        NoticeRepository,
+        PrincipalForYouReader,
+        NoticeCtaTargetOptionsReader,
+        PrincipalOfficialProfilesReader {
   SupabaseNoticeRepository(this._client, {String? targetDevice})
     : _targetDevice = targetDevice ?? (kIsWeb ? 'web' : 'mobile');
 
@@ -301,6 +306,61 @@ final class SupabaseNoticeRepository
       throw const NoticeUnavailableException();
     }
   }
+
+  // spec 068 (lote 104): perfis oficiais no Principal, pelo mesmo parser de aviso.
+  @override
+  Future<List<PrincipalOfficialProfile>> loadOfficialProfiles() async {
+    try {
+      final data = _map(_unwrap(await _client.rpc('principal_official_profiles_v1')));
+      return _profiles(data['profiles']);
+    } on PostgrestException catch (error) {
+      throw _error(error);
+    } on ClientException {
+      throw const NoticeUnavailableException();
+    }
+  }
+
+  @override
+  Future<PrincipalOfficialProfileDetail> loadOfficialProfile(String handle) async {
+    try {
+      final data = _map(
+        _unwrap(await _client.rpc('principal_official_profiles_v1', params: {'p_handle': handle})),
+      );
+      final profile = PrincipalOfficialProfile.fromJson(data['profile']);
+      if (profile == null) throw const NoticeNotFoundException();
+      return PrincipalOfficialProfileDetail(
+        profile: profile,
+        profiles: _profiles(data['profiles']),
+        items: _list(data['items']).map((item) => _notice(_map(item))).toList(growable: false),
+      );
+    } on PostgrestException catch (error) {
+      throw _error(error);
+    } on ClientException {
+      throw const NoticeUnavailableException();
+    }
+  }
+
+  @override
+  Future<bool> setOfficialFollowing(String personId, {required bool follow}) async {
+    try {
+      final summary = _map(
+        await _client.rpc(
+          'follow_set',
+          params: {'p_target_kind': 'person', 'p_target_id': personId, 'p_follow': follow},
+        ),
+      );
+      return summary['following'] == true;
+    } on PostgrestException catch (error) {
+      throw _error(error);
+    } on ClientException {
+      throw const NoticeUnavailableException();
+    }
+  }
+
+  List<PrincipalOfficialProfile> _profiles(Object? raw) => _list(raw)
+      .map(PrincipalOfficialProfile.fromJson)
+      .whereType<PrincipalOfficialProfile>()
+      .toList(growable: false);
 
   @override
   Future<PlatformNotice> duplicate(String noticeId, {required String requestId}) async {
