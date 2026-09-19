@@ -76,36 +76,6 @@ void main() {
     expect(find.byKey(const Key('principal-context-all-blocked')), findsOneWidget);
     expect(find.textContaining('Ativo:'), findsNothing);
   });
-}
-
-class _Contexts implements PrincipalRuntimeContextRepository {
-  _Contexts({this.blockedFirst = false, this.blockedAll = false, this.popup = true});
-  final bool blockedFirst;
-  final bool blockedAll;
-  final bool popup;
-
-  @override
-  Future<List<PrincipalRuntimeContext>> listAvailableContexts() async => [
-    for (final id in ['a', 'b'])
-      PrincipalRuntimeContext(
-        membershipId: id,
-        personId: 'qa',
-        institutionId: id,
-        institutionName: 'QA $id',
-        roleCode: 'teacher',
-        scopeKind: 'institution',
-        accessBlocked: blockedAll || (blockedFirst && id == 'a'),
-        accessReason: blockedAll || (blockedFirst && id == 'a') ? 'schedule' : null,
-        accessPopup: popup && (blockedAll || (blockedFirst && id == 'a'))
-            ? {
-                'kind': 'schedule',
-                'windows': [
-                  {'weekday': 1, 'start': '08:00', 'end': '18:00'},
-                ],
-              }
-            : null,
-      ),
-  ];
 
   testWidgets('"ver como" múltiplo: o bloqueado não marca e abre o popup', (tester) async {
     resetPrincipalContextSelectionForTests();
@@ -136,4 +106,34 @@ class _Contexts implements PrincipalRuntimeContextRepository {
     await tester.pumpAndSettle();
     expect(find.text('Selected: 1'), findsOneWidget);
   });
+}
+
+class _Contexts implements PrincipalRuntimeContextRepository {
+  _Contexts({this.blockedFirst = false, this.blockedAll = false, this.popup = true});
+  final bool blockedFirst;
+  final bool blockedAll;
+  final bool popup;
+
+  @override
+  Future<List<PrincipalRuntimeContext>> listAvailableContexts() async => [
+    for (final id in ['a', 'b'])
+      PrincipalRuntimeContext(
+        membershipId: id,
+        personId: 'qa',
+        institutionId: id,
+        institutionName: 'QA $id',
+        roleCode: 'teacher',
+        scopeKind: 'institution',
+        accessBlocked: blockedAll || (blockedFirst && id == 'a'),
+        accessReason: blockedAll || (blockedFirst && id == 'a') ? 'schedule' : null,
+        accessPopup: popup && (blockedAll || (blockedFirst && id == 'a'))
+            ? {
+                'kind': 'schedule',
+                'windows': [
+                  {'weekday': 1, 'start': '08:00', 'end': '18:00'},
+                ],
+              }
+            : null,
+      ),
+  ];
 }
