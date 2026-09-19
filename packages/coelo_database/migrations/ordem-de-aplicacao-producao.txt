@@ -446,6 +446,13 @@
 # superadmin_entity_images_get_v1. Bytes passam pela Edge entity-media (o navegador nunca fala com o R2 — CORS do bucket fora da conta).
 # pgTAP entity_images_r2_v1_test 34/34 no espelho mirror-acesso (transação revertida); ledger 20260919200000 reparado e listado.
 20260919200000_entity_images_r2_v1.sql
+# Lote 86 (19/09 — Sessão ACESSO-PERFIL, Etapa 3 F7): horário de uso do app no PERFIL de funcionário (decisão do Owner 19/09).
+# Tabela public.staff_access_profile_rules (1 por institution_roles; RLS deny, leitura por staff_access.manage ou pelo titular),
+# resolvedor único app_private.staff_access_effective_rule (própria > perfil > nenhuma; source profile|own|none) usado por
+# staff_access_evaluate/popup_json/state/item_json; staff_access_list_v1 ganha p_sources; RPCs staff_access_profile_rule_get_v1/save_v1
+# (PT409, auditoria staff_access_profile_rule). "Voltar ao padrão" = staff_access_rule_save_v1 clear. pgTAP staff_access_profile_v1_test 39/39
+# e staff_access_v1_test 68/68 no espelho mirror-acesso; ledger 20260919220000 reparado e listado.
+20260919220000_staff_access_profile_v1.sql
 # Lote 87 (MÍDIA-E2E 19/09): superadmin_entity_images_list_v1 (diretórios/cards em lote), leitor do Principal
 # (principal_entity_images_list_v1 / principal_entity_image_authorize_read_v1: equipe ou responsável por guardian_links+can_view),
 # ícone vetorial 'icon_vector' (image/svg+xml ≤256 KiB) ao lado do PNG, superadmin_entity_image_expire_v1 (service_role) +

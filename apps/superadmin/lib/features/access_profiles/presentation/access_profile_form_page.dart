@@ -14,8 +14,12 @@ import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart'
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
+import '../../staff_access/domain/staff_access.dart';
+import '../../staff_access/presentation/staff_access_rule_fields.dart';
 import '../domain/access_profile.dart';
 import 'access_permission_labels.dart';
+
+enum _Step { identity, permissions, appUsage, members, review }
 
 String? _profileNameError(String? value) =>
     value == null || value.trim().isEmpty ? 'Informe o nome do perfil.' : null;
@@ -57,10 +61,15 @@ final class AccessProfileFormPage extends StatefulWidget {
     this.onConversationsOpen,
     this.entityLabel = 'perfil',
     this.currentDestination = 'profiles',
+    this.staffAccessRepository,
     super.key,
   });
 
   final AccessProfileRepository repository;
+
+  /// Horário de uso do app por perfil (domínio institution): passo
+  /// "Utilização do app". Sem repositório, o passo não aparece.
+  final StaffAccessRepository? staffAccessRepository;
   final LogoutAction logout;
   final AccessProfileDomain domain;
   final String? profileId;
@@ -92,6 +101,12 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
   AccessProfileStatus _status = AccessProfileStatus.active;
   AccessProfileScope _scope = AccessProfileScope.platform;
   List<AccessPermission> _permissions = const [];
+
+  // Utilização do app (staff_access_profile_rule_*_v1)
+  StaffAccessProfileRule? _appUsageOriginal;
+  bool _appUsageRestricted = false;
+  StaffAccessRuleDraft _appUsageDraft = _emptyAppUsageDraft;
+  bool _appUsageUnavailable = false;
   int _currentStep = 0;
   int _furthestStep = 0;
   bool _loading = true;
@@ -110,14 +125,68 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
 
   bool get _editing => widget.profileId != null;
 
-  List<String> get _stepLabels => [
-    'Perfil e escopo',
-    'Permissões',
-    if (_editing) 'Pessoas vinculadas',
-    'Revisão',
+  bool get _hasAppUsage =>
+      widget.domain == AccessProfileDomain.institution && widget.staffAccessRepository != null;
+
+  List<_Step> get _stepKeys => [
+    _Step.identity,
+    _Step.permissions,
+    if (_hasAppUsage) _Step.appUsage,
+    if (_editing) _Step.members,
+    _Step.review,
   ];
 
+  List<String> get _stepLabels => [
+    for (final step in _stepKeys)
+      switch (step) {
+        _Step.identity => 'Perfil e escopo',
+        _Step.permissions => 'Permissões',
+        _Step.appUsage => 'Utilização do app',
+        _Step.members => 'Pessoas vinculadas',
+        _Step.review => 'Revisão',
+      },
+  ];
+
+  _Step get _step => _stepKeys[_currentStep];
+
   bool get _lastStep => _currentStep == _stepLabels.length - 1;
+
+  static const _emptyAppUsageDraft = StaffAccessRuleDraft(
+    surfaces: {
+      StaffAccessSurface.web,
+      StaffAccessSurface.mobileWeb,
+      StaffAccessSurface.tabletWeb,
+      StaffAccessSurface.installedApp,
+    },
+    windows: [],
+    validFrom: null,
+    validUntil: null,
+    validitySurfaces: {
+      StaffAccessSurface.web,
+      StaffAccessSurface.mobileWeb,
+      StaffAccessSurface.tabletWeb,
+      StaffAccessSurface.installedApp,
+    },
+    popupEnabled: false,
+    popupShowValidity: false,
+  );
+
+  bool get _appUsageDirty {
+    if (!_hasAppUsage) return false;
+    final original = _appUsageOriginal?.rule;
+    if (!_appUsageRestricted) return original != null;
+    if (original == null) return true;
+    final a = original.toDraft().toJson();
+    final b = _appUsageDraft.toJson();
+    return a.toString() != b.toString();
+  }
+
+  bool get _appUsageValid =>
+      !_appUsageRestricted ||
+      (_appUsageDraft.surfaces.isNotEmpty &&
+          !(_appUsageDraft.validFrom != null &&
+              _appUsageDraft.validUntil != null &&
+              _appUsageDraft.validUntil!.isBefore(_appUsageDraft.validFrom!)));
 
   bool get _isDirty {
     if (_confirmedCompletion != null) return false;
@@ -137,7 +206,8 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
         _status != original.status ||
         _scope != original.maxScope ||
         selected.length != originalSelected.length ||
-        !selected.containsAll(originalSelected);
+        !selected.containsAll(originalSelected) ||
+        _appUsageDirty;
   }
 
   @override
@@ -176,6 +246,10 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
       _pendingSaveRequestId = null;
       _pendingSaveFingerprint = null;
       _permissions = const [];
+      _appUsageOriginal = null;
+      _appUsageRestricted = false;
+      _appUsageDraft = _emptyAppUsageDraft;
+      _appUsageUnavailable = false;
       _status = AccessProfileStatus.active;
       _scope = AccessProfileScope.platform;
       _currentStep = 0;
@@ -210,8 +284,21 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
               await widget.repository.fetchDetail(widget.domain, sourceProfileId),
             )
           : profile;
+      StaffAccessProfileRule? appUsage;
+      var appUsageUnavailable = false;
+      if (_editing && _hasAppUsage) {
+        try {
+          appUsage = await widget.staffAccessRepository!.fetchProfileRule(widget.profileId!);
+        } on Object {
+          appUsageUnavailable = true;
+        }
+      }
       if (!_isCurrent(revision)) return;
       _original = profile;
+      _appUsageOriginal = appUsage;
+      _appUsageUnavailable = appUsageUnavailable;
+      _appUsageRestricted = appUsage?.rule != null;
+      _appUsageDraft = appUsage?.rule?.toDraft() ?? _emptyAppUsageDraft;
       _nameController.text = draft.name;
       _codeController.text = draft.code;
       _descriptionController.text = draft.description;
@@ -402,6 +489,10 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
       return;
     }
     if (!_validateIdentity()) return;
+    if (!_appUsageValid) {
+      setState(() => _currentStep = _stepKeys.indexOf(_Step.appUsage));
+      return;
+    }
     if (_reasonController.text.trim().isEmpty) return;
     final draft = _draft();
     final revision = _contextRevision;
@@ -422,6 +513,44 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
       if (!_isCurrent(revision)) return;
       _pendingSaveRequestId = null;
       _pendingSaveFingerprint = null;
+      if (_appUsageDirty) {
+        // Horário do perfil: contrato próprio (versão/PT409 da regra), gravado
+        // depois do perfil porque o id nasce no servidor ao criar.
+        try {
+          _appUsageOriginal = await widget.staffAccessRepository!.saveProfileRule(
+            saved.id,
+            _appUsageOriginal?.rule?.version,
+            _appUsageRestricted
+                ? _appUsageDraft
+                : const StaffAccessRuleDraft(
+                    surfaces: {},
+                    windows: [],
+                    validFrom: null,
+                    validUntil: null,
+                    validitySurfaces: {},
+                    popupEnabled: false,
+                    popupShowValidity: false,
+                    clear: true,
+                  ),
+          );
+          if (!_isCurrent(revision)) return;
+          _appUsageRestricted = _appUsageOriginal?.rule != null;
+        } on StaffAccessConflictException {
+          if (!mounted || !_isCurrent(revision)) return;
+          showSuperadminNotice(
+            context,
+            'Perfil salvo. O horário de uso foi alterado por outra pessoa: reabra o perfil para revisar.',
+            icon: Icons.sync_problem_outlined,
+          );
+        } on Object {
+          if (!mounted || !_isCurrent(revision)) return;
+          showSuperadminNotice(
+            context,
+            'Perfil salvo. Não foi possível salvar o horário de uso do app; reabra o perfil e tente novamente.',
+            icon: Icons.error_outline_rounded,
+          );
+        }
+      }
       // Confirmation survives navigation failures and is bound to this context.
       _confirmedCompletion = () {
         if (!_isCurrent(revision)) return;
@@ -518,7 +647,7 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
         icon: Icons.check_circle_outline_rounded,
       );
     }
-    if (_currentStep == 0) {
+    if (_step == _Step.identity) {
       return _IdentitySection(
         nameController: _nameController,
         descriptionController: _descriptionController,
@@ -529,14 +658,24 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
         onScopeChanged: (value) => setState(() => _scope = value),
       );
     }
-    if (_currentStep == 1) {
+    if (_step == _Step.permissions) {
       return _PermissionMatrix(
         permissions: _permissions,
         searchController: _permissionSearchController,
         onChanged: (permissions) => setState(() => _permissions = permissions),
       );
     }
-    if (_editing && _currentStep == 2) {
+    if (_step == _Step.appUsage) {
+      return _AppUsageSection(
+        restricted: _appUsageRestricted,
+        draft: _appUsageDraft,
+        unavailable: _appUsageUnavailable,
+        original: _appUsageOriginal,
+        onRestrictedChanged: (value) => setState(() => _appUsageRestricted = value),
+        onDraftChanged: (value) => setState(() => _appUsageDraft = value),
+      );
+    }
+    if (_step == _Step.members) {
       return _MembershipSection(links: _original!.links);
     }
     final draft = _draft();
@@ -1492,6 +1631,71 @@ final class _MembershipSection extends StatelessWidget {
           rowHeight: 64,
         ),
       ],
+    ),
+  );
+}
+
+/// Passo "Utilização do app": horário de uso do perfil, herdado pelos vínculos
+/// que recebem este perfil (o vínculo pode ter regra própria — "fora do padrão").
+final class _AppUsageSection extends StatelessWidget {
+  const _AppUsageSection({
+    required this.restricted,
+    required this.draft,
+    required this.unavailable,
+    required this.original,
+    required this.onRestrictedChanged,
+    required this.onDraftChanged,
+  });
+
+  final bool restricted;
+  final StaffAccessRuleDraft draft;
+  final bool unavailable;
+  final StaffAccessProfileRule? original;
+  final ValueChanged<bool> onRestrictedChanged;
+  final ValueChanged<StaffAccessRuleDraft> onDraftChanged;
+
+  @override
+  Widget build(BuildContext context) => _FormSurface(
+    title: 'Utilização do app',
+    description:
+        'Superfícies, dias e horários em que quem tem este perfil pode usar o app. '
+        'Cada vínculo herda este padrão; em Acesso de funcionários é possível ajustar um vínculo (fica "fora do padrão do perfil") ou voltar ao padrão.',
+    child: CoeloTourAnchor(
+      id: 'access-profile.app-usage',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (unavailable) ...[
+            const StaffAccessInfoBanner(
+              key: Key('access-profile-app-usage-unavailable'),
+              icon: Icons.error_outline_rounded,
+              text: 'Não foi possível consultar o horário atual deste perfil. Salvar aqui pode sobrescrever o que existe.',
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+          ],
+          CoeloAdminToggleField(
+            key: const Key('access-profile-app-usage-toggle'),
+            label: 'Definir horário de uso do app para este perfil',
+            description: restricted
+                ? original == null
+                      ? 'Vale para os vínculos que recebem este perfil.'
+                      : 'Vale para ${original!.membershipCount} vínculo${original!.membershipCount == 1 ? '' : 's'}'
+                            '${original!.ownRuleCount > 0 ? '; ${original!.ownRuleCount} fora do padrão' : ''}.'
+                : 'Desligado: sem restrição pelo perfil (vale só o que estiver no vínculo).',
+            value: restricted,
+            onChanged: onRestrictedChanged,
+          ),
+          if (restricted) ...[
+            const SizedBox(height: CoeloSpacing.space5),
+            StaffAccessRuleEditor(
+              draft: draft,
+              onChanged: onDraftChanged,
+              keyPrefix: 'access-profile-app-usage',
+              timezone: 'da unidade do vínculo (ou da instituição)',
+            ),
+          ],
+        ],
+      ),
     ),
   );
 }

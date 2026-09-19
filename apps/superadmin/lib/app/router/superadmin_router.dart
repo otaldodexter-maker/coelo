@@ -4386,6 +4386,7 @@ GoRouter createSuperadminRouter({
                   'profile-create-${state.pathParameters}-${state.uri.queryParameters['from']}-${session.authorizationInvalidationRevision}',
                 ),
                 repository: accessProfileRepository,
+                staffAccessRepository: staffAccessRepository,
                 logout: logout,
                 domain: _accessProfileDomain(state.pathParameters['domain']),
                 sourceProfileId: _nullableProfileId(state.uri.queryParameters['from']),
@@ -4435,6 +4436,7 @@ GoRouter createSuperadminRouter({
                   'profile-edit-${state.pathParameters}-${session.authorizationInvalidationRevision}',
                 ),
                 repository: accessProfileRepository,
+                staffAccessRepository: staffAccessRepository,
                 logout: logout,
                 domain: _accessProfileDomain(state.pathParameters['domain']),
                 profileId: state.pathParameters['profileId'],
@@ -5249,6 +5251,7 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.devProfileCreateName,
             builder: (context, state) => AccessProfileFormPage(
               repository: accessProfilePreviewRepository(),
+              staffAccessRepository: previewStaffAccess(),
               logout: _previewLogout,
               domain: _accessProfileDomain(state.pathParameters['domain']),
               onCancel: () => context.goNamed(SuperadminRoutes.devProfilesName),
@@ -5280,6 +5283,7 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.devProfileEditName,
             builder: (context, state) => AccessProfileFormPage(
               repository: accessProfilePreviewRepository(),
+              staffAccessRepository: previewStaffAccess(),
               logout: _previewLogout,
               domain: _accessProfileDomain(state.pathParameters['domain']),
               profileId: state.pathParameters['profileId'],
