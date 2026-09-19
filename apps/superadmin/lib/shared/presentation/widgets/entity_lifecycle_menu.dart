@@ -35,41 +35,19 @@ final class EntityLifecycleMenu extends StatelessWidget {
     final archived = state == EntityLifecycleState.archived;
     return CoeloAdminFlyout<EntityLifecycleAction>(
       items: [
-        if (canEdit)
-          const CoeloAdminFlyoutItem(
-            value: EntityLifecycleAction.edit,
-            icon: Icons.edit_outlined,
-            label: 'Editar',
-          ),
+        if (canEdit) CoeloAdminEntityActions.edit(EntityLifecycleAction.edit),
         if (!archived && state != EntityLifecycleState.active)
-          const CoeloAdminFlyoutItem(
-            value: EntityLifecycleAction.activate,
-            icon: Icons.play_circle_outline_rounded,
-            label: 'Ativar',
-          ),
+          CoeloAdminEntityActions.activate(EntityLifecycleAction.activate),
         if (!archived && state != EntityLifecycleState.inactive)
-          const CoeloAdminFlyoutItem(
-            value: EntityLifecycleAction.inactivate,
-            icon: Icons.pause_circle_outline_rounded,
-            label: 'Inativar',
-          ),
+          CoeloAdminEntityActions.inactivate(EntityLifecycleAction.inactivate),
         if (!archived)
-          const CoeloAdminFlyoutItem(
-            value: EntityLifecycleAction.delete,
-            icon: Icons.delete_outline,
-            label: 'Excluir',
-            startsGroup: true,
-            tone: CoeloAdminFlyoutTone.negative,
-          ),
+          CoeloAdminEntityActions.delete(EntityLifecycleAction.delete, startsGroup: true),
       ],
       onSelected: onSelected,
-      builder: (context, controller) => IconButton(
+      builder: (context, controller) => CoeloAdminEntityActionsTrigger(
         key: Key('$keyPrefix-lifecycle-$entityId'),
+        controller: controller,
         tooltip: 'Ações de $entityLabel',
-        onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-        icon: const Icon(Icons.more_horiz_rounded),
-        iconSize: CoeloSize.iconSm,
-        visualDensity: VisualDensity.compact,
       ),
     );
   }

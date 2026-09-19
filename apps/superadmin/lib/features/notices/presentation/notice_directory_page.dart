@@ -569,50 +569,29 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage>
           label: notice.isPopup ? 'Pré-visualizar popup' : 'Prévia administrativa',
         ),
         if (actions.contains(_NoticeCardAction.edit))
-          const CoeloAdminFlyoutItem(
-            value: _NoticeCardAction.edit,
-            icon: Icons.edit_outlined,
-            label: 'Editar',
-          ),
+          CoeloAdminEntityActions.edit(_NoticeCardAction.edit),
         if (actions.contains(_NoticeCardAction.duplicate))
-          const CoeloAdminFlyoutItem(
-            value: _NoticeCardAction.duplicate,
-            icon: Icons.copy_all_outlined,
-            label: 'Duplicar',
-          ),
+          CoeloAdminEntityActions.duplicate(_NoticeCardAction.duplicate),
         if (actions.contains(_NoticeCardAction.publish))
-          const CoeloAdminFlyoutItem(
-            value: _NoticeCardAction.publish,
-            icon: Icons.send_rounded,
-            label: 'Publicar',
-          ),
+          CoeloAdminEntityActions.publish(_NoticeCardAction.publish),
         if (actions.contains(_NoticeCardAction.pause))
-          const CoeloAdminFlyoutItem(
-            value: _NoticeCardAction.pause,
-            icon: Icons.pause_circle_outline_rounded,
-            label: 'Pausar',
-          ),
+          CoeloAdminEntityActions.inactivate(_NoticeCardAction.pause, label: 'Pausar'),
         if (actions.contains(_NoticeCardAction.resume))
-          const CoeloAdminFlyoutItem(
-            value: _NoticeCardAction.resume,
-            icon: Icons.play_circle_outline_rounded,
-            label: 'Reativar',
-          ),
+          CoeloAdminEntityActions.activate(_NoticeCardAction.resume, label: 'Reativar'),
+        // Inativar e superadmin_notice_change_status -> inactive (pausa
+        // definitiva, nao cancelamento): icone de inativar, tom negativo.
         if (actions.contains(_NoticeCardAction.cancel))
-          const CoeloAdminFlyoutItem(
+          CoeloAdminFlyoutItem(
             value: _NoticeCardAction.cancel,
-            icon: Icons.block,
+            icon: CoeloAdminActionIcons.inactivate,
             label: 'Inativar',
             startsGroup: true,
             tone: CoeloAdminFlyoutTone.negative,
           ),
       ],
       onSelected: (action) => _runAction(action, notice),
-      builder: (context, controller) => IconButton(
-        tooltip: 'Ações da comunicação',
-        onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-        icon: const Icon(Icons.more_horiz_rounded),
-      ),
+      builder: (context, controller) =>
+          CoeloAdminEntityActionsTrigger(controller: controller, tooltip: 'Ações da comunicação'),
     );
   }
 

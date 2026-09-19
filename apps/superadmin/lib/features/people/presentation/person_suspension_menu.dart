@@ -29,34 +29,23 @@ final class PersonSuspensionMenu extends StatelessWidget {
     final scheduled = item.suspendedFrom != null;
     return CoeloAdminFlyout<PersonSuspensionAction>(
       items: [
-        if (canEdit)
-          const CoeloAdminFlyoutItem(
-            value: PersonSuspensionAction.edit,
-            icon: Icons.edit_outlined,
-            label: 'Editar',
-          ),
+        if (canEdit) CoeloAdminEntityActions.edit(PersonSuspensionAction.edit),
         if (!scheduled)
-          const CoeloAdminFlyoutItem(
+          CoeloAdminFlyoutItem(
             value: PersonSuspensionAction.suspend,
-            icon: Icons.pause_circle_outline_rounded,
+            icon: CoeloAdminActionIcons.inactivate,
             label: 'Suspender por período…',
+            startsGroup: canEdit,
             tone: CoeloAdminFlyoutTone.negative,
           )
         else
-          const CoeloAdminFlyoutItem(
-            value: PersonSuspensionAction.reactivate,
-            icon: Icons.play_circle_outline_rounded,
-            label: 'Reativar',
-          ),
+          CoeloAdminEntityActions.activate(PersonSuspensionAction.reactivate, label: 'Reativar'),
       ],
       onSelected: onSelected,
-      builder: (context, controller) => IconButton(
+      builder: (context, controller) => CoeloAdminEntityActionsTrigger(
         key: Key('person-suspension-${item.id}'),
+        controller: controller,
         tooltip: 'Ações de ${item.displayName}',
-        onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-        icon: const Icon(Icons.more_horiz_rounded),
-        iconSize: CoeloSize.iconSm,
-        visualDensity: VisualDensity.compact,
       ),
     );
   }
