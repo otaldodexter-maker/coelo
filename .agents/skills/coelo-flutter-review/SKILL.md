@@ -44,3 +44,11 @@ Versão anterior em `docs/archive/skills-20260918/`.
   `showDatePicker` do Material.
 - Header custom para o servidor (ex.: `x-coelo-surface`) vai só em `Supabase.instance.client.rest.headers`; nunca em `Supabase.initialize(headers:)`, porque as Edge Functions têm `Access-Control-Allow-Headers` fixo e o preflight de todas cai.
 - Acesso contextual (ADR 0035): o cliente só reflete `access_blocked`/`access_popup` de `list_my_principal_contexts`; nunca esconde o vínculo nem decide localmente (`principal_runtime_context_route.dart`).
+- Diálogo de posse da tela: `superadminDialogRoute<T>(context, builder:)` e o
+  mixin `SuperadminOwnedDialogs` (`showOwnedDialog`, `pushOwnedRoute`,
+  `dismissOwnedRoutes`) em `shared/presentation/widgets/superadmin_owned_dialogs.dart`;
+  nunca `DialogRoute<T>(…)` cru. Só data: `CoeloDateField`. Ação destrutiva
+  confirmada: `FilledButton` com `coeloDestructiveFilledButtonStyle(context)`.
+- @ (Decisão 16): campo "@ da unidade/turma (opcional)"; vazio, o servidor gera
+  o padrão e a nota mostra a prévia (`structure_handle_preview.dart`); na
+  criação o valor viaja como `handle` no payload; na edição só "Alterar @".
