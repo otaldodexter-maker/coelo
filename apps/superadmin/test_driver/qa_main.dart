@@ -7,6 +7,7 @@ import 'dart:convert';
 
 import 'package:coelo_superadmin/core/qa/superadmin_qa_hooks.dart';
 import 'package:coelo_superadmin/features/principal_circulars/application/circular_media_upload_coordinator.dart';
+import 'package:coelo_superadmin/features/safety/domain/child_safety_contract.dart';
 import 'package:coelo_superadmin/main.dart' as app;
 import 'package:flutter_driver/driver_extension.dart';
 
@@ -19,9 +20,7 @@ Future<void> main() async {
   // canal e deixa os controllers vazios. Runners que usam Driver.enterText
   // devem compilar com --dart-define=COELO_QA_TEXT_ENTRY_EMULATION=true.
   enableFlutterDriverExtension(
-    enableTextEntryEmulation: const bool.fromEnvironment(
-      'COELO_QA_TEXT_ENTRY_EMULATION',
-    ),
+    enableTextEntryEmulation: const bool.fromEnvironment('COELO_QA_TEXT_ENTRY_EMULATION'),
   );
   // A prova pela interface usa o seletor normal. Runners antigos podem
   // optar pelo arquivo sintetico; essa substituicao nao prova o seletor.
@@ -34,6 +33,15 @@ Future<void> main() async {
         bytes: base64Decode(_qaPngBase64),
       ),
     ];
+  }
+  // Segurança da criança (r12-18): o documento da pessoa sem conta também vem
+  // sintético; o servidor valida assinatura e tamanho como sempre.
+  if (const bool.fromEnvironment('COELO_QA_SYNTHETIC_SAFETY_DOCUMENT')) {
+    SuperadminQaHooks.childSafetyDocumentPicker = () async => ChildSafetyPersonDocumentFile(
+      fileName: 'qa-documento.png',
+      mimeType: 'image/png',
+      bytes: base64Decode(_qaPngBase64),
+    );
   }
   await app.main();
 }

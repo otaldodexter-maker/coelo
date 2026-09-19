@@ -1,4 +1,5 @@
 import '../../features/circulars/presentation/production_circular_hosts.dart';
+import '../../features/safety/domain/child_safety_contract.dart';
 
 /// Ganchos de QA da sessao de teste em producao (ADR 0034, Decisao 10).
 ///
@@ -9,4 +10,8 @@ import '../../features/circulars/presentation/production_circular_hosts.dart';
 abstract final class SuperadminQaHooks {
   /// Substitui o `FilePicker` nativo do compositor de Circulares.
   static CircularAttachmentPicker? circularFilePicker;
+
+  /// Substitui o `FilePicker` do documento da pessoa sem conta (Segurança da
+  /// criança, r12-18): a prova pela rota real envia bytes sintéticos pela Edge.
+  static Future<ChildSafetyPersonDocumentFile?> Function()? childSafetyDocumentPicker;
 }

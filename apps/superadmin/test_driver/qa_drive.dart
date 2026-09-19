@@ -79,13 +79,18 @@ Future<void> _waitForApp() async {
   throw TimeoutException('app nao respondeu depois da carga');
 }
 
-Map<String, Object?> key(String value) =>
-    {'finderType': 'ByValueKey', 'keyValueString': value, 'keyValueType': 'String'};
+Map<String, Object?> key(String value) => {
+  'finderType': 'ByValueKey',
+  'keyValueString': value,
+  'keyValueType': 'String',
+};
 Map<String, Object?> text(String value) => {'finderType': 'ByText', 'text': value};
 
 Future<void> main(List<String> args) async {
   if (args.length < 2) {
-    stderr.writeln('uso: qa_drive.dart <ws> login|cmd <json>|goto <url>|reload|shot <png>|texts|url');
+    stderr.writeln(
+      'uso: qa_drive.dart <ws> login|cmd <json>|goto <url>|reload|shot <png>|texts|url',
+    );
     exit(2);
   }
   _socket = await WebSocket.connect(args[0]);

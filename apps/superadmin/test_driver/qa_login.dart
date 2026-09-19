@@ -39,9 +39,8 @@ Future<void> main(List<String> args) async {
   }
 
   final vm = await call('getVM');
-  final isolates =
-      ((vm['result'] as Map<String, Object?>)['isolates'] as List)
-          .cast<Map<String, Object?>>();
+  final isolates = ((vm['result'] as Map<String, Object?>)['isolates'] as List)
+      .cast<Map<String, Object?>>();
   final isolateId = isolates.first['id'] as String;
   Future<Map<String, Object?>> driver(Map<String, Object?> command) async {
     final response = await call('ext.flutter.driver', {'isolateId': isolateId, ...command});
@@ -52,19 +51,18 @@ Future<void> main(List<String> args) async {
     return result;
   }
 
-  Map<String, Object?> key(String value) =>
-      {'finderType': 'ByValueKey', 'keyValueString': value, 'keyValueType': 'String'};
+  Map<String, Object?> key(String value) => {
+    'finderType': 'ByValueKey',
+    'keyValueString': value,
+    'keyValueType': 'String',
+  };
   await driver({'command': 'waitFor', ...key('superadmin-login-email'), 'timeout': '15000'});
   await driver({'command': 'tap', ...key('superadmin-login-email')});
   await driver({'command': 'enter_text', 'text': email});
   await driver({'command': 'tap', ...key('superadmin-login-password')});
   await driver({'command': 'enter_text', 'text': password});
   await driver({'command': 'tap', 'finderType': 'ByText', 'text': 'Entrar'});
-  await driver({
-    'command': 'waitForAbsent',
-    ...key('superadmin-login-email'),
-    'timeout': '30000',
-  });
+  await driver({'command': 'waitForAbsent', ...key('superadmin-login-email'), 'timeout': '30000'});
   stdout.writeln('login enviado e tela de login saiu');
   await socket.close();
 }

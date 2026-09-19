@@ -3766,6 +3766,10 @@ GoRouter createSuperadminRouter({
               // cadastra, edita e decide autorizacoes com auditoria. A rota
               // abre e o servidor revalida child_safety.manage em cada comando.
               onCreate: () => context.goNamed(SuperadminRoutes.safetyCreateName),
+              onCreateForChild: (id) => context.goNamed(
+                SuperadminRoutes.safetyCreateName,
+                queryParameters: {'childId': id},
+              ),
               onExport: null,
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
@@ -3777,6 +3781,7 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => ChildSafetyWizardPage(
               controller: resolvedChildSafetyController,
               childId: state.uri.queryParameters['childId'],
+              pickPersonDocument: SuperadminQaHooks.childSafetyDocumentPicker,
               logout: logout,
               onCancel: () => context.goNamed(SuperadminRoutes.safetyName),
               onSaved: () => context.goNamed(SuperadminRoutes.safetyName),
@@ -5561,6 +5566,10 @@ GoRouter createSuperadminRouter({
               controller: developmentChildSafetyController,
               logout: _previewLogout,
               onCreate: () => context.goNamed(SuperadminRoutes.devSafetyCreateName),
+              onCreateForChild: (id) => context.goNamed(
+                SuperadminRoutes.devSafetyCreateName,
+                queryParameters: {'childId': id},
+              ),
               onOpenChild: (id) => context.goNamed(
                 SuperadminRoutes.devSafetyChildName,
                 pathParameters: {'childId': id},

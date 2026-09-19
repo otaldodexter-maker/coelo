@@ -27,6 +27,7 @@ final class SafetyLandingPage extends StatefulWidget {
     required this.logout,
     required this.onOpenChild,
     this.onCreate,
+    this.onCreateForChild,
     this.onExport,
     this.onDestinationSelected,
     super.key,
@@ -35,6 +36,9 @@ final class SafetyLandingPage extends StatefulWidget {
   final LogoutAction logout;
   final ValueChanged<String> onOpenChild;
   final VoidCallback? onCreate;
+
+  /// Nova autorização já com a criança da linha (r12-10).
+  final ValueChanged<String>? onCreateForChild;
   final VoidCallback? onExport;
   final ValueChanged<String>? onDestinationSelected;
   @override
@@ -356,7 +360,11 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
             ),
             const SizedBox(height: CoeloSpacing.space4),
           ],
-          _SafetyRows(records: c.records, onOpen: widget.onOpenChild),
+          _SafetyRows(
+            records: c.records,
+            onOpen: widget.onOpenChild,
+            onCreateFor: c.canCreate ? widget.onCreateForChild : null,
+          ),
         ],
       ],
     );
@@ -454,9 +462,12 @@ final class SafetyChildDirectoryCard extends StatelessWidget {
 }
 
 final class _SafetyRows extends StatelessWidget {
-  const _SafetyRows({required this.records, required this.onOpen});
+  const _SafetyRows({required this.records, required this.onOpen, this.onCreateFor});
   final List<ChildSafetyRecord> records;
   final ValueChanged<String> onOpen;
+
+  /// Nova autorização para a criança da linha (r12-10: ações da linha).
+  final ValueChanged<String>? onCreateFor;
   @override
   Widget build(BuildContext context) => records.isEmpty
       ? const CoeloStatePanel(
@@ -471,12 +482,109 @@ final class _SafetyRows extends StatelessWidget {
           headerHeight: 56,
           rowHeight: 64,
           onRowPressed: (r) => onOpen(r.childId),
-          pinnedColumn: _column('child', 'Criança', (r) => r.childName, 240),
+          pinnedColumn: CoeloAdminTableColumn(
+            id: 'child',
+            label: 'Criança',
+            initialWidth: 260,
+            minWidth: 200,
+            maxWidth: 400,
+            cellBuilder: (context, r) => Row(
+              children: [
+                CoeloAvatar(
+                  initials: _initials(r.childName),
+                  semanticLabel: 'Avatar de ${r.childName}',
+                  size: CoeloAvatarSize.small,
+                ),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        r.childName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        r.internalId,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
           columns: [
             _column('institution', 'Instituição', (r) => r.institutionName, 220),
             _column('unit', 'Unidade', (r) => r.unitName, 200),
-            _column('authorized', 'Autorizadas', (r) => r.authorizationCount.toString(), 160),
-            _column('pending', 'Em análise', (r) => r.pendingCount.toString(), 150),
+            _column('authorized', 'Autorizadas', (r) => r.authorizationCount.toString(), 130),
+            _column('pending', 'Em análise', (r) => r.pendingCount.toString(), 130),
+            CoeloAdminTableColumn(
+              id: 'status',
+              label: 'Status',
+              initialWidth: 190,
+              minWidth: 150,
+              maxWidth: 260,
+              cellBuilder: (context, r) {
+                final (label, status) = _segmentStatus(r);
+                final colors = _statusPair(context, status);
+                return Align(
+                  alignment: Alignment.centerLeft,
+                  child: CoeloStatusChip(
+                    key: Key('safety-child-status-cell-${r.childId}'),
+                    label: label,
+                    backgroundColor: colors.$1,
+                    foregroundColor: colors.$2,
+                  ),
+                );
+              },
+            ),
+            CoeloAdminTableColumn(
+              id: 'actions',
+              label: 'Ações',
+              initialWidth: 88,
+              minWidth: 72,
+              maxWidth: 120,
+              cellBuilder: (context, r) => Align(
+                alignment: Alignment.centerLeft,
+                child: CoeloAdminFlyout<_SafetyRowAction>(
+                  items: [
+                    const CoeloAdminFlyoutItem(
+                      value: _SafetyRowAction.open,
+                      icon: Icons.shield_outlined,
+                      label: 'Abrir segurança',
+                    ),
+                    if (onCreateFor != null)
+                      const CoeloAdminFlyoutItem(
+                        value: _SafetyRowAction.create,
+                        icon: Icons.add_moderator_outlined,
+                        label: 'Nova autorização',
+                      ),
+                  ],
+                  onSelected: (action) => switch (action) {
+                    _SafetyRowAction.open => onOpen(r.childId),
+                    _SafetyRowAction.create => onCreateFor?.call(r.childId),
+                  },
+                  builder: (context, controller) => IconButton(
+                    key: Key('safety-child-actions-${r.childId}'),
+                    tooltip: 'Ações de ${r.childName}',
+                    onPressed: () => controller.isOpen ? controller.close() : controller.open(),
+                    icon: const Icon(Icons.more_horiz_rounded),
+                    iconSize: CoeloSize.iconSm,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+              ),
+            ),
           ],
         );
   CoeloAdminTableColumn<ChildSafetyRecord> _column(
@@ -488,10 +596,31 @@ final class _SafetyRows extends StatelessWidget {
     id: id,
     label: label,
     initialWidth: width,
-    minWidth: 140,
+    minWidth: 110,
     maxWidth: 360,
     cellBuilder: (_, item) => Text(value(item), maxLines: 1, overflow: TextOverflow.ellipsis),
   );
+}
+
+enum _SafetyRowAction { open, create }
+
+/// Rótulo e cor do segmento, iguais aos do card (uma fonte para as duas visões).
+(String, PickupAuthorizationStatus) _segmentStatus(ChildSafetyRecord record) {
+  final status = switch (record.directorySegment) {
+    ChildSafetyDirectorySegment.awaitingApproval => PickupAuthorizationStatus.pending,
+    ChildSafetyDirectorySegment.authorized => PickupAuthorizationStatus.approved,
+    ChildSafetyDirectorySegment.attention ||
+    ChildSafetyDirectorySegment.withoutAuthorization ||
+    ChildSafetyDirectorySegment.all => PickupAuthorizationStatus.rejected,
+  };
+  final label = switch (record.directorySegment) {
+    ChildSafetyDirectorySegment.awaitingApproval => 'Aguardando aprovação',
+    ChildSafetyDirectorySegment.attention => 'Atenção',
+    ChildSafetyDirectorySegment.authorized => 'Autorizada',
+    ChildSafetyDirectorySegment.withoutAuthorization => 'Sem autorização',
+    ChildSafetyDirectorySegment.all => status.label,
+  };
+  return (label, status);
 }
 
 final class ChildSecurityPage extends StatefulWidget {
@@ -1349,6 +1478,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       ..._personSearchSection(),
       const SizedBox(height: CoeloSpacing.space4),
       CoeloFormTextField(
+        fieldKey: const Key('safety-request-reason'),
         controller: requestReason,
         labelText: 'Motivo da solicitação',
         hintText: 'Informe o motivo auditável',
