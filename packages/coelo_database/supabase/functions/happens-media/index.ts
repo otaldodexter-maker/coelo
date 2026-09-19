@@ -5,6 +5,7 @@ import {
   R2TransportError,
   validateR2Config,
 } from "../_shared/r2_s3.ts";
+import { bytesResponse, decodeEnvelope, isBinaryUpload, readUploadBytes } from "../_shared/edge_bytes.ts";
 
 const DEFAULT_MAX_BYTES = 10 * 1024 * 1024;
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp", "video/mp4"]);
@@ -14,7 +15,7 @@ type Json = Record<string, unknown>;
 
 export type HappensMediaTransport = Pick<
   R2Client,
-  "presignGet" | "presignPut" | "get" | "delete"
+  "presignGet" | "presignPut" | "get" | "put" | "delete"
 >;
 
 export type HappensMediaDependencies = Readonly<{
@@ -82,26 +83,32 @@ function descriptorBucket(descriptor: Json) {
   return bucket;
 }
 
+function corsHeaders(dependencies: HappensMediaDependencies, origin: string | null) {
+  const headers: Record<string, string> = {
+    "Cache-Control": "no-store",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+    "Vary": "Origin",
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type, x-coelo-media-envelope, x-coelo-surface",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+  if (origin !== null && allowedOrigins(dependencies).has(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  }
+  return headers;
+}
+
 function reply(
   dependencies: HappensMediaDependencies,
   origin: string | null,
   status: number,
   body: Json,
 ) {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    "Cache-Control": "no-store",
-    "X-Content-Type-Options": "nosniff",
-    "Referrer-Policy": "no-referrer",
-    "Vary": "Origin",
-    "Access-Control-Allow-Headers":
-      "authorization, x-client-info, apikey, content-type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-  };
-  if (origin !== null && allowedOrigins(dependencies).has(origin)) {
-    headers["Access-Control-Allow-Origin"] = origin;
-  }
-  return new Response(JSON.stringify(body), { status, headers });
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders(dependencies, origin), "Content-Type": "application/json" },
+  });
 }
 
 function secret(dependencies: HappensMediaDependencies) {
@@ -175,7 +182,8 @@ export async function handleHappensMediaRequest(
   }
 
   try {
-    const body = await request.json() as Json;
+    // Upload binário: envelope no cabeçalho, bytes no corpo (_shared/edge_bytes.ts).
+    const body = isBinaryUpload(request) ? decodeEnvelope(request) : await request.json() as Json;
     const url = dependencies.envGet("SUPABASE_URL")!;
     const user = dependencies.createClient(
       url,
@@ -202,6 +210,20 @@ export async function handleHappensMediaRequest(
         return respond(origin, 403, { error: "media_read_denied" });
       }
       const descriptor = redeemed.data as Json;
+      if (body.inline === true) {
+        // Bytes pela Edge: nenhuma URL assinada chega ao navegador.
+        let bytes: Uint8Array;
+        if (usesR2(descriptor)) {
+          bytes = await transportFor(dependencies, descriptorBucket(descriptor))
+            .get(String(descriptor.object_key), maxBytes(dependencies)).catch(opaqueTransport);
+        } else {
+          const stored = await admin.storage.from(String(descriptor.bucket_id))
+            .download(String(descriptor.object_key));
+          if (stored.error) throw new Error("media_read_denied");
+          bytes = new Uint8Array(await stored.data.arrayBuffer());
+        }
+        return bytesResponse(corsHeaders(dependencies, origin), bytes, String(descriptor.mime_type));
+      }
       if (usesR2(descriptor)) {
         const signed = await transportFor(
           dependencies,
@@ -271,6 +293,34 @@ export async function handleHappensMediaRequest(
         object_key: descriptor.object_key,
         upload_token: signed.data.token,
       });
+    }
+
+    if (body.action === "upload") {
+      // A Edge grava os bytes (R2 ou bucket legado) e segue para o finalize
+      // normal, que relê e confere a assinatura real.
+      const input = uploadEnvelope(body, dependencies);
+      const bytes = await readUploadBytes(request, input.sizeBytes);
+      if (!validSignature(bytes, input.mimeType)) throw new Error("invalid_media_signature");
+      const prepared = await user.rpc("prepare_happens_media_upload", {
+        p_request_id: input.requestId,
+        p_institution_id: input.institutionId,
+        p_post_id: input.postId,
+        p_name: input.name,
+        p_mime_type: input.mimeType,
+        p_byte_size: input.sizeBytes,
+      });
+      if (prepared.error) throw new Error("media_prepare_failed");
+      const descriptor = prepared.data as Json;
+      if (usesR2(descriptor)) {
+        await transportFor(dependencies, descriptorBucket(descriptor))
+          .put(String(descriptor.object_key), bytes, input.mimeType).catch(opaqueTransport);
+      } else {
+        const stored = await admin.storage.from(String(descriptor.bucket_id))
+          .upload(String(descriptor.object_key), bytes, { contentType: input.mimeType, upsert: true });
+        if (stored.error) throw new Error("media_upload_failed");
+      }
+      body.action = "finalize";
+      body.asset_id = descriptor.asset_id;
     }
 
     if (body.action === "finalize") {

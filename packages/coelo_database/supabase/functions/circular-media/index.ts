@@ -5,11 +5,14 @@ import {
   R2TransportError,
   validateR2Config,
 } from "../_shared/r2_s3.ts";
+import { bytesResponse, decodeEnvelope, isBinaryUpload, readUploadBytes } from "../_shared/edge_bytes.ts";
 
 import { validateCircularMediaEnvelope } from "./media_contract.ts";
 
 type Json = Record<string, unknown>;
 const maximumRequestBytes = 32_768;
+// Upload binário pela Edge: o maior tamanho do contrato (vídeo) + margem de cabeçalhos.
+const maximumUploadBytes = 25 * 1024 * 1024;
 const uploadTtlSeconds = 300;
 const readTtlSeconds = 120;
 
@@ -19,7 +22,7 @@ const legacyBucket = "coelo-circulars-private";
 
 export type CircularMediaTransport = Pick<
   R2Client,
-  "presignGet" | "presignPut" | "get" | "delete"
+  "presignGet" | "presignPut" | "get" | "put" | "delete"
 >;
 
 export type CircularMediaDependencies = Readonly<{
@@ -86,25 +89,32 @@ function descriptorBucket(descriptor: Json) {
   return bucket;
 }
 
+function corsHeaders(origins: ReadonlySet<string>, origin: string | null) {
+  const headers: Record<string, string> = {
+    "Cache-Control": "no-store",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+    "Vary": "Origin",
+    "Access-Control-Allow-Headers":
+      "authorization, apikey, content-type, x-client-info, x-coelo-media-envelope, x-coelo-surface",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+  if (origin !== null && origins.has(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  }
+  return headers;
+}
+
 function reply(
   origins: ReadonlySet<string>,
   origin: string | null,
   status: number,
   body: Json,
 ) {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    "Cache-Control": "no-store",
-    "X-Content-Type-Options": "nosniff",
-    "Referrer-Policy": "no-referrer",
-    "Vary": "Origin",
-    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-  };
-  if (origin !== null && origins.has(origin)) {
-    headers["Access-Control-Allow-Origin"] = origin;
-  }
-  return new Response(JSON.stringify(body), { status, headers });
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders(origins, origin), "Content-Type": "application/json" },
+  });
 }
 
 function operationId(value: unknown) {
@@ -177,18 +187,20 @@ export async function handleCircularMediaRequest(
 
   try {
     const declaredLength = request.headers.get("content-length");
+    // Upload binário: envelope no cabeçalho, bytes no corpo (_shared/edge_bytes.ts).
+    const binary = isBinaryUpload(request);
     if (declaredLength !== null) {
       const parsedLength = Number(declaredLength);
       if (
         !Number.isSafeInteger(parsedLength) || parsedLength < 0 ||
-        parsedLength > maximumRequestBytes
+        parsedLength > (binary ? maximumUploadBytes : maximumRequestBytes)
       ) {
         return respond(origin, 413, { error: "request_too_large" });
       }
     }
     const contentType = request.headers.get("content-type")
       ?.split(";", 1)[0].trim().toLowerCase();
-    if (contentType !== "application/json") {
+    if (contentType !== "application/json" && !binary) {
       return respond(origin, 415, { error: "unsupported_media_type" });
     }
 
@@ -204,7 +216,7 @@ export async function handleCircularMediaRequest(
       return respond(origin, 401, { error: "authentication_required" });
     }
 
-    const rawBody = await request.text();
+    const rawBody = binary ? "" : await request.text();
     if (new TextEncoder().encode(rawBody).length > maximumRequestBytes) {
       return respond(origin, 413, { error: "request_too_large" });
     }
@@ -235,10 +247,14 @@ export async function handleCircularMediaRequest(
     let url = userSession?.url ?? null;
 
     let body: Json;
-    try {
-      body = JSON.parse(rawBody) as Json;
-    } catch {
-      throw new Error("invalid_request");
+    if (binary) {
+      body = decodeEnvelope(request);
+    } else {
+      try {
+        body = JSON.parse(rawBody) as Json;
+      } catch {
+        throw new Error("invalid_request");
+      }
     }
 
     if (body.action === "cleanup") {
@@ -292,6 +308,20 @@ export async function handleCircularMediaRequest(
         return respond(origin, 403, { error: "media_read_denied" });
       }
       const descriptor = authorized.data as Json;
+      if (body.inline === true) {
+        // Bytes pela Edge: nenhuma URL assinada chega ao navegador.
+        let bytes: Uint8Array;
+        if (usesR2(descriptor)) {
+          bytes = await transportFor(dependencies, descriptorBucket(descriptor))
+            .get(String(descriptor.object_key), maximumUploadBytes).catch(opaqueTransport);
+        } else {
+          const stored = await admin.storage.from(String(descriptor.bucket_id))
+            .download(String(descriptor.object_key));
+          if (stored.error) throw new Error("media_read_denied");
+          bytes = new Uint8Array(await stored.data.arrayBuffer());
+        }
+        return bytesResponse(corsHeaders(origins, origin), bytes, String(descriptor.mime_type));
+      }
       if (usesR2(descriptor)) {
         const signed = await transportFor(
           dependencies,
@@ -389,6 +419,24 @@ export async function handleCircularMediaRequest(
         required_headers: { "content-type": input.mimeType },
         expires_at: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
       });
+    }
+
+    if (body.action === "upload") {
+      // A Edge grava os bytes e segue para o finalize normal (relê e confere a assinatura).
+      if (descriptor.status !== "ready") {
+        const bytes = await readUploadBytes(request, input.sizeBytes);
+        if (!validSignature(bytes, input.mimeType)) throw new Error("invalid_media_signature");
+        if (usesR2(descriptor)) {
+          await transportFor(dependencies, descriptorBucket(descriptor))
+            .put(String(descriptor.object_key), bytes, input.mimeType).catch(opaqueTransport);
+        } else {
+          const stored = await admin.storage.from(String(descriptor.bucket_id))
+            .upload(String(descriptor.object_key), bytes, { contentType: input.mimeType, upsert: true });
+          if (stored.error) throw new Error("media_upload_failed");
+        }
+      }
+      body.action = "finalize";
+      body.asset_id = descriptor.asset_id;
     }
 
     if (body.action === "finalize") {

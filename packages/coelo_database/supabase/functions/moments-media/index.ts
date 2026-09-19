@@ -1,7 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
+import { bytesResponse, decodeEnvelope, isBinaryUpload, readUploadBytes } from "../_shared/edge_bytes.ts";
 import { MomentsR2Client, momentsR2Config } from "./r2_s3.ts";
-import { assertStoredBytesMatchDeclaredType } from "./stored_bytes.ts";
+import { assertStoredBytesMatchDeclaredType, matchesDeclaredType } from "./stored_bytes.ts";
 
 type Json = Record<string, unknown>;
 const allowedMimeTypes = new Set([
@@ -21,19 +22,25 @@ function allowedOrigins() {
   );
 }
 
-function reply(origin: string | null, status: number, body: Json) {
+function corsHeaders(origin: string | null) {
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
     "Cache-Control": "no-store",
     "Vary": "Origin",
     "Access-Control-Allow-Headers":
-      "authorization, apikey, content-type, x-client-info, x-worker-secret",
+      "authorization, apikey, content-type, x-client-info, x-worker-secret, x-coelo-media-envelope, x-coelo-surface",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
   if (origin !== null && allowedOrigins().has(origin)) {
     headers["Access-Control-Allow-Origin"] = origin;
   }
-  return new Response(JSON.stringify(body), { status, headers });
+  return headers;
+}
+
+function reply(origin: string | null, status: number, body: Json) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
+  });
 }
 
 function environment() {
@@ -111,7 +118,9 @@ Deno.serve(async (request) => {
   }
 
   try {
-    const body = await request.json() as Json;
+    // Upload binário: envelope no cabeçalho, bytes no corpo (ver _shared/edge_bytes.ts).
+    const binary = isBinaryUpload(request);
+    const body = binary ? decodeEnvelope(request) : await request.json() as Json;
     const url = requiredSecret("SUPABASE_URL");
     const admin = createClient(
       url,
@@ -167,6 +176,11 @@ Deno.serve(async (request) => {
         return reply(origin, 403, { error: "media_read_denied" });
       }
       const descriptor = authorized.data as Json;
+      if (body.inline === true) {
+        // Bytes pela Edge: sem URL assinada no navegador.
+        const bytes = await r2.get(String(descriptor.object_key), maximumBytes);
+        return bytesResponse(corsHeaders(origin), bytes, String(descriptor.mime_type));
+      }
       const signed = await r2.presignGet(String(descriptor.object_key), 120);
       return reply(origin, 200, {
         signed_url: signed.url.toString(),
@@ -205,6 +219,18 @@ Deno.serve(async (request) => {
         expires_at: new Date(Date.now() + 300_000).toISOString(),
         receipt_id: descriptor.receipt_id,
       });
+    }
+
+    if (body.action === "upload") {
+      // Bytes chegam aqui, a Edge grava no R2 e segue para o finalize normal
+      // (que relê e confere a assinatura real, como no PUT assinado).
+      const bytes = await readUploadBytes(request, input.sizeBytes);
+      if (!matchesDeclaredType(bytes, input.mimeType)) {
+        throw new Error("uploaded_media_mismatch");
+      }
+      await r2.put(String(descriptor.object_key), bytes, input.mimeType);
+      body.action = "finalize";
+      body.asset_id = descriptor.asset_id;
     }
 
     if (body.action === "finalize") {

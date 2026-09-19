@@ -74,6 +74,7 @@ function dependencies(overrides: Partial<ChildSafetyMediaDependencies> = {}) {
       presignGet: async (key: string) => ({ url: new URL(`https://signed.local/${key}`), requiredHeaders: {} }),
       get: async () => new Uint8Array([0xff, 0xd8, 0xff]),
       head: async () => ({ byteSize: 3, mimeType: "image/jpeg", etag: null }),
+      put: async () => {},
       delete: async () => {},
     }),
     ...overrides,

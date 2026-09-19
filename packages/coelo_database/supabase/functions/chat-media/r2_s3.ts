@@ -51,6 +51,11 @@ export class ChatR2Client {
     return this.#client.head(key).catch(compatibleError);
   }
 
+  /// Upload pela Edge (o navegador nunca fala com o R2).
+  put(key: string, bytes: Uint8Array, mimeType: string) {
+    return this.#client.put(key, bytes, mimeType).catch(compatibleError);
+  }
+
   get(key: string, maxBytes: number) {
     return this.#client.get(key, maxBytes).catch(compatibleError);
   }

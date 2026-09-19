@@ -80,7 +80,8 @@ function dependencies(rpcOverrides: Record<string, Json> = {}): Dependencies {
       }),
       presignGet: async (key: string) => ({ url: new URL(`https://signed.local/${key}`), requiredHeaders: {} }),
       get: async () => new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]),
-      head: async () => ({ byteSize: 8, mimeType: "image/png", etag: null }),
+      head: async () => ({ byteSize: 8, mimeType: "image/png" }),
+      put: async () => {},
       delete: async () => {},
     }),
   };

@@ -62,6 +62,11 @@ export class MomentsR2Client {
     return this.#client.head(key).catch(compatibleError);
   }
 
+  /// Upload pela Edge (o navegador nunca fala com o R2).
+  put(key: string, bytes: Uint8Array, mimeType: string) {
+    return this.#client.put(key, bytes, mimeType).catch(compatibleError);
+  }
+
   /// Le de volta os bytes ja armazenados, limitados por [maxBytes], para que a
   /// finalizacao possa conferir a assinatura MIME real em vez de confiar no
   /// Content-Type que o proprio cliente declarou no PUT.

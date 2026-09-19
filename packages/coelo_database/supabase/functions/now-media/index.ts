@@ -5,6 +5,7 @@ import {
   R2TransportError,
   validateR2Config,
 } from "../_shared/r2_s3.ts";
+import { bytesResponse, decodeEnvelope, isBinaryUpload, readUploadBytes } from "../_shared/edge_bytes.ts";
 
 /** Bucket legado do Supabase Storage. O ramo legado continua exigindo que o
  * descritor aponte exatamente para ele; o ramo R2 nao passa por aqui. */
@@ -26,7 +27,7 @@ type Json = Record<string, unknown>;
 
 export type NowMediaTransport = Pick<
   R2Client,
-  "presignGet" | "presignPut" | "get" | "delete"
+  "presignGet" | "presignPut" | "get" | "put" | "delete"
 >;
 
 export type NowMediaDependencies = Readonly<{
@@ -103,25 +104,29 @@ function legacyObjectKey(descriptor: Json, failure: string) {
   return descriptor.object_key;
 }
 
+function corsHeaders(dependencies: NowMediaDependencies, origin: string | null) {
+  const headers: Record<string, string> = {
+    "Cache-Control": "no-store",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+    "Vary": "Origin",
+    "Access-Control-Allow-Headers":
+      "authorization, apikey, content-type, x-client-info, x-coelo-media-envelope, x-coelo-surface",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+  if (origin !== null && allowedOrigins(dependencies).has(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  }
+  return headers;
+}
+
 function reply(
   dependencies: NowMediaDependencies,
   origin: string | null,
   status: number,
   body: Json,
 ) {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    "Cache-Control": "no-store",
-    "X-Content-Type-Options": "nosniff",
-    "Referrer-Policy": "no-referrer",
-    "Vary": "Origin",
-    "Access-Control-Allow-Headers":
-      "authorization, apikey, content-type, x-client-info",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-  };
-  if (origin !== null && allowedOrigins(dependencies).has(origin)) {
-    headers["Access-Control-Allow-Origin"] = origin;
-  }
+  const headers = { ...corsHeaders(dependencies, origin), "Content-Type": "application/json" };
   return new Response(JSON.stringify(body), {
     status,
     headers,
@@ -244,7 +249,8 @@ export async function handleNowMediaRequest(
     return respond(origin, 401, { error: "authentication_required" });
   }
   try {
-    const body = await request.json() as Json;
+    // Upload binário: envelope no cabeçalho, bytes no corpo (_shared/edge_bytes.ts).
+    const body = isBinaryUpload(request) ? decodeEnvelope(request) : await request.json() as Json;
     const url = dependencies.envGet("SUPABASE_URL")!;
     const user = dependencies.createClient(
       url,
@@ -254,6 +260,20 @@ export async function handleNowMediaRequest(
     const admin = dependencies.createClient(url, secret(dependencies), {
       auth: { persistSession: false },
     });
+
+    // Bytes pela Edge (read/read-draft com inline=true): nenhuma URL assinada chega ao navegador.
+    const inlineRead = async (descriptor: Json, failure: string) => {
+      let bytes: Uint8Array;
+      if (usesR2(descriptor)) {
+        bytes = await transportFor(dependencies, descriptorBucket(descriptor))
+          .get(String(descriptor.object_key), maxBytes(dependencies)).catch(opaqueTransport);
+      } else {
+        const stored = await admin.storage.from(BUCKET).download(legacyObjectKey(descriptor, failure));
+        if (stored.error) throw new Error(failure);
+        bytes = new Uint8Array(await stored.data.arrayBuffer());
+      }
+      return bytesResponse(corsHeaders(dependencies, origin), bytes, String(descriptor.mime_type));
+    };
 
     const signedRead = async (descriptor: Json, failure: string) => {
       if (usesR2(descriptor)) {
@@ -287,6 +307,7 @@ export async function handleNowMediaRequest(
       });
       if (authorized.error) throw new Error("asset_read_not_authorized");
       const descriptor = authorized.data as Json;
+      if (body.inline === true) return await inlineRead(descriptor, "asset_read_not_authorized");
       return respond(origin, 200, {
         signed_url: await signedRead(descriptor, "asset_read_not_authorized"),
         mime_type: descriptor.mime_type,
@@ -310,6 +331,7 @@ export async function handleNowMediaRequest(
         return respond(origin, 403, { error: "media_read_denied" });
       }
       const descriptor = redeemed.data as Json;
+      if (body.inline === true) return await inlineRead(descriptor, "media_read_denied");
       return respond(origin, 200, {
         signed_url: await signedRead(descriptor, "media_read_denied"),
         mime_type: descriptor.mime_type,
@@ -366,6 +388,38 @@ export async function handleNowMediaRequest(
         object_key: objectKey,
         upload_token: signed.data.token,
       });
+    }
+
+    if (body.action === "upload") {
+      // A Edge grava os bytes (R2 ou bucket legado) e segue para o finalize
+      // normal, que relê e confere a assinatura real.
+      const input = uploadEnvelope(body, dependencies);
+      const bytes = await readUploadBytes(request, input.sizeBytes);
+      if (!validSignature(bytes, String(input.mimeType))) throw new Error("invalid_asset_signature");
+      const prepared = await user.rpc("prepare_now_asset_upload", {
+        p_institution_id: input.institutionId,
+        p_publication_id: input.publicationId,
+        p_kind: input.kind,
+        p_name: input.name,
+        p_mime_type: input.mimeType,
+        p_byte_size: input.sizeBytes,
+        p_duration_seconds: input.durationSeconds,
+        p_rights_confirmed: input.rightsConfirmed,
+      });
+      if (prepared.error) throw new Error("asset_prepare_failed");
+      const descriptor = prepared.data as Json;
+      if (typeof descriptor.asset_id !== "string") throw new Error("asset_prepare_failed");
+      if (usesR2(descriptor)) {
+        await transportFor(dependencies, descriptorBucket(descriptor))
+          .put(String(descriptor.object_key), bytes, String(input.mimeType)).catch(opaqueTransport);
+      } else {
+        const stored = await admin.storage.from(BUCKET)
+          .upload(legacyObjectKey(descriptor, "asset_prepare_failed"), bytes, {
+            contentType: String(input.mimeType), upsert: true });
+        if (stored.error) throw new Error("asset_upload_failed");
+      }
+      body.action = "finalize";
+      body.asset_id = descriptor.asset_id;
     }
 
     if (body.action === "finalize") {

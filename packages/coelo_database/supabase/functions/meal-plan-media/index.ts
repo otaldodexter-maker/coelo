@@ -5,6 +5,7 @@ import {
   R2TransportError,
   validateR2Config,
 } from "../_shared/r2_s3.ts";
+import { bytesResponse, decodeEnvelope, isBinaryUpload, readUploadBytes } from "../_shared/edge_bytes.ts";
 
 /** Imagens de Cardapios em R2 privado (owner.r12-38, spec 063, ADR 0032):
  * prepare -> PUT assinado -> finalize (bytes relidos e assinatura real) ->
@@ -18,7 +19,7 @@ type Json = Record<string, unknown>;
 
 export type MealPlanMediaTransport = Pick<
   R2Client,
-  "presignGet" | "presignPut" | "get" | "head" | "delete"
+  "presignGet" | "presignPut" | "get" | "put" | "head" | "delete"
 >;
 
 export type MealPlanMediaDependencies = Readonly<{
@@ -81,26 +82,32 @@ function descriptorBucket(descriptor: Json) {
   return bucket;
 }
 
+function corsHeaders(dependencies: MealPlanMediaDependencies, origin: string | null) {
+  const headers: Record<string, string> = {
+    "Cache-Control": "no-store",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+    "Vary": "Origin",
+    "Access-Control-Allow-Headers":
+      "authorization, apikey, content-type, x-client-info, x-coelo-media-envelope, x-coelo-surface",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+  if (origin !== null && allowedOrigins(dependencies).has(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  }
+  return headers;
+}
+
 function reply(
   dependencies: MealPlanMediaDependencies,
   origin: string | null,
   status: number,
   body: Json,
 ) {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    "Cache-Control": "no-store",
-    "X-Content-Type-Options": "nosniff",
-    "Referrer-Policy": "no-referrer",
-    "Vary": "Origin",
-    "Access-Control-Allow-Headers":
-      "authorization, apikey, content-type, x-client-info",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-  };
-  if (origin !== null && allowedOrigins(dependencies).has(origin)) {
-    headers["Access-Control-Allow-Origin"] = origin;
-  }
-  return new Response(JSON.stringify(body), { status, headers });
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders(dependencies, origin), "Content-Type": "application/json" },
+  });
 }
 
 function secret(dependencies: MealPlanMediaDependencies) {
@@ -184,7 +191,8 @@ export async function handleMealPlanMediaRequest(
     return respond(origin, 401, { error: "authentication_required" });
   }
   try {
-    const body = await request.json() as Json;
+    // Upload binário: envelope no cabeçalho, bytes no corpo (_shared/edge_bytes.ts).
+    const body = isBinaryUpload(request) ? decodeEnvelope(request) : await request.json() as Json;
     const url = dependencies.envGet("SUPABASE_URL")!;
     const user = dependencies.createClient(
       url,
@@ -228,6 +236,29 @@ export async function handleMealPlanMediaRequest(
         max_bytes: descriptor.max_bytes,
         expires_at: new Date(Date.now() + uploadTtlSeconds * 1000).toISOString(),
       });
+    }
+
+    if (body.action === "upload") {
+      // O bilhete do dono autoriza o upload; a Edge grava no R2 e segue para o
+      // finalize normal (releitura + assinatura + sha256 medido).
+      if (typeof body.request_id !== "string" || !uuid.test(body.request_id)) {
+        return respond(origin, 400, { error: "invalid_request" });
+      }
+      const ticketed = await user.rpc("meal_plan_authorize_image_finalize_v2", {
+        p_request_id: body.request_id,
+      });
+      if (ticketed.error) {
+        return respond(origin, 403, { error: "image_upload_denied" });
+      }
+      const descriptor = ticketed.data as Json;
+      const bytes = await readUploadBytes(request, Number(descriptor.byte_size));
+      if (!validSignature(bytes, String(descriptor.mime_type))) {
+        throw new Error("invalid_image_signature");
+      }
+      await transportFor(dependencies, descriptorBucket(descriptor))
+        .put(String(descriptor.object_key), bytes, String(descriptor.mime_type))
+        .catch(opaqueTransport);
+      body.action = "finalize";
     }
 
     if (body.action === "finalize") {
@@ -291,6 +322,12 @@ export async function handleMealPlanMediaRequest(
       if (descriptor.storage_provider !== "r2") {
         // Ativo legado (Supabase Storage): leitura pelo caminho v1 do cliente.
         return respond(origin, 409, { error: "legacy_storage_asset" });
+      }
+      if (body.inline === true) {
+        // Bytes pela Edge: nenhuma URL assinada chega ao navegador.
+        const bytes = await transportFor(dependencies, descriptorBucket(descriptor))
+          .get(String(descriptor.object_key), maxBytes(dependencies)).catch(opaqueTransport);
+        return bytesResponse(corsHeaders(dependencies, origin), bytes, String(descriptor.mime_type));
       }
       const signed = await transportFor(dependencies, descriptorBucket(descriptor))
         .presignGet(String(descriptor.object_key), readTtlSeconds)

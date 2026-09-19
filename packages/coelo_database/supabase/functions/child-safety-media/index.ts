@@ -5,6 +5,7 @@ import {
   R2TransportError,
   validateR2Config,
 } from "../_shared/r2_s3.ts";
+import { bytesResponse, decodeEnvelope, isBinaryUpload, readUploadBytes } from "../_shared/edge_bytes.ts";
 
 /** Documento de identidade da pessoa autorizada sem conta (ADR 0041 B6,
  * spec 062). So R2 privado (coelo-documents-prod): nunca URL publica, nunca
@@ -22,7 +23,7 @@ type Json = Record<string, unknown>;
 
 export type ChildSafetyMediaTransport = Pick<
   R2Client,
-  "presignGet" | "presignPut" | "get" | "head" | "delete"
+  "presignGet" | "presignPut" | "get" | "put" | "head" | "delete"
 >;
 
 export type ChildSafetyMediaDependencies = Readonly<{
@@ -89,26 +90,32 @@ function descriptorBucket(descriptor: Json) {
   return bucket;
 }
 
+function corsHeaders(dependencies: ChildSafetyMediaDependencies, origin: string | null) {
+  const headers: Record<string, string> = {
+    "Cache-Control": "no-store",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+    "Vary": "Origin",
+    "Access-Control-Allow-Headers":
+      "authorization, apikey, content-type, x-client-info, x-coelo-media-envelope, x-coelo-surface",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+  if (origin !== null && allowedOrigins(dependencies).has(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  }
+  return headers;
+}
+
 function reply(
   dependencies: ChildSafetyMediaDependencies,
   origin: string | null,
   status: number,
   body: Json,
 ) {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    "Cache-Control": "no-store",
-    "X-Content-Type-Options": "nosniff",
-    "Referrer-Policy": "no-referrer",
-    "Vary": "Origin",
-    "Access-Control-Allow-Headers":
-      "authorization, apikey, content-type, x-client-info",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-  };
-  if (origin !== null && allowedOrigins(dependencies).has(origin)) {
-    headers["Access-Control-Allow-Origin"] = origin;
-  }
-  return new Response(JSON.stringify(body), { status, headers });
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders(dependencies, origin), "Content-Type": "application/json" },
+  });
 }
 
 function secret(dependencies: ChildSafetyMediaDependencies) {
@@ -193,7 +200,8 @@ export async function handleChildSafetyMediaRequest(
     return respond(origin, 401, { error: "authentication_required" });
   }
   try {
-    const body = await request.json() as Json;
+    // Upload binário: envelope no cabeçalho, bytes no corpo (_shared/edge_bytes.ts).
+    const body = isBinaryUpload(request) ? decodeEnvelope(request) : await request.json() as Json;
     const url = dependencies.envGet("SUPABASE_URL")!;
     const user = dependencies.createClient(
       url,
@@ -237,6 +245,30 @@ export async function handleChildSafetyMediaRequest(
       });
     }
 
+    if (body.action === "upload") {
+      // O bilhete do dono autoriza o upload; a Edge grava no R2 e segue para o
+      // finalize normal (releitura + assinatura + sha256 medido).
+      if (typeof body.document_id !== "string" || !uuid.test(body.document_id)) {
+        return respond(origin, 400, { error: "invalid_request" });
+      }
+      const ticketed = await user.rpc(
+        "child_safety_person_document_authorize_finalize_v1",
+        { p_document_id: body.document_id },
+      );
+      if (ticketed.error) {
+        return respond(origin, 403, { error: "document_upload_denied" });
+      }
+      const descriptor: Json = { storage_provider: "r2", ...(ticketed.data as Json) };
+      const bytes = await readUploadBytes(request, Number(descriptor.byte_size));
+      if (!validSignature(bytes, String(descriptor.mime_type))) {
+        throw new Error("invalid_document_signature");
+      }
+      await transportFor(dependencies, descriptorBucket(descriptor))
+        .put(String(descriptor.object_key), bytes, String(descriptor.mime_type))
+        .catch(opaqueTransport);
+      body.action = "finalize";
+    }
+
     if (body.action === "finalize") {
       if (typeof body.document_id !== "string" || !uuid.test(body.document_id)) {
         return respond(origin, 400, { error: "invalid_request" });
@@ -250,7 +282,7 @@ export async function handleChildSafetyMediaRequest(
       }
       // O bilhete de finalize nao repete storage_provider: documentos sao
       // sempre R2 (constraint authorized_person_documents_provider_ck).
-      const descriptor = { storage_provider: "r2", ...(ticketed.data as Json) };
+      const descriptor: Json = { storage_provider: "r2", ...(ticketed.data as Json) };
       const expectedSize = Number(descriptor.byte_size);
       const expectedMime = String(descriptor.mime_type);
       const transport = transportFor(dependencies, descriptorBucket(descriptor));
@@ -287,6 +319,12 @@ export async function handleChildSafetyMediaRequest(
         return respond(origin, 403, { error: "document_read_denied" });
       }
       const descriptor = authorized.data as Json;
+      if (body.inline === true) {
+        // Bytes pela Edge: nenhuma URL assinada chega ao navegador.
+        const bytes = await transportFor(dependencies, descriptorBucket(descriptor))
+          .get(String(descriptor.object_key), maxBytes(dependencies)).catch(opaqueTransport);
+        return bytesResponse(corsHeaders(dependencies, origin), bytes, String(descriptor.mime_type));
+      }
       const signed = await transportFor(dependencies, descriptorBucket(descriptor))
         .presignGet(String(descriptor.object_key), readTtlSeconds)
         .catch(opaqueTransport);

@@ -1,7 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
+import { bytesResponse, decodeEnvelope, isBinaryUpload, readUploadBytes } from "../_shared/edge_bytes.ts";
 import { ChatR2Client, chatR2Config } from "./r2_s3.ts";
-import { readStoredBytes } from "./stored_bytes.ts";
+import { matchesDeclaredType, readStoredBytes } from "./stored_bytes.ts";
 
 // Gateway de anexos do chat interno (R05 realm-interno, 20260911210200).
 // Contrato de tres tempos: prepare (RPC do usuario + PUT assinado), finalize
@@ -31,19 +32,25 @@ function allowedOrigins() {
   );
 }
 
-function reply(origin: string | null, status: number, body: Json) {
+function corsHeaders(origin: string | null) {
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
     "Cache-Control": "no-store",
     "Vary": "Origin",
     "Access-Control-Allow-Headers":
-      "authorization, apikey, content-type, x-client-info, x-worker-secret",
+      "authorization, apikey, content-type, x-client-info, x-worker-secret, x-coelo-media-envelope, x-coelo-surface",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
   if (origin !== null && allowedOrigins().has(origin)) {
     headers["Access-Control-Allow-Origin"] = origin;
   }
-  return new Response(JSON.stringify(body), { status, headers });
+  return headers;
+}
+
+function reply(origin: string | null, status: number, body: Json) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
+  });
 }
 
 function environment() {
@@ -150,7 +157,8 @@ Deno.serve(async (request) => {
   }
 
   try {
-    const body = await request.json() as Json;
+    // Upload binário: envelope {attachment_id} no cabeçalho, bytes no corpo (_shared/edge_bytes.ts).
+    const body = isBinaryUpload(request) ? decodeEnvelope(request) : await request.json() as Json;
     const url = requiredSecret("SUPABASE_URL");
     const admin = createClient(url, requiredSecret("SUPABASE_SERVICE_ROLE_KEY"), {
       auth: { persistSession: false },
@@ -190,6 +198,11 @@ Deno.serve(async (request) => {
         }),
       );
       const ttl = Number(descriptor.ttl_seconds ?? 300);
+      if (body.inline === true) {
+        // Bytes pela Edge: nenhuma URL assinada chega ao navegador.
+        const bytes = await r2.get(String(descriptor.object_key), Number(descriptor.byte_size));
+        return bytesResponse(corsHeaders(origin), bytes, String(descriptor.content_type));
+      }
       const signed = await r2.presignGet(String(descriptor.object_key), ttl);
       return reply(origin, 200, {
         attachment_id: descriptor.attachment_id,
@@ -294,6 +307,22 @@ Deno.serve(async (request) => {
         upload_status: prepared.upload_status,
         replayed: prepared.replayed === true,
       });
+    }
+
+    if (body.action === "upload") {
+      // O ticket do dono autoriza o upload; a Edge grava no R2 e segue para o
+      // finalize normal (HEAD + releitura + sha256 medido).
+      const ticket = unwrap(
+        await user.rpc("superadmin_chat_attachment_authorize_finalize_v1", {
+          p_attachment_id: uuid(body.attachment_id),
+        }),
+      );
+      const bytes = await readUploadBytes(request, Number(ticket.byte_size));
+      if (!matchesDeclaredType(bytes, String(ticket.content_type))) {
+        throw new Error("uploaded_attachment_mismatch");
+      }
+      await r2.put(String(ticket.object_key), bytes, String(ticket.content_type));
+      body.action = "finalize";
     }
 
     if (body.action === "finalize") {
