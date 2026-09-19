@@ -1412,7 +1412,10 @@ final class _PostMedia extends StatelessWidget {
                       borderRadius: BorderRadius.circular(CoeloRadius.full),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: CoeloSpacing.space2,
+                        vertical: CoeloSpacing.space1,
+                      ),
                       child: Text(
                         '1/${media.isNotEmpty ? media.length : demoIndices.length}',
                         style: TextStyle(

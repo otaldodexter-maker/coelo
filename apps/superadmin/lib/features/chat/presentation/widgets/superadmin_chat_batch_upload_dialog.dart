@@ -1,4 +1,5 @@
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/chat_repository.dart';
@@ -273,7 +274,7 @@ final class _ItemRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.spaceHalf),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -769,7 +769,7 @@ class _FeedPreview extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
                 child: Text(
                   state.draft.caption.isEmpty ? 'Sua legenda aparecerá aqui.' : state.draft.caption,
                 ),

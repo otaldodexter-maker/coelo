@@ -732,7 +732,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
   Widget _mealCard(int index, _MealEditor meal) => DecoratedBox(
     decoration: BoxDecoration(
       border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(CoeloRadius.lg),
     ),
     child: Padding(
       padding: const EdgeInsets.all(CoeloSpacing.space4),

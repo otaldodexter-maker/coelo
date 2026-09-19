@@ -152,7 +152,7 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 180),
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 4),
+                    padding: const EdgeInsets.only(left: CoeloSpacing.space1),
                     child: Text(
                       contextLabel!,
                       key: ValueKey('$keyPrefix-context-label'),

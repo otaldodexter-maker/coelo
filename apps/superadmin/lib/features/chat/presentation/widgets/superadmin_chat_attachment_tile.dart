@@ -394,7 +394,7 @@ final class _CompactVisualAttachment extends StatelessWidget {
                     bottom: CoeloSpacing.space1,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: Colors.black54,
+                        color: context.coeloOnMediaColors.scrim,
                         borderRadius: BorderRadius.circular(CoeloRadius.sm),
                       ),
                       child: Padding(
@@ -403,9 +403,9 @@ final class _CompactVisualAttachment extends StatelessWidget {
                           attachment.fileName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: Theme.of(
-                            context,
-                          ).textTheme.labelSmall?.copyWith(color: Colors.white),
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: context.coeloOnMediaColors.foreground,
+                          ),
                         ),
                       ),
                     ),

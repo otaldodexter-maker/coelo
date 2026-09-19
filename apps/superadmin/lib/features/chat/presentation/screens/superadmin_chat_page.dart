@@ -1357,7 +1357,7 @@ final class _ChatAttachmentMosaic extends StatelessWidget {
                       child: DecoratedBox(
                         key: Key('superadmin-chat-attachment-mosaic-count-$messageId'),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.scrim.withValues(alpha: 0.72),
+                          color: context.coeloOnMediaColors.scrim,
                           borderRadius: BorderRadius.circular(CoeloRadius.md),
                         ),
                         child: Padding(
@@ -1368,7 +1368,7 @@ final class _ChatAttachmentMosaic extends StatelessWidget {
                           child: Text(
                             '+${attachments.length - visible.length}',
                             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: Colors.white,
+                              color: context.coeloOnMediaColors.foreground,
                               fontWeight: FontWeight.w700,
                             ),
                           ),

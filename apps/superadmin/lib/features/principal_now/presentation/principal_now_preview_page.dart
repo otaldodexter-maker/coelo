@@ -946,7 +946,9 @@ final class _StoryCard extends StatelessWidget {
                               : 0.0;
                           return Expanded(
                             child: Padding(
-                              padding: EdgeInsets.only(right: index == stories.length - 1 ? 0 : 4),
+                              padding: EdgeInsets.only(
+                                right: index == stories.length - 1 ? 0 : CoeloSpacing.space1,
+                              ),
                               child: LinearProgressIndicator(
                                 value: value,
                                 minHeight: 3,
